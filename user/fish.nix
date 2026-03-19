@@ -44,11 +44,12 @@ in
         end
       '';
       notify_countdown = ''
-        argparse 'h/help' 'm/message=' 's/sound' 't/time=' -- $argv
+        argparse 'f/file=' 'h/help' 'm/message=' 's/sound' 't/time=' -- $argv
         or return
         if set -q _flag_help
           printf "Usage: notify_countdown [OPTIONS]\n\n"
           printf "Options:\n"
+          printf "  -f, --file        Stop when file no longer exists\n"
           printf "  -h, --help        Show this help message\n"
           printf "  -m, --message STR Set the text string\n"
           printf "  -s, --sound       Play a sound every second\n"
@@ -66,6 +67,13 @@ in
         play_sound
         set id (notify-send --print-id (make_message $_flag_time))
         for i in (seq (math $_flag_time - 1) -1 1)
+          # Check if the file flag was passed, and if the file no longer exists
+          if set -q _flag_file
+            if not test -e $_flag_file
+              break
+            end
+          end
+
           sleep 1
           play_sound
           notify-send --expire-time=1100 --replace-id=$id (make_message $i)

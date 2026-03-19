@@ -21,39 +21,59 @@ let
   floatSize = fraction: "size (monitor_w*${toString(fraction)}) (monitor_h*${toString(fraction)})";
   ghdashboard = import ./ghdashboard/default.nix { inherit pkgs; };
   ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString(ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
-  lockAfterNotify = n: "notify_countdown -s -t ${toString(n)} -m 'Locking in {} seconds'";
-  lockAfterSeconds = 60;
+  lockAfterNotify = n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString(n)} -m \'Locking in {} seconds\''";
+  lockAfterSeconds = 120;
+  lockingPath = "/tmp/hypr_locking";
   locks = import ./lock.nix { inherit ignisPath; inherit palette; inherit pkgs; };
+  # TODO move to os-commands module
   os-current-monitor = pkgs.writeShellScriptBin "os-current-monitor" "hyprctl monitors | awk -F '[ ()]+' '/Monitor/ {id=$4} /focused: yes/ {print id; exit}'";
-  os-screenshot = pkgs.writeShellScriptBin "os-screenshot" "${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" - | ${pkgs.swappy}/bin/swappy -f -";
+  os-screenshot = pkgs.writeShellScriptBin "os-screenshot" "${pkgs.grim}/bin/grim -l 9 -g \"$(${pkgs.slurp}/bin/slurp)\" - | ${pkgs.swappy}/bin/swappy -f -";
   os-toggle-menu-bar = pkgs.writeShellScriptBin "os-toggle-menu-bar" "ignis toggle-window ignis-bar-$(${os-current-monitor}/bin/os-current-monitor)";
   wallpaperPath = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperPath;
   zoomFactor = 0.2;
 in
 {
-  home.packages = [ ghdashboardwithargs locks.os-lock locks.swaylock os-current-monitor os-toggle-menu-bar ];
+  home.packages = [
+    ghdashboardwithargs
+    locks.os-lock
+    locks.swaylock
+    os-current-monitor
+    os-toggle-menu-bar
+  ];
   services.hypridle = {
     enable = true;
     settings = {
       general = {
+        # Screen off after sleeping.
         after_sleep_cmd = "hyprctl dispatch dpms on";
+        # Lock before sleeping.
         before_sleep_cmd = "loginctl lock-session";
+        # Lock if not already locked.
         lock_cmd = "pidof os-lock || os-lock ";
       };
       listener = [
         {
-          on-timeout = lockAfterNotify(5);
-          timeout = lockAfterSeconds - 5;
+          on-timeout = "fish -c 'date -d \"-1 second\" +\"%Y-%m-%d %H:%M:%S\" > /tmp/idle-started-at'";
+          timeout = 1; # For some reason 0 doesn't work.
         }
+        # Locking notification.
+        {
+          on-timeout = "touch ${lockingPath}; " + lockAfterNotify(10);
+          on-resume = "rm ${lockingPath}";
+          timeout = lockAfterSeconds - 10;
+        }
+        # Lock.
         {
           on-timeout = "loginctl lock-session";
           timeout = lockAfterSeconds;
         }
+        # Screen off.
         {
           on-resume = "hyprctl dispatch dpms on";
           on-timeout = "hyprctl dispatch dpms off";
           timeout = lockAfterSeconds + 60;
         }
+        # Sleep.
         {
           on-timeout = "systemctl suspend";
           timeout = lockAfterSeconds + 120;
