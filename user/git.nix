@@ -23,7 +23,7 @@
     enable = true;
     settings = {
       push.autoSetupRemote = true;
-      rebase.autoSquash = true;
+      rebase.autoSquash = false;
       user = {
         name = "jerbaroo";
         email = "jerbaroo.work@pm.me";
