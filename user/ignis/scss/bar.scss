@@ -1,16 +1,12 @@
 .bar-window {
   padding: 5px;
-  // margin: 10px; // 2 x gap in flake.nix.
-  // margin-bottom: 0;
-  // border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  .bar-center { font-size: small; }
-  .bar-left { font-size: small; }
-  .bar-right { font-size: small; }
-  .bar-button, .powermenu-button {
+  .bar-center, .bar-left, .bar-right { font-size: small; }
+  .bar-button {
+    background-color: rgba(255, 255, 255, 0.15);
     border-radius: 8px; // Should match rounding in hyprland.nix.
     outline-width: 0px;
-    padding: 0 24px;
     min-width: 0;
+    padding: 0 18px;
   }
   .workspaces {
     .workspace-button {
@@ -18,13 +14,12 @@
       .workspace-button-label {
           min-width: 24px;
       }
-    }
-    .workspace-button.active-workspace {
-      border-color: $accent;
-    }
-    .workspace-button.open-workspace {
-      border-color: $base;
+      &.active-workspace {
+        border-color: $accent;
+      }
+      &.open-workspace {
+        border-color: $base;
+      }
     }
   }
 }
-

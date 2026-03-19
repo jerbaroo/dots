@@ -33,21 +33,23 @@ def exec(cmd: str) -> None:
 
 def battery():
     battery = uPowerService.batteries[0]
-    return widgets.Box(
+    return widgets.Button(
         css_classes=["bar-button", "battery"],
-        child=utils.Poll(
-            100, # 0.1s
-            lambda self:
-                [ widgets.Icon(image=battery.icon_name, pixel_size=icon_size)
-                , widgets.Label(label=f"{battery.percent:.0f}")
-                ]
-        ).bind("output")
+        child=widgets.Box(
+                child=utils.Poll(
+                100, # 0.1s
+                lambda self:
+                    [ widgets.Icon(image=battery.icon_name, pixel_size=icon_size)
+                    , widgets.Label(label=f"{battery.percent:.0f}")
+                    ]
+            ).bind("output")
+        )
     )
 
 
 def do_not_disturb():
 
-    def read_do_not_disturb_status():
+    def get_do_not_disturb_status():
       result = subprocess.check_output("swaync-client -D", shell=True, text=True)
       if result == 'true':
           return True
@@ -55,31 +57,51 @@ def do_not_disturb():
           return False
       raise Exception(f"Unknown do not disturb status {result}")
 
-    def do_not_disturb_icon_name():
-        if read_do_not_disturb_status():
+    def get_do_not_disturb_icon_name():
+        if get_do_not_disturb_status():
             return "notifications-disabled-symbolic"
         return "notifications-symbolic"
 
-    box = widgets.Box(
+
+    return widgets.Button(
         css_classes=["bar-button", "do-not-disturb"],
-        child=utils.Poll(
-            100, # 0.1s
-            lambda self: [
-                widgets.Icon(image=do_not_disturb_icon_name(), pixel_size=icon_size)
-            ]
-        ).bind("output")
+        on_click=lambda x: exec("swaync-client -d -sw"),
+        child=widgets.Box(
+            child=utils.Poll(
+                100, # 0.1s
+                lambda self: [
+                    widgets.Icon(image=get_do_not_disturb_icon_name(), pixel_size=icon_size)
+                ]
+            ).bind("output")
+        )
     )
 
-    return widgets.EventBox(
-        on_click=lambda x: exec("swaync-client -d -sw"),
-        child=[box],
+
+def notification_count():
+
+    def get_count():
+        return int(subprocess.check_output("swaync-client -c", shell=True, text=True))
+
+    def get_icon(self):
+        count = get_count()
+        return [
+            widgets.Icon(image="notification-new-symbolic", pixel_size=icon_size),
+            widgets.Label(label=str(count), css_classes=["notification-count-label"])
+        ]
+
+    return widgets.Button(
+        css_classes=["bar-button", "notification-count"],
+        on_click=lambda _: exec("swaync-client -t -sw"),  # Toggle the panel.
+        child=widgets.Box(
+            spacing=tiny_spacing,
+            child=utils.Poll(100, get_icon).bind("output")
+        )
     )
 
 
 def volume() -> widgets.EventBox:
 
     box = widgets.Box(
-            css_classes=["bar-button", "volume"],
             child=[
                 widgets.Icon(
                     image=audio.speaker.bind("icon_name"),
@@ -92,10 +114,17 @@ def volume() -> widgets.EventBox:
             ]
         )
 
+    # For the "button" look and click action.
+    button = widgets.Button(
+        css_classes=["bar-button", "volume"],
+        on_click=lambda _: exec("pavucontrol"),
+        child=box
+    )
+
     return widgets.EventBox(
         on_scroll_up=lambda x: exec("wpctl set-volume @DEFAULT_SINK@ 5%+"),
         on_scroll_down=lambda x: exec("wpctl set-volume @DEFAULT_SINK@ 5%-"),
-        child=[box],
+        child=[button],
     )
 
 
@@ -167,7 +196,7 @@ def center() -> widgets.Label:
 def power_menu() -> widgets.Button:
 
     return widgets.Button(
-        css_classes=["bar-button ", "powermenu-button"],
+        css_classes=["bar-button", " powermenu-button"],
         on_click=lambda _: exec("os-logout-menu"),
         child=widgets.Box(
             child=[widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size)]
@@ -209,7 +238,7 @@ def right() -> widgets.Box:
     return widgets.Box(
         css_classes=["bar-right"],
         spacing=sml_spacing,
-        child=[volume(), battery(), do_not_disturb(), power_menu()],
+        child=[volume(), battery(), do_not_disturb(), notification_count(), power_menu()],
     )
 
 
