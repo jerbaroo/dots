@@ -195,12 +195,10 @@ in
       dwindle.preserve_split = true;
       exec-once = [
         # "openrgb -m static -c ff1e00"
-        "1password --silent"
         "swww img ${wallpaperPath}"
         "${ghdashboardwithargs}/bin/ghdashboardwithargs"
-        "${pkgs.blueman}/bin/blueman-applet"
-        "nm-applet"
         "ignis init"
+        "1password --silent"
       ];
       general = {
         border_size = borderSize;
