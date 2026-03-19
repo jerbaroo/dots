@@ -24,7 +24,7 @@ barName = "ignis-bar"
 namespace = lambda x: f"{barName}-{x}"
 tiny_spacing = 4
 sml_spacing = 6
-icon_size = 16
+icon_size = 18
 
 
 def exec(cmd: str) -> None:
@@ -40,7 +40,7 @@ def battery():
                 100, # 0.1s
                 lambda self:
                     [ widgets.Icon(image=battery.icon_name, pixel_size=icon_size)
-                    , widgets.Label(label=f"{battery.percent:.0f}")
+                    , widgets.Label(label=f"{battery.percent:.0f}%")
                     ]
             ).bind("output")
         )
@@ -109,7 +109,7 @@ def volume() -> widgets.EventBox:
                     style=f"margin-right: {tiny_spacing}px;"
                 ),
                 widgets.Label(
-                    label=audio.speaker.bind("volume", transform=lambda p: f"{p}")
+                    label=audio.speaker.bind("volume", transform=lambda p: f"{p}%")
                 ),
             ]
         )
@@ -199,7 +199,7 @@ def power_menu() -> widgets.Button:
         css_classes=["bar-button", " powermenu-button"],
         on_click=lambda _: exec("os-logout-menu"),
         child=widgets.Box(
-            child=[widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size)]
+            child=[widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size + 4)]
         ),
     )
 
