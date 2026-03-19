@@ -228,6 +228,7 @@ in
         "center true, match:class ^(wdisplays)$"
         "${floatSize(defaultFloatSize)}, match:class ^(wdisplays)$"
       ];
+      workspace = ["1, monitor:DP-1, default:true" ];
       xwayland = {
         force_zero_scaling = true;
       };
