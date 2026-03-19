@@ -51,6 +51,7 @@
       systemFontSize = 16;
       temperature = 3000;
       username = "jeremy-barisch-rooney";
+      wallpaperName = "gengar.png";
     in
     {
       nixosConfigurations = {
@@ -93,6 +94,7 @@
             inherit systemFontSize;
             inherit temperature;
             inherit username;
+            inherit wallpaperName;
             catppuccin = inputs.catppuccin;
             color-schemes = inputs.color-schemes;
             genericLinux = true;

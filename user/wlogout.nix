@@ -1,10 +1,12 @@
-{ accent, palette, pkgs, ... }:
+{ accent, palette, pkgs, username, wallpaperName, ... }:
 let
+  # TODO move to os-commands module.
   os-logout-menu = pkgs.writeShellScriptBin "os-logout-menu" "wlogout -b 5";
   rgba = c: a: "rgba(${toString(c.r)}, ${toString(c.g)}, ${toString(c.b)}, ${toString(a)})";
-  wallpaper-blurred = (import ./wallpaper.nix { inherit pkgs; }).wallpaper-blurred;
+  wallpaperBlurred = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperBlurred;
+  wallpaperBlurredPath = ".config/wallpaper-blurred.jpg";
 in {
-  home.file."wallpaper-blurred.jpg".source = wallpaper-blurred;
+  home.file.${wallpaperBlurredPath}.source = wallpaperBlurred;
   home.packages = [ os-logout-menu ];
   programs.wlogout = {
     enable = true;
@@ -42,7 +44,7 @@ in {
     ];
   style = ''
     window {
-      background-image: url("/home/jeremy-barisch-rooney/wallpaper-blurred.jpg");
+      background-image: url("/home/${username}/${wallpaperBlurredPath}");
       background-size: cover;
       font-size: 22px;
     }

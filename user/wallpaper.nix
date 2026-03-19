@@ -1,12 +1,13 @@
-{ pkgs, ... }:
+{ pkgs, wallpaperName, ... }:
 let
-  wallpaper = builtins.toString wallpaper_import;
-  wallpaper_import = ./wallpaper.jpg;
+  wallpaper = builtins.toString wallpaperPath;
+  wallpaperPath = ./wallpapers/${wallpaperName};
 in {
   inherit wallpaper;
-  wallpaper-blurred =
+  inherit wallpaperPath;
+  wallpaperBlurred =
     pkgs.runCommand
       "blur-image"
       { nativeBuildInputs = [ pkgs.imagemagick ]; }
-      "magick ${wallpaper_import} -blur 20x20 $out";
+      "magick ${wallpaperPath} -blur 20x20 $out";
 }

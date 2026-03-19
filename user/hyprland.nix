@@ -12,6 +12,7 @@
   system,
   temperature,
   username,
+  wallpaperName,
   wrapGL,
   ...
 }:
@@ -26,7 +27,7 @@ let
   os-current-monitor = pkgs.writeShellScriptBin "os-current-monitor" "hyprctl monitors | awk -F '[ ()]+' '/Monitor/ {id=$4} /focused: yes/ {print id; exit}'";
   os-screenshot = pkgs.writeShellScriptBin "os-screenshot" "${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" - | ${pkgs.swappy}/bin/swappy -f -";
   os-toggle-menu-bar = pkgs.writeShellScriptBin "os-toggle-menu-bar" "ignis toggle-window ignis-bar-$(${os-current-monitor}/bin/os-current-monitor)";
-  wallpaper = (import ./wallpaper.nix { inherit pkgs; }).wallpaper;
+  wallpaperPath = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperPath;
   zoomFactor = 0.2;
 in
 {
@@ -58,15 +59,6 @@ in
           timeout = lockAfterSeconds + 120;
         }
       ];
-    };
-  };
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      ipc = "off";
-      preload = [ wallpaper ];
-      splash = false;
-      wallpaper = [ ",${wallpaper}" ];
     };
   };
   services.hyprsunset = {
@@ -204,6 +196,7 @@ in
       exec-once = [
         # "openrgb -m static -c ff1e00"
         "1password --silent"
+        "swww img ${wallpaperPath}"
         "${ghdashboardwithargs}/bin/ghdashboardwithargs"
         "${pkgs.blueman}/bin/blueman-applet"
         "nm-applet"

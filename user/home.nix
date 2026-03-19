@@ -25,6 +25,7 @@
   systemFontSize,
   temperature,
   username,
+  wallpaperName,
   wrapGL,
   ...
 }:
@@ -57,6 +58,7 @@ in
       inherit accent;
       inherit lib;
       inherit pkgs;
+      inherit username;
     })
     (import ./fonts.nix { inherit pkgs; inherit systemFontSize; })
     (import ./ghostty.nix {
@@ -93,6 +95,7 @@ in
       inherit system;
       inherit temperature;
       inherit username;
+      inherit wallpaperName;
       inherit wrapGL;
     })
     (import ./ignis.nix {
@@ -135,10 +138,16 @@ in
       inherit palette;
       inherit pkgs;
     })
+    (import ./wallpaper-service.nix {
+      inherit pkgs;
+      inherit wallpaperName;
+    })
     (import ./wlogout.nix {
       inherit accent;
       inherit palette;
       inherit pkgs;
+      inherit username;
+      inherit wallpaperName;
     })
   ];
   home = {
