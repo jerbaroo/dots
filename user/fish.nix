@@ -1,7 +1,8 @@
-{ accent, lib, pkgs, ... }:
+{ accent, lib, pkgs, username, ... }:
 let
+  neo-color = if accent == "blue" then "cyan" else accent;
   os-neo = pkgs.writeShellScriptBin "os-neo"
-    "${pkgs.neo}/bin/neo -D -f 120 -F -c ${accent}";
+    "${pkgs.neo}/bin/neo -D -f 120 -F -c ${neo-color}";
   plugin = x: {
     name = x;
     src = pkgs.fishPlugins.${x}.src;

@@ -1,10 +1,7 @@
 {
   description = "NixOS";
   inputs = {
-    catppuccin = {
-      # inputs.nixpkgs.follows = "home-manager";
-      url = "github:catppuccin/nix";
-    };
+    catppuccin.url = "github:catppuccin/nix";
     color-schemes = {
       flake = false;
       url = "github:mbadolato/iTerm2-Color-Schemes";
@@ -34,20 +31,21 @@
         let whitelist = map pkgs.lib.getName [ pkgs.spotify ];
         in  pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
       borderSize = 2;
-      codeBackgroundOpacity = 0.7;
+      codeBackgroundOpacity = 0.8;
       codeFontName = "Iosevka Nerd Font Mono";
       codeFontSize = 14;
       flavor = "mocha";
-      gap = 5;
+      gap = 3;
       ghdashboardPort = 1234;
       hostname = "nixos";
       pkgs = import inputs.nixpkgs {
         overlays = [
-            inputs.nixgl.overlay
-            inputs.nur.overlays.default
+          inputs.nixgl.overlay
+          inputs.nur.overlays.default
         ];
         inherit system;
       };
+      rounding = 8;
       stateVersion = "25.05";
       system = "x86_64-linux";
       systemFontSize = 16;
@@ -89,6 +87,7 @@
             inherit gap;
             inherit ghdashboardPort;
             inherit hostname;
+            inherit rounding;
             inherit stateVersion;
             inherit system;
             inherit systemFontSize;

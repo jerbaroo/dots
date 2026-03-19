@@ -198,7 +198,7 @@ in
           size = 5;
         };
         inactive_opacity = 1;
-        rounding = 10;
+        rounding = 8;
       };
       dwindle.preserve_split = true;
       exec-once = [
@@ -218,6 +218,12 @@ in
         resize_on_border = true;
       };
       input.kb_options = "caps:swapescape";
+      layerrule = [
+        # Blur the menu bar.
+        "blur on, match:namespace ^(ignis-bar-.*)$"
+        # Ignore the transparent gaps.
+        # "ignore_alpha 0.1, match:namespace ^(ignis-bar-.*)$"
+      ];
       monitor = [ ", preferred, auto-up, 1.5" ];
       misc.disable_hyprland_logo = true;
       windowrule = [

@@ -33,7 +33,7 @@ def exec(cmd: str) -> None:
 def battery():
     battery = uPowerService.batteries[0]
     return widgets.Box(
-        css_classes=["battery"],
+        css_classes=["bar-button", "battery"],
         child=utils.Poll(
             100, # 0.1s
             lambda self:
@@ -47,7 +47,7 @@ def battery():
 def volume() -> widgets.EventBox:
 
     box = widgets.Box(
-            css_classes=["volume"],
+            css_classes=["bar-button", "volume"],
             child=[
                 widgets.Icon(
                     image=audio.speaker.bind("icon_name"),
@@ -177,7 +177,7 @@ def right() -> widgets.Box:
     return widgets.Box(
         css_classes=["bar-right"],
         spacing=sml_spacing,
-        child=[volume(), battery(), tray(), power_menu()],
+        child=[volume(), battery(), power_menu()],
     )
 
 

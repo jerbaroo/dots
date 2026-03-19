@@ -18,6 +18,7 @@
   lib,
   nixgl,
   pkgs,
+  rounding,
   spicetify,
   stateVersion,
   system,
@@ -88,6 +89,7 @@ in
       inherit ignisPath;
       inherit palette;
       inherit pkgs;
+      inherit rounding;
       inherit system;
       inherit temperature;
       inherit username;
