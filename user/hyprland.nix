@@ -160,6 +160,7 @@ in
         "$mod      , E, exec, ${pkgs.emacs-pgtk}/bin/emacs"
         "$mod      , F, fullscreenstate, 1"
         "$mod SHIFT, F, fullscreen"
+        "$mod      , I, exec, [float;center;${floatSize(0.5)}] ghostty -e os-switch-home"
         "$mod      , M, exec, spotify"
         "$mod      , N, exec, ${pkgs.swaynotificationcenter}/bin/swaync-client -t"
         "$mod      , O, exec, ${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"
@@ -170,9 +171,8 @@ in
         "$mod SHIFT, Q, exec, os-logout-menu"
         "$mod      , S, exec, ${os-screenshot}/bin/os-screenshot"
         "$mod      , T, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.btop}/bin/btop"
-        "$mod      , U, exec, [float;center;${floatSize(0.5)}] ghostty -e os-switch-home"
         "$mod      , V, exec, ${pkgs.pavucontrol}/bin/pavucontrol"
-        "$mod      , W, exec, firefox"
+        "$mod      , W, exec, chromium"
         "$mod SHIFT, W, exec, ${pkgs.librewolf}/bin/librewolf"
         # Zoom.
         "$mod CTRL, J, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor |  ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"
