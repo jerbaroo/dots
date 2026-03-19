@@ -1,3 +1,8 @@
 {
-  services.swaync.enable = true;
+  services.swaync = {
+    enable = true;
+    settings = {
+      timeout-critical = 10;
+    };
+  };
 }
