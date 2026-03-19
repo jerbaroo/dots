@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import re
+import subprocess
 import time
 
 from collections import defaultdict
@@ -41,6 +42,37 @@ def battery():
                 , widgets.Label(label=f"{battery.percent:.0f}")
                 ]
         ).bind("output")
+    )
+
+
+def do_not_disturb():
+
+    def read_do_not_disturb_status():
+      result = subprocess.check_output("swaync-client -D", shell=True, text=True)
+      if result == 'true':
+          return True
+      if result == 'false':
+          return False
+      raise Exception(f"Unknown do not disturb status {result}")
+
+    def do_not_disturb_icon_name():
+        if read_do_not_disturb_status():
+            return "notifications-disabled-symbolic"
+        return "notifications-symbolic"
+
+    box = widgets.Box(
+        css_classes=["bar-button", "do-not-disturb"],
+        child=utils.Poll(
+            100, # 0.1s
+            lambda self: [
+                widgets.Icon(image=do_not_disturb_icon_name(), pixel_size=icon_size)
+            ]
+        ).bind("output")
+    )
+
+    return widgets.EventBox(
+        on_click=lambda x: exec("swaync-client -d -sw"),
+        child=[box],
     )
 
 
@@ -177,7 +209,7 @@ def right() -> widgets.Box:
     return widgets.Box(
         css_classes=["bar-right"],
         spacing=sml_spacing,
-        child=[volume(), battery(), power_menu()],
+        child=[volume(), battery(), do_not_disturb(), power_menu()],
     )
 
 
