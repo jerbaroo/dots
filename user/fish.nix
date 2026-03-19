@@ -91,11 +91,6 @@ in
           | string replace $HOME "~"
       '';
       tmux_project_open = ''
-        if test -z "$EDITOR"
-          echo 'EDITOR variable not set'
-          exit 0
-        end
-
         set project_selection \
           ( project_select \
           | ${pkgs.fzf}/bin/fzf --reverse --preview 'git_preview {}' \
@@ -116,7 +111,6 @@ in
               # Create a session for the project if it doesn't exist.
               if not ${pkgs.tmux}/bin/tmux has-session -t $project_name 2> /dev/null
                 ${pkgs.tmux}/bin/tmux new-session -d -s "$project_name" -c "$project_path"
-                ${pkgs.tmux}/bin/tmux send-keys -t "$project_name" "$EDITOR ." C-m
               end
               tmux_switch_or_attach "$project_name"
 
