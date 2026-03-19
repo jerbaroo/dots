@@ -145,6 +145,15 @@ in
         "$mod SHIFT, J, movewindow, d"
         "$mod SHIFT, K, movewindow, u"
         "$mod SHIFT, L, movewindow, r"
+        # Resize splits.
+        "$mod ALT, l, resizeactive, 40 0"
+        "$mod ALT, h, resizeactive, -40 0"
+        "$mod ALT, k, resizeactive, 0 -40"
+        "$mod ALT, j, resizeactive, 0 40"
+        "$mod CTRL, l, resizeactive, 20 0"
+        "$mod CTRL, h, resizeactive, -20 0"
+        "$mod CTRL, k, resizeactive, 0 -20"
+        "$mod CTRL, j, resizeactive, 0 20"
         # Move focus to workspace by ID.
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
