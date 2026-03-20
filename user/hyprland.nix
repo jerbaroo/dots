@@ -25,12 +25,25 @@ let
   lockAfterSeconds = 120;
   lockingPath = "/tmp/hypr_locking";
   locks = import ./lock.nix { inherit ignisPath; inherit palette; inherit pkgs; };
+  monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
+    ${pkgs.socat}/bin/socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
+      case "$line" in
+        "monitoradded>>"*|"monitorremoved>>"*)
+          echo "$line" >> /tmp/monitor-change
+          ${setWallpaperCmd}
+          ignis reload
+          ;;
+      esac
+    done
+  '';
   # TODO move to os-commands module
   os-current-monitor = pkgs.writeShellScriptBin "os-current-monitor" "hyprctl monitors | awk -F '[ ()]+' '/Monitor/ {id=$4} /focused: yes/ {print id; exit}'";
   os-screenshot = pkgs.writeShellScriptBin "os-screenshot" "${pkgs.grim}/bin/grim -l 9 -g \"$(${pkgs.slurp}/bin/slurp)\" - | ${pkgs.swappy}/bin/swappy -f -";
   os-toggle-menu-bar = pkgs.writeShellScriptBin "os-toggle-menu-bar" "ignis toggle-window ignis-bar-$(${os-current-monitor}/bin/os-current-monitor)";
+  setWallpaperCmd = "swww img ${wallpaperPath}";
   wallpaperPath = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperPath;
   zoomFactor = 0.2;
+
 in
 {
   home.packages = [
@@ -124,6 +137,7 @@ in
         enabled = true;
       };
       bind = [
+        ",Caps_Lock, exec, os-logout-menu" # TODO actives caps lock
         ",Delete, exec, systemctl suspend"
         # Function keys.
         ",XF86MonBrightnessDown, exec, ${pkgs.brightnessctl}/bin/brightnessctl s 10%-"
@@ -220,8 +234,9 @@ in
       dwindle.preserve_split = true;
       exec-once = [
         # "openrgb -m static -c ff1e00"
+        setWallpaperCmd
         "ignis init >> /tmp/ignis.log 2>&1"
-        "swww img ${wallpaperPath}"
+        monitorListener
         "${ghdashboardwithargs}/bin/ghdashboardwithargs"
         "1password --silent"
       ];
