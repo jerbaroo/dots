@@ -12,6 +12,7 @@ from ignis.services.audio import AudioService
 from ignis.services.hyprland import HyprlandService
 from ignis.services.system_tray import SystemTrayService, SystemTrayItem
 from ignis.services.upower import UPowerService
+from ignis.variable import Variable
 from ignis import widgets
 from typing import List, Optional
 
@@ -29,6 +30,9 @@ icon_size = 18
 
 def exec(cmd: str) -> None:
     asyncio.create_task(utils.exec_sh_async(cmd))
+
+
+##### RHS Buttons ##############################################################
 
 
 def battery():
@@ -100,6 +104,124 @@ def notification_count():
     )
 
 
+def performance_menu(monitor=0) -> widgets.Button:
+
+    all_profiles = Variable([])
+    all_profiles.connect("notify::value", lambda x, y: print("Value changed!: ", x.value))
+    async def set_profiles():
+        proc = await asyncio.create_subprocess_shell(
+            "nix run nixpkgs#power-profiles-daemon -- list",
+            stdout=asyncio.subprocess.PIPE,
+        )
+        stdout, _ = await proc.communicate()
+        all_profiles.value = [
+            line.strip(' *:')
+            for line in stdout.decode('utf-8').splitlines()
+            if line.strip().endswith(':')
+        ]
+    asyncio.create_task(set_profiles())
+
+    current_profile = Variable("balanced")
+    current_profile.connect("notify::value", lambda x, y: print("Value changed!: ", x.value))
+    async def poll_current_profile():
+        while True:
+            proc = await asyncio.create_subprocess_shell(
+                "nix run nixpkgs#power-profiles-daemon -- get",
+                stdout=asyncio.subprocess.PIPE,
+            )
+            stdout, _ = await proc.communicate()
+            new_profile = stdout.decode('utf-8').strip()
+            if new_profile != current_profile.value:
+                current_profile.value = new_profile
+            await asyncio.sleep(0.1)
+    asyncio.create_task(poll_current_profile())
+
+    profile_icons = {
+        "balanced": "power-profile-balanced-symbolic",
+        "performance": "power-profile-performance-symbolic",
+        "power-saver": "power-profile-power-saver-symbolic",
+    }
+
+    def get_next_profile():
+
+        def get_next_profile_by_index():
+            current_index = all_profiles.value.index(current_profile.value)
+            next_index = (current_index + 1) % len(all_profiles.value)
+            return all_profiles.value[next_index]
+
+        cycle = {
+            "performance": "power-saver",
+            "balanced": "performance",
+            "power-saver": "balanced"
+        }
+        next_profile = cycle.get(current_profile.value)
+        if next_profile is not None and next_profile in all_profiles.value:
+            return next_profile
+        else:
+            return get_next_profile_by_index()
+
+    def set_next_profile():
+        next_profile = get_next_profile()
+        exec(f"nix run nixpkgs#power-profiles-daemon -- set {next_profile}")
+
+    return widgets.Button(
+        css_classes=["bar-button", "performance-button"],
+        on_click=lambda _: set_next_profile(),
+        child=widgets.Box(
+            child=[
+                widgets.Icon(
+                    image=current_profile.bind(
+                        "value",
+                        transform=lambda p:
+                          profile_icons.get(p, "dialog-question-symbolic")
+                    )
+                ),
+            ]
+        ),
+    )
+
+
+def power_menu(monitor: int) -> widgets.Button:
+
+    return widgets.Button(
+        css_classes=["bar-button", "powermenu-button"],
+        on_click=lambda _: exec(f"ignis toggle-window ignis-logout-menu-{monitor}"),
+        child=widgets.Box(
+            child=[widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size + 4)]
+        ),
+    )
+
+
+def tray_item(item: SystemTrayItem) -> widgets.Button:
+    if item.menu:
+        menu = item.menu.copy()
+    else:
+        menu = None
+
+    return widgets.Button(
+        child=widgets.Box(
+            child=[
+                widgets.Icon(image=item.bind("icon"), pixel_size=icon_size),
+                menu,
+            ]
+        ),
+        setup=lambda self: item.connect("removed", lambda x: self.unparent()),
+        tooltip_text=item.bind("tooltip"),
+        on_click=lambda x: menu.popup() if menu else None,
+        on_right_click=lambda x: menu.popup() if menu else None,
+        css_classes=["bar-button", "system-tray-button"],
+    )
+
+
+def tray():
+    return widgets.Box(
+        setup=lambda self: system_tray.connect(
+            "added", lambda x, item: self.append(tray_item(item))
+        ),
+        spacing=sml_spacing,
+    )
+
+
 def volume() -> widgets.EventBox:
 
     box = widgets.Box(
@@ -127,6 +249,9 @@ def volume() -> widgets.EventBox:
         on_scroll_down=lambda x: exec("wpctl set-volume @DEFAULT_SINK@ 5%-"),
         child=[button],
     )
+
+
+##### LHS Buttons ##############################################################
 
 
 def scroll_workspaces(f) -> None:
@@ -178,69 +303,7 @@ def workspaces(monitor: int) -> widgets.EventBox:
     )
 
 
-def left(monitor: int) -> widgets.Box:
-    return widgets.Box(
-        css_classes=["bar-left"],
-        child=[workspaces(monitor)]
-    )
-
-
-def center() -> widgets.Label:
-    return widgets.Label(
-        css_classes=["bar-center"],
-        label=utils.Poll(
-            1_000, lambda self: datetime.datetime.now().strftime("%b %-d %H:%M")
-        ).bind("output"),
-    )
-
-
-def power_menu(monitor: int) -> widgets.Button:
-
-    return widgets.Button(
-        css_classes=["bar-button", " powermenu-button"],
-        on_click=lambda _: exec(f"ignis toggle-window ignis-logout-menu-{monitor}"),
-        child=widgets.Box(
-            child=[widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size + 4)]
-        ),
-    )
-
-
-def tray_item(item: SystemTrayItem) -> widgets.Button:
-    if item.menu:
-        menu = item.menu.copy()
-    else:
-        menu = None
-
-    return widgets.Button(
-        child=widgets.Box(
-            child=[
-                widgets.Icon(image=item.bind("icon"), pixel_size=icon_size),
-                menu,
-            ]
-        ),
-        setup=lambda self: item.connect("removed", lambda x: self.unparent()),
-        tooltip_text=item.bind("tooltip"),
-        on_click=lambda x: menu.popup() if menu else None,
-        on_right_click=lambda x: menu.popup() if menu else None,
-        css_classes=["bar-button", "system-tray-button"],
-    )
-
-
-def tray():
-    return widgets.Box(
-        setup=lambda self: system_tray.connect(
-            "added", lambda x, item: self.append(tray_item(item))
-        ),
-        spacing=sml_spacing,
-    )
-
-
-def right(monitor: int) -> widgets.Box:
-    return widgets.Box(
-        css_classes=["bar-right"],
-        spacing=sml_spacing,
-        child=[volume(), battery(), do_not_disturb(), notification_count(), power_menu(monitor)],
-    )
+##### Left, right & center combined ############################################
 
 
 def bar(monitor: int) -> widgets.Window:
@@ -257,4 +320,28 @@ def bar(monitor: int) -> widgets.Window:
             center_widget=center(),
             end_widget=right(monitor),
         ),
+    )
+
+
+def center() -> widgets.Label:
+    return widgets.Label(
+        css_classes=["bar-center"],
+        label=utils.Poll(
+            1_000, lambda self: datetime.datetime.now().strftime("%b %-d %H:%M")
+        ).bind("output"),
+    )
+
+
+def left(monitor: int) -> widgets.Box:
+    return widgets.Box(
+        css_classes=["bar-left"],
+        child=[workspaces(monitor)]
+    )
+
+
+def right(monitor: int) -> widgets.Box:
+    return widgets.Box(
+        css_classes=["bar-right"],
+        spacing=sml_spacing,
+        child=[performance_menu(), volume(), battery(), do_not_disturb(), notification_count(), power_menu(monitor)],
     )
