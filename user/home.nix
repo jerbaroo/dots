@@ -44,6 +44,7 @@ in
     ignis.homeManagerModules.default
     spicetify.homeManagerModules.default
 
+    ./bluetooth.nix
     (import ./browser.nix { inherit ghdashboardPort; inherit pkgs; })
     ./direnv.nix
     (import ./emacs.nix {
