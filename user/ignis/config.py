@@ -1,6 +1,7 @@
 import app_launcher
 import bar
 import lock_screen
+import logout_menu
 import os
 from ignis.css_manager import CssInfoPath, CssManager
 from ignis import utils
@@ -27,3 +28,4 @@ app_launcher.app_launcher(app)
 lock_screen.register_lock_screen(app)
 for monitor in range(utils.get_n_monitors()):
     bar.bar(monitor)
+    logout_menu.logout_menu(app, monitor)

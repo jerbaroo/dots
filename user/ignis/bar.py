@@ -84,8 +84,9 @@ def notification_count():
 
     def get_icon(self):
         count = get_count()
+        icon_name = "mail-unread-symbolic" if count > 0 else "mail-read-symbolic"
         return [
-            widgets.Icon(image="notification-new-symbolic", pixel_size=icon_size),
+            widgets.Icon(image=icon_name, pixel_size=icon_size + 4),
             widgets.Label(label=str(count), css_classes=["notification-count-label"])
         ]
 
@@ -193,11 +194,11 @@ def center() -> widgets.Label:
     )
 
 
-def power_menu() -> widgets.Button:
+def power_menu(monitor: int) -> widgets.Button:
 
     return widgets.Button(
         css_classes=["bar-button", " powermenu-button"],
-        on_click=lambda _: exec("os-logout-menu"),
+        on_click=lambda _: exec(f"ignis toggle-window ignis-logout-menu-{monitor}"),
         child=widgets.Box(
             child=[widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size + 4)]
         ),
@@ -234,11 +235,11 @@ def tray():
     )
 
 
-def right() -> widgets.Box:
+def right(monitor: int) -> widgets.Box:
     return widgets.Box(
         css_classes=["bar-right"],
         spacing=sml_spacing,
-        child=[volume(), battery(), do_not_disturb(), notification_count(), power_menu()],
+        child=[volume(), battery(), do_not_disturb(), notification_count(), power_menu(monitor)],
     )
 
 
@@ -254,6 +255,6 @@ def bar(monitor: int) -> widgets.Window:
             css_classes=["bar-center-box"],
             start_widget=left(monitor),
             center_widget=center(),
-            end_widget=right(),
+            end_widget=right(monitor),
         ),
     )

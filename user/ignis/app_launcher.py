@@ -98,7 +98,7 @@ def app_launcher(ignis_app: IgnisApp) -> widgets.Window:
         kb_mode="on_demand",
         setup=lambda self: self.connect("notify::visible", lambda x, y: on_open(self)),
         popup=True,  # Close on ESC.
-        visible=False,  # Initially not open.
+        visible=False,  # Initially hidden.
         child=widgets.Overlay(
             overlays=[main_box],
             child=widgets.Button(

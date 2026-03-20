@@ -52,10 +52,6 @@ in
         lock_cmd = "pidof os-lock || os-lock ";
       };
       listener = [
-        {
-          on-timeout = "fish -c 'date -d \"-1 second\" +\"%Y-%m-%d %H:%M:%S\" > /tmp/idle-started-at'";
-          timeout = 1; # For some reason 0 doesn't work.
-        }
         # Locking notification.
         {
           on-timeout = "touch ${lockingPath}; " + lockAfterNotify(10);
@@ -128,7 +124,7 @@ in
         enabled = true;
       };
       bind = [
-        ",Delete, exec, os-lock & disown && sleep 1 && systemctl suspend"
+        ",Delete, exec, systemctl suspend"
         # Function keys.
         ",XF86MonBrightnessDown, exec, ${pkgs.brightnessctl}/bin/brightnessctl s 10%-"
         ",XF86MonBrightnessUp  , exec, ${pkgs.brightnessctl}/bin/brightnessctl s +10%"
@@ -208,7 +204,7 @@ in
         "$mod CTRL, K, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"
         "$mod CTRL, H, exec, hyprctl keyword cursor:zoom_factor 1"
       ];
-      bindl = [ ", switch:on:Lid Switch, exec, ${locks.swaylock}/bin/swaylock_ & disown && systemctl suspend" ];
+      bindl = [ ", switch:on:Lid Switch, exec, systemctl suspend" ];
       debug.disable_logs = false;
       decoration = {
         active_opacity = 1;
@@ -224,9 +220,9 @@ in
       dwindle.preserve_split = true;
       exec-once = [
         # "openrgb -m static -c ff1e00"
+        "ignis init >> /tmp/ignis.log 2>&1"
         "swww img ${wallpaperPath}"
         "${ghdashboardwithargs}/bin/ghdashboardwithargs"
-        "ignis init"
         "1password --silent"
       ];
       general = {

@@ -16,8 +16,8 @@
   # ls /etc/profiles/per-user/jer/share/icons
   catppuccin.gtk.icon.enable = false;
   gtk.iconTheme = {
-    name = "Oranchelo";
-    package = pkgs.oranchelo-icon-theme;
+    name = "Papirus";
+    package = pkgs.papirus-icon-theme;
   };
 
   # Cursors.

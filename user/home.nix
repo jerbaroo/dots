@@ -143,10 +143,7 @@ in
       inherit wallpaperName;
     })
     (import ./wlogout.nix {
-      inherit accent;
-      inherit palette;
       inherit pkgs;
-      inherit username;
       inherit wallpaperName;
     })
   ];
