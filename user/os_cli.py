@@ -16,6 +16,17 @@ SWAPPY = os.environ.get("OS_SWAPPY_PATH", "swappy")
 USERNAME = os.environ["OS_USERNAME"]
 
 
+def monitor_current() -> Optional[int]:
+    output = subprocess.check_output(f"{HYPRCTL} -j monitors", shell=True, text=True)
+    for monitor in json.loads(output):
+        if monitor["focused"]:
+            return monitor["id"]
+
+
+def ui_reload():
+    subprocess.run([IGNIS, "reload"])
+
+
 ##### ROOT #####################################################################
 
 
@@ -53,6 +64,8 @@ def switch():
     flake_path = f"{home_path}/nixos-config/.#homeConfigurations.{USERNAME}@{HOSTNAME}.activationPackage"
     click.echo(f"Switching home configuration using {flake_path}")
     subprocess.run([NH, "home", "switch", flake_path], cwd=home_path)
+    # We also reload the UI to avoid issues with missing icons.
+    ui_reload()
 
 
 ##### MONITOR ##################################################################
@@ -61,13 +74,6 @@ def switch():
 @cli.group()
 def monitor():
     pass
-
-
-def monitor_current() -> Optional[int]:
-    output = subprocess.check_output(f"{HYPRCTL} -j monitors", shell=True, text=True)
-    for monitor in json.loads(output):
-        if monitor["focused"]:
-            return monitor["id"]
 
 
 @monitor.command()
@@ -125,7 +131,7 @@ def toggle():
 
 @ui.command()
 def reload():
-    subprocess.run([IGNIS, "reload"])
+    ui_reload()
 
 
 if __name__ == '__main__':
