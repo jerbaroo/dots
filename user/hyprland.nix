@@ -6,6 +6,7 @@
   ghdashboardPort,
   gap,
   hyprland,
+  ignis,
   ignisPath,
   palette,
   pkgs,
@@ -24,33 +25,33 @@ let
   lockAfterNotify = n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString(n)} -m \'Locking in {} seconds\''";
   lockAfterSeconds = 120;
   lockingPath = "/tmp/hypr_locking";
+  # TODO rename to lock_screen
   locks = import ./lock.nix { inherit ignisPath; inherit palette; inherit pkgs; };
+  os-cli = import ./os-cli.nix { inherit ignis; inherit hyprland; inherit pkgs; inherit system; };
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
     ${pkgs.socat}/bin/socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
       case "$line" in
         "monitoradded>>"*|"monitorremoved>>"*)
           echo "$line" >> /tmp/monitor-change
           ${setWallpaperCmd}
-          ignis reload
+          ${os-cli.ui-reload}
           ;;
       esac
     done
   '';
   # TODO move to os-commands module
-  os-current-monitor = pkgs.writeShellScriptBin "os-current-monitor" "hyprctl monitors | awk -F '[ ()]+' '/Monitor/ {id=$4} /focused: yes/ {print id; exit}'";
   os-screenshot = pkgs.writeShellScriptBin "os-screenshot" "${pkgs.grim}/bin/grim -l 9 -g \"$(${pkgs.slurp}/bin/slurp)\" - | ${pkgs.swappy}/bin/swappy -f -";
-  os-toggle-menu-bar = pkgs.writeShellScriptBin "os-toggle-menu-bar" "ignis toggle-window ignis-bar-$(${os-current-monitor}/bin/os-current-monitor)";
+  os-toggle-menu-bar = pkgs.writeShellScriptBin "os-toggle-menu-bar" "ignis toggle-window ignis-bar-$(${os-cli.monitor-current})";
   setWallpaperCmd = "swww img ${wallpaperPath}";
   wallpaperPath = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperPath;
   zoomFactor = 0.2;
-
 in
 {
   home.packages = [
     ghdashboardwithargs
     locks.os-lock
     locks.swaylock
-    os-current-monitor
+    os-cli.cli
     os-toggle-menu-bar
   ];
   services.hypridle = {

@@ -89,6 +89,7 @@ in
       inherit gap;
       inherit ghdashboardPort;
       inherit hyprland;
+      inherit ignis;
       inherit ignisPath;
       inherit palette;
       inherit pkgs;

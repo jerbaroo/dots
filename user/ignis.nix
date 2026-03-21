@@ -11,6 +11,7 @@
     source = ./ignis;
     recursive = true;
   };
+  # Write theme colours to a fixed location, to be picked up at run-time.
   home.file.".config/ignis/colors.scss".text = ''
     $accent: ${palette.${accent}.hex};
     $base: ${palette.base.hex};
