@@ -5,6 +5,7 @@
   flavor,
   ghdashboardPort,
   gap,
+  hostname,
   hyprland,
   ignis,
   ignisPath,
@@ -27,7 +28,7 @@ let
   lockingPath = "/tmp/hypr_locking";
   # TODO rename to lock_screen
   locks = import ./lock.nix { inherit ignisPath; inherit palette; inherit pkgs; };
-  os-cli = import ./os-cli.nix { inherit ignis; inherit hyprland; inherit pkgs; inherit system; };
+  os-cli = import ./os-cli.nix { inherit ignis; inherit hostname; inherit hyprland; inherit pkgs; inherit system; inherit username; };
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
     ${pkgs.socat}/bin/socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
       case "$line" in
@@ -39,9 +40,6 @@ let
       esac
     done
   '';
-  # TODO move to os-commands module
-  os-screenshot = pkgs.writeShellScriptBin "os-screenshot" "${pkgs.grim}/bin/grim -l 9 -g \"$(${pkgs.slurp}/bin/slurp)\" - | ${pkgs.swappy}/bin/swappy -f -";
-  os-toggle-menu-bar = pkgs.writeShellScriptBin "os-toggle-menu-bar" "ignis toggle-window ignis-bar-$(${os-cli.monitor-current})";
   setWallpaperCmd = "swww img ${wallpaperPath}";
   wallpaperPath = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperPath;
   zoomFactor = 0.2;
@@ -52,7 +50,6 @@ in
     locks.os-lock
     locks.swaylock
     os-cli.cli
-    os-toggle-menu-bar
   ];
   services.hypridle = {
     enable = true;
@@ -194,7 +191,7 @@ in
         "$mod SHIFT, SPACE, togglefloating"
         "$mod      , TAB, workspace, m+1"
         "$mod      , B, exec, ${pkgs.blueman}/bin/blueman-manager"
-        "$mod SHIFT, B, exec, ${os-toggle-menu-bar}/bin/os-toggle-menu-bar"
+        "$mod SHIFT, B, exec, ${os-cli.ui-menu-bar-toggle}"
         "$mod      , C, exec, ${pkgs.cliphist}/bin/cliphist list | ${pkgs.rofi}/bin/rofi -dmenu | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy"
         "$mod      , D, exec, ${pkgs.wdisplays}/bin/wdisplays"
         "$mod      , E, exec, ${pkgs.emacs-pgtk}/bin/emacs"
@@ -209,7 +206,7 @@ in
         "$mod      , P, workspace, previous"
         "$mod      , Q, killactive"
         "$mod SHIFT, Q, exec, os-logout-menu"
-        "$mod      , S, exec, ${os-screenshot}/bin/os-screenshot"
+        "$mod      , S, exec, ${os-cli.screenshot}"
         "$mod      , T, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.btop}/bin/btop"
         "$mod      , V, exec, ${pkgs.pavucontrol}/bin/pavucontrol"
         "$mod      , W, exec, chromium"

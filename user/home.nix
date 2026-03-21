@@ -30,11 +30,7 @@
   ...
 }:
 let
-  ignisPath = ".config/ignis/";
-  os-switch-home = pkgs.writeShellScriptBin "os-switch-home"
-    "cd ~ && ${pkgs.nh}/bin/nh home switch /home/${username}/nixos-config/.#homeConfigurations.${username}@${hostname}.activationPackage; cd -";
-  os-switch-nixos = pkgs.writeShellScriptBin "os-switch-nixos"
-    "sudo nixos-rebuild switch --flake .#nixos";
+  ignisPath = ".config/ignis/"; # Where we install ignis configuration.
   palette =
     (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
 in
@@ -88,6 +84,7 @@ in
       inherit flavor;
       inherit gap;
       inherit ghdashboardPort;
+      inherit hostname;
       inherit hyprland;
       inherit ignis;
       inherit ignisPath;
@@ -151,7 +148,6 @@ in
   ];
   home = {
     homeDirectory = "/home/${username}";
-    packages = [ os-switch-home os-switch-nixos ];
     stateVersion = stateVersion;
     username = "${username}";
   };
