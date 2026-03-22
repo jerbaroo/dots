@@ -257,17 +257,16 @@ in
       ];
       monitor = [ ", preferred, auto-up, 1.5" ];
       misc.disable_hyprland_logo = true;
-      windowrule = [
-        "float true, match:title ^(${audio.guiTitle})$"
-        "center true, match:title ^(${audio.guiTitle})$"
-        "${floatSize(defaultFloatSize)}, match:title ^(${audio.guiTitle})$"
-        "float true, match:title ^(${bluetooth.guiTitle})$"
-        "center true, match:title ^(${bluetooth.guiTitle})$"
-        "${floatSize(defaultFloatSize)}, match:title ^(${bluetooth.guiTitle})$"
-        "float true, match:class ^(wdisplays)$"
-        "center true, match:class ^(wdisplays)$"
-        "${floatSize(defaultFloatSize)}, match:class ^(wdisplays)$"
-      ];
+      windowrule =
+        let floatCenterRule = title: [
+            "float true, match:title ^(${title})$"
+            "center true, match:title ^(${title})$"
+            "${floatSize(defaultFloatSize)}, match:title ^(${title})$"
+          ];
+        in
+          floatCenterRule audio.guiTitle
+          ++ floatCenterRule bluetooth.guiTitle
+          ++ floatCenterRule "wdisplays";
       workspace = ["1, monitor:DP-1, default:true" ];
       xwayland = {
         force_zero_scaling = true;
