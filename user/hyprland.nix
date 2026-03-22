@@ -186,7 +186,7 @@ in
         # Primary keys.
         "$mod      , RETURN, exec, ghostty"
         "$mod      , SLASH, exec, ignis open-window ignis-app-launcher"
-        "$mod      , SPACE, togglesplit, # dwindle"
+        # "$mod      , SPACE, togglesplit, # dwindle"
         "$mod SHIFT, SPACE, togglefloating"
         "$mod      , TAB, workspace, m+1"
         "$mod      , B, exec, ${pkgs.blueman}/bin/blueman-manager"
@@ -233,7 +233,7 @@ in
         # "openrgb -m static -c ff1e00"
         setWallpaperCmd
         "ignis init >> /tmp/ignis.log 2>&1"
-        monitorListener
+        "${monitorListener}"
         "${ghdashboardwithargs}/bin/ghdashboardwithargs"
         "1password --silent"
       ];
