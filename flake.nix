@@ -20,7 +20,6 @@
     };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
     spicetify.url = "github:Gerg-L/spicetify-nix";
   };
   outputs =
@@ -42,12 +41,11 @@
       pkgs = import inputs.nixpkgs {
         overlays = [
           inputs.nixgl.overlay
-          inputs.nur.overlays.default
         ];
         inherit system;
       };
       rounding = 8;
-      stateVersion = "25.05";
+      stateVersion = "26.05";
       system = "x86_64-linux";
       systemFontSize = 16;
       temperature = 3000;
