@@ -3,7 +3,7 @@
   programs.neovim = {
     defaultEditor = true;
     enable = true;
-    extraLuaConfig = ''
+    initLua = ''
       vim.g.mapleader = ' '
 
       vim.keymap.set('n', '<leader>bp', ':bprevious<CR>')

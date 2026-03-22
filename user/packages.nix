@@ -20,7 +20,6 @@
     nh # Nix helper.
     obs-studio # Video recorder.
     pandoc # Document converter.
-    # pavucontrol # Volume control.
     python3 # For quick scripts.
     shellcheck # Shell script analyser.
     shfmt # Shell parser and formatter.

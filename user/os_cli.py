@@ -76,9 +76,10 @@ def home():
 def switch():
     """Switch Home Manager configuration."""
     home_path = f"/home/{USERNAME}"
-    flake_path = f"{home_path}/nixos-config/.#homeConfigurations.{USERNAME}@{HOSTNAME}.activationPackage"
+    flake_path = f"{home_path}/nixos-config"
+    flake_attribute = f"{USERNAME}@{HOSTNAME}"
     click.echo(f"Switching home configuration using {flake_path}")
-    subprocess.run([NH, "home", "switch", flake_path], cwd=home_path)
+    subprocess.run([NH, "home", "switch", flake_path, "-c", flake_attribute], cwd=home_path)
     # We also reload the UI to avoid issues with missing icons.
     ui_reload()
 
@@ -88,6 +89,7 @@ def switch():
 
 @cli.group()
 def monitor():
+    """Monitor information."""
     pass
 
 
