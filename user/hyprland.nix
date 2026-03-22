@@ -20,7 +20,9 @@
   ...
 }:
 let
+  bluetoothGuiCmd = (import ./bluetooth.nix { inherit pkgs; }).guiCmd;
   defaultFloatSize = 0.8;
+  floatCenter = "[float;center;${floatSize(defaultFloatSize)}]";
   floatSize = fraction: "size (monitor_w*${toString(fraction)}) (monitor_h*${toString(fraction)})";
   ghdashboard = import ./ghdashboard/default.nix { inherit pkgs; };
   ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString(ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
@@ -189,7 +191,7 @@ in
         # "$mod      , SPACE, togglesplit, # dwindle"
         "$mod SHIFT, SPACE, togglefloating"
         "$mod      , TAB, workspace, m+1"
-        "$mod      , B, exec, ${pkgs.blueman}/bin/blueman-manager"
+        "$mod      , B, exec, ${floatCenter} ${bluetoothGuiCmd}"
         "$mod SHIFT, B, exec, ${os-cli.ui-menu-bar-toggle}"
         "$mod      , C, exec, ${pkgs.cliphist}/bin/cliphist list | ${pkgs.rofi}/bin/rofi -dmenu | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy"
         "$mod      , D, exec, ${pkgs.wdisplays}/bin/wdisplays"
@@ -204,10 +206,10 @@ in
         "$mod SHIFT, R, exec, ${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
         "$mod      , P, workspace, previous"
         "$mod      , Q, killactive"
-        "$mod SHIFT, Q, exec, os-logout-menu"
+        "$mod SHIFT, Q, exec, os-logout-menu" # TODO
         "$mod      , S, exec, ${os-cli.screenshot}"
         "$mod      , T, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.btop}/bin/btop"
-        "$mod      , V, exec, ${pkgs.pavucontrol}/bin/pavucontrol"
+        "$mod      , V, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.wiremix}/bin/wiremix"
         "$mod      , W, exec, chromium"
         "$mod SHIFT, W, exec, ${pkgs.librewolf}/bin/librewolf"
         # Zoom.

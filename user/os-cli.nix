@@ -1,8 +1,10 @@
 { ignis, hostname, hyprland, pkgs, system, username, ... }:
 let
+  bluetoothGuiCmd = (import ./bluetooth.nix { inherit pkgs; }).guiCmd;
   cli =
     let python = pkgs.python3.withPackages (ps: with ps; [ click ]);
     in pkgs.writeShellScriptBin "os" ''
+      export OS_BLUETOOTH_GUI_CMD="${bluetoothGuiCmd}"
       export OS_GRIM_PATH="${pkgs.grim}/bin/grim"
       export OS_NH_PATH="${pkgs.nh}/bin/nh"
       export OS_HOSTNAME="${hostname}"

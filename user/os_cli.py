@@ -6,6 +6,7 @@ from typing import Optional
 
 # Pull the injected variables from the environment.
 # Fallback to standard commands if running outside of Nix.
+BLUETOOTH_GUI_CMD = os.environ.get("OS_BLUETOOTH_GUI_CMD", "blueman")
 GRIM = os.environ.get("OS_GRIM_PATH", "grim")
 HOSTNAME = os.environ["OS_HOSTNAME"]
 HYPRCTL = os.environ.get("OS_HYPRCTL_PATH", "hyprctl")
@@ -33,6 +34,20 @@ def ui_reload():
 @click.group()
 def cli():
     pass
+
+
+##### APPS #####################################################################
+
+
+@cli.group()
+def app():
+    """Open apps for various purposes."""
+    pass
+
+
+@app.command()
+def bluetooth():
+    subprocess.run(BLUETOOTH_GUI_CMD, shell=True)
 
 
 ##### INFO #####################################################################
