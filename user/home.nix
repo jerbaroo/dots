@@ -16,6 +16,7 @@
   genericLinux,
   ignis,
   lib,
+  lockTimeout,
   nixgl,
   pkgs,
   rounding,
@@ -88,6 +89,7 @@ in
       inherit hyprland;
       inherit ignis;
       inherit ignisPath;
+      inherit lockTimeout;
       inherit palette;
       inherit pkgs;
       inherit rounding;

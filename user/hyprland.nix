@@ -12,6 +12,7 @@
   palette,
   pkgs,
   system,
+  lockTimeout,
   temperature,
   username,
   wallpaperName,
@@ -24,9 +25,7 @@ let
   ghdashboard = import ./ghdashboard/default.nix { inherit pkgs; };
   ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString(ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
   lockAfterNotify = n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString(n)} -m \'Locking in {} seconds\''";
-  lockAfterSeconds = 120;
   lockingPath = "/tmp/hypr_locking";
-  # TODO rename to lock_screen
   locks = import ./lock.nix { inherit ignisPath; inherit palette; inherit pkgs; };
   os-cli = import ./os-cli.nix { inherit ignis; inherit hostname; inherit hyprland; inherit pkgs; inherit system; inherit username; };
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
@@ -65,25 +64,25 @@ in
       listener = [
         # Locking notification.
         {
-          on-timeout = "touch ${lockingPath}; " + lockAfterNotify(10);
           on-resume = "rm ${lockingPath}";
-          timeout = lockAfterSeconds - 10;
+          on-timeout = "touch ${lockingPath}; " + lockAfterNotify(10);
+          timeout = lockTimeout - 10;
         }
         # Lock.
         {
           on-timeout = "loginctl lock-session";
-          timeout = lockAfterSeconds;
+          timeout = lockTimeout;
         }
         # Screen off.
         {
           on-resume = "hyprctl dispatch dpms on";
           on-timeout = "hyprctl dispatch dpms off";
-          timeout = lockAfterSeconds + 60;
+          timeout = lockTimeout + 60;
         }
         # Sleep.
         {
           on-timeout = "systemctl suspend";
-          timeout = lockAfterSeconds + 120;
+          timeout = lockTimeout + 120;
         }
       ];
     };

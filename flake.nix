@@ -38,6 +38,7 @@
       gap = 3;
       ghdashboardPort = 1234;
       hostname = "nixos";
+      lockTimeout = 120;
       pkgs = import inputs.nixpkgs {
         overlays = [
           inputs.nixgl.overlay
@@ -88,6 +89,7 @@
             inherit gap;
             inherit ghdashboardPort;
             inherit hostname;
+            inherit lockTimeout;
             inherit rounding;
             inherit stateVersion;
             inherit system;
