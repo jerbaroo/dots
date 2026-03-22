@@ -215,8 +215,6 @@ in
       "z"
     ];
     shellInit = ''
-      fish_add_path /home/${username}/.ghcup/bin
-      fish_add_path $HOME/.cabal/bin
       set -g fish_key_bindings fish_vi_key_bindings
       set fish_greeting
     '';

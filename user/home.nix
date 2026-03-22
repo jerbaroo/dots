@@ -165,6 +165,6 @@ in
     };
   };
   xdg.configFile."environment.d/envvars.conf".text = ''
-    PATH="$HOME/.config/emacs/bin:$HOME/.nix-profile/bin:$HOME/.cargo/bin:$PATH"
+    PATH="$HOME/.config/emacs/bin:$HOME/.nix-profile/bin:$HOME/.cargo/bin:$HOME/${username}/.ghcup/bin:$HOME/.cabal/bin:$PATH"
   '';
 }
