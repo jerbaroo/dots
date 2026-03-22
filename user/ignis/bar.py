@@ -1,6 +1,10 @@
 import asyncio
 import datetime
 import re
+try:
+  import nix_paths
+except ModuleNotFoundError as e:
+    print(f"During development nix_paths is not available: {e}")
 import subprocess
 import time
 
@@ -240,7 +244,7 @@ def volume() -> widgets.EventBox:
     # For the "button" look and click action.
     button = widgets.Button(
         css_classes=["bar-button", "volume"],
-        on_click=lambda _: exec("pavucontrol"),
+        on_click=lambda _: exec(nix_paths.AUDIO_GUI_CMD),
         child=box
     )
 

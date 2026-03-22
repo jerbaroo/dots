@@ -20,6 +20,7 @@
   ...
 }:
 let
+  audioGuiCmd = (import ./audio.nix { inherit pkgs; }).guiCmd;
   bluetoothGuiCmd = (import ./bluetooth.nix { inherit pkgs; }).guiCmd;
   defaultFloatSize = 0.8;
   floatCenter = "[float;center;${floatSize(defaultFloatSize)}]";
@@ -209,7 +210,7 @@ in
         "$mod SHIFT, Q, exec, os-logout-menu" # TODO
         "$mod      , S, exec, ${os-cli.screenshot}"
         "$mod      , T, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.btop}/bin/btop"
-        "$mod      , V, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.wiremix}/bin/wiremix"
+        "$mod      , V, exec, ${floatCenter} ${audioGuiCmd}"
         "$mod      , W, exec, chromium"
         "$mod SHIFT, W, exec, ${pkgs.librewolf}/bin/librewolf"
         # Zoom.

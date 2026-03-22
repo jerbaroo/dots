@@ -6,6 +6,7 @@ from typing import Optional
 
 # Pull the injected variables from the environment.
 # Fallback to standard commands if running outside of Nix.
+AUDIO_GUI_CMD = os.environ.get("OS_AUDIO_GUI_CMD", "pavucontrol")
 BLUETOOTH_GUI_CMD = os.environ.get("OS_BLUETOOTH_GUI_CMD", "blueman")
 GRIM = os.environ.get("OS_GRIM_PATH", "grim")
 HOSTNAME = os.environ["OS_HOSTNAME"]
@@ -43,6 +44,11 @@ def cli():
 def app():
     """Open apps for various purposes."""
     pass
+
+
+@app.command()
+def audio():
+    subprocess.run(AUDIO_GUI_CMD, shell=True)
 
 
 @app.command()

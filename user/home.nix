@@ -31,7 +31,8 @@
   ...
 }:
 let
-  ignisPath = ".config/ignis/"; # Where we install ignis configuration.
+  # Where we install ignis configuration. Relative to home directory.
+  ignisPath = ".config/ignis/";
   palette =
     (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
 in
@@ -105,7 +106,7 @@ in
       inherit ignisPath;
       inherit palette;
       inherit pkgs;
-    })
+    }).hm
     (import ./kitty.nix {
       inherit codeBackgroundOpacity;
       inherit codeFontName;
