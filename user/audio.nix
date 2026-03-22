@@ -1,4 +1,7 @@
 {pkgs}:
-{
-  guiCmd = "ghostty -e ${pkgs.wiremix}/bin/wiremix";
+let
+  guiTitle = "wiremix";
+in {
+  inherit guiTitle;
+  guiCmd = "ghostty --title=${guiTitle} -e ${pkgs.wiremix}/bin/wiremix --tab output";
 }

@@ -7,8 +7,8 @@
   ...
 }:
 let
-  audioGuiCmd = (import ./audio.nix { inherit pkgs; }).guiCmd;
-  bluetoothGuiCmd = (import ./bluetooth.nix { inherit pkgs; }).guiCmd;
+  audio = (import ./audio.nix { inherit pkgs; });
+  bluetooth = (import ./bluetooth.nix { inherit pkgs; });
 in {
   hm = {
     home.file.${ignisPath} = {
@@ -17,8 +17,8 @@ in {
     };
     # Write command paths to a fixed location, to be picked up at run-time.
     home.file."${ignisPath}/nix_paths.py".text = ''
-      AUDIO_GUI_CMD="${audioGuiCmd}"
-      BLUETOOTH_GUI_CMD="${bluetoothGuiCmd}"
+      AUDIO_GUI_CMD="${audio.guiCmd}"
+      BLUETOOTH_GUI_CMD="${bluetooth.guiCmd}"
     '';
     # Write theme colours to a fixed location, to be picked up at run-time.
     home.file."${ignisPath}/colors.scss".text = ''

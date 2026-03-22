@@ -20,8 +20,8 @@
   ...
 }:
 let
-  audioGuiCmd = (import ./audio.nix { inherit pkgs; }).guiCmd;
-  bluetoothGuiCmd = (import ./bluetooth.nix { inherit pkgs; }).guiCmd;
+  audio = (import ./audio.nix { inherit pkgs; });
+  bluetooth = (import ./bluetooth.nix { inherit pkgs; });
   defaultFloatSize = 0.8;
   floatCenter = "[float;center;${floatSize(defaultFloatSize)}]";
   floatSize = fraction: "size (monitor_w*${toString(fraction)}) (monitor_h*${toString(fraction)})";
@@ -192,7 +192,7 @@ in
         # "$mod      , SPACE, togglesplit, # dwindle"
         "$mod SHIFT, SPACE, togglefloating"
         "$mod      , TAB, workspace, m+1"
-        "$mod      , B, exec, ${floatCenter} ${bluetoothGuiCmd}"
+        "$mod      , B, exec, ${floatCenter} ${bluetooth.guiCmd}"
         "$mod SHIFT, B, exec, ${os-cli.ui-menu-bar-toggle}"
         "$mod      , C, exec, ${pkgs.cliphist}/bin/cliphist list | ${pkgs.rofi}/bin/rofi -dmenu | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy"
         "$mod      , D, exec, ${pkgs.wdisplays}/bin/wdisplays"
@@ -210,7 +210,7 @@ in
         "$mod SHIFT, Q, exec, os-logout-menu" # TODO
         "$mod      , S, exec, ${os-cli.screenshot}"
         "$mod      , T, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.btop}/bin/btop"
-        "$mod      , V, exec, ${floatCenter} ${audioGuiCmd}"
+        "$mod      , V, exec, ${floatCenter} ${audio.guiCmd}"
         "$mod      , W, exec, chromium"
         "$mod SHIFT, W, exec, ${pkgs.librewolf}/bin/librewolf"
         # Zoom.
@@ -258,12 +258,12 @@ in
       monitor = [ ", preferred, auto-up, 1.5" ];
       misc.disable_hyprland_logo = true;
       windowrule = [
-        "float true, match:class ^(org.pulseaudio.pavucontrol)$"
-        "center true, match:class ^(org.pulseaudio.pavucontrol)$"
-        "${floatSize(defaultFloatSize)}, match:class ^(org.pulseaudio.pavucontrol)$"
-        "float true, match:class ^(.blueman-manager-wrapped)$"
-        "center true, match:class ^(.blueman-manager-wrapped)$"
-        "${floatSize(defaultFloatSize)}, match:class ^(.blueman-manager-wrapped)$"
+        "float true, match:title ^(${audio.guiTitle})$"
+        "center true, match:title ^(${audio.guiTitle})$"
+        "${floatSize(defaultFloatSize)}, match:title ^(${audio.guiTitle})$"
+        "float true, match:title ^(${bluetooth.guiTitle})$"
+        "center true, match:title ^(${bluetooth.guiTitle})$"
+        "${floatSize(defaultFloatSize)}, match:title ^(${bluetooth.guiTitle})$"
         "float true, match:class ^(wdisplays)$"
         "center true, match:class ^(wdisplays)$"
         "${floatSize(defaultFloatSize)}, match:class ^(wdisplays)$"
