@@ -12,12 +12,14 @@
     ;; https://github.com/doomemacs/doomemacs/blob/master/static/config.example.el
     
     (setq
+      catppuccin-flavor '${flavor}
       display-line-numbers-type t
       doom-font (font-spec :family "${codeFontName}" :size ${toString(codeFontSize)}.0)
       doom-theme 'catppuccin
-      catppuccin-flavor '${flavor}
+      flycheck-checker-error-threshold 1000
       ;; doom-themes-treemacs-theme "doom-colors"
       ;; doom-variable-pitch-font (font-spec :family "${codeFontName}" :size ${toString(codeFontSize)}.0)
+      ;; lsp-disabled-clients '(pylsp)
       ;; lsp-enable-file-watchers nil
       ;; lsp-eldoc-enable-hover t
       ;; lsp-haskell-formatting-provider "fourmolu"
