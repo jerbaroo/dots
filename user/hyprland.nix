@@ -194,7 +194,8 @@ in
         "$mod      , SLASH, exec, ignis open-window ignis-app-launcher"
         # "$mod      , SPACE, togglesplit, # dwindle"
         "$mod SHIFT, SPACE, togglefloating"
-        "$mod      , TAB, workspace, m+1"
+        "$mod      , TAB, cyclenext"
+        "$mod SHIFT, TAB, workspace, m+1"
         "$mod      , B, exec, ${floatCenter} ${bluetooth.guiCmd}"
         "$mod SHIFT, B, exec, ${os-cli.ui-menu-bar-toggle}"
         "$mod      , C, exec, ${pkgs.cliphist}/bin/cliphist list | ${pkgs.rofi}/bin/rofi -dmenu | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy"
@@ -208,7 +209,8 @@ in
         "$mod      , O, exec, ${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"
         "$mod      , R, exec, ${pkgs.hyprpicker}/bin/hyprpicker --autocopy"
         "$mod SHIFT, R, exec, ${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
-        "$mod      , P, workspace, previous"
+        "$mod      , P, focuscurrentorlast"
+        "$mod SHIFT, P, workspace, previous"
         "$mod      , Q, killactive"
         "$mod SHIFT, Q, exec, os-logout-menu" # TODO
         "$mod      , S, exec, ${os-cli.screenshot}"
@@ -260,6 +262,11 @@ in
       ];
       monitor = [ ", preferred, auto-up, 1.5" ];
       misc.disable_hyprland_logo = true;
+      scrolling = {
+        column_width = 0.5;
+        direction = "right";
+        focus_fit_method = 1; # Center active column.
+      };
       windowrule =
         let floatCenterRule = title: [
             "float true, match:title ^(${title})$"
