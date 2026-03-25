@@ -1,5 +1,8 @@
 {
   accent,
+  animationSpeed,
+  animations,
+  blur,
   borderSize,
   config,
   flavor,
@@ -109,19 +112,19 @@ in
       # https://github.com/end-4/dots-hyprland/blob/main/dots/.config/hypr/hyprland/general.conf
       animations = {
         animation = [
-          "windowsIn, 1, 3, emphasizedDecel, popin 80%"
-          "fadeIn, 1, 3, emphasizedDecel"
-          "windowsOut, 1, 2, emphasizedDecel, popin 90%"
-          "fadeOut, 1, 2, emphasizedDecel"
-          "windowsMove, 1, 3, emphasizedDecel, slide"
-          "border, 1, 10, emphasizedDecel"
-          "layersIn, 1, 2.7, emphasizedDecel, popin 93%"
-          "layersOut, 1, 2.4, menu_accel, popin 94%"
-          "fadeLayersIn, 1, 0.5, menu_decel"
-          "fadeLayersOut, 1, 2.7, stall"
-          "workspaces, 1, 7, menu_decel, slide"
-          "specialWorkspaceIn, 1, 2.8, emphasizedDecel, slidevert"
-          "specialWorkspaceOut, 1, 1.2, emphasizedAccel, slidevert"
+          "windowsIn, 1, ${toString (3.0 / animationSpeed)}, emphasizedDecel, popin 80%"
+          "fadeIn, 1, ${toString (3.0 / animationSpeed)}, emphasizedDecel"
+          "windowsOut, 1, ${toString (2.0 / animationSpeed)}, emphasizedDecel, popin 90%"
+          "fadeOut, 1, ${toString (2.0 / animationSpeed)}, emphasizedDecel"
+          "windowsMove, 1, ${toString (3.0 / animationSpeed)}, emphasizedDecel, slide"
+          "border, 1, ${toString (10.0 / animationSpeed)}, emphasizedDecel"
+          "layersIn, 1, ${toString (2.7 / animationSpeed)}, emphasizedDecel, popin 93%"
+          "layersOut, 1, ${toString (2.4 / animationSpeed)}, menu_accel, popin 94%"
+          "fadeLayersIn, 1, ${toString (0.5 / animationSpeed)}, menu_decel"
+          "fadeLayersOut, 1, ${toString (2.7 / animationSpeed)}, stall"
+          "workspaces, 1, ${toString (7.0 / animationSpeed)}, menu_decel, slide"
+          "specialWorkspaceIn, 1, ${toString (2.8 / animationSpeed)}, emphasizedDecel, slidevert"
+          "specialWorkspaceOut, 1, ${toString (1.2 / animationSpeed)}, emphasizedAccel, slidevert"
         ];
         bezier = [
           "expressiveFastSpatial, 0.42, 1.67, 0.21, 0.90"
@@ -134,7 +137,7 @@ in
           "menu_accel, 0.52, 0.03, 0.72, 0.08"
           "stall, 1, -0.1, 0.7, 0.85"
         ];
-        enabled = true;
+        enabled = animations;
       };
       bind = [
         ",Caps_Lock, exec, os-logout-menu" # TODO actives caps lock
@@ -223,7 +226,7 @@ in
       decoration = {
         active_opacity = 1;
         blur = {
-          enabled = true;
+          enabled = blur;
           noise = 0.02;
           passes = 4;
           size = 5;

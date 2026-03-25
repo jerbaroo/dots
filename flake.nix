@@ -26,9 +26,12 @@
     inputs:
     let
       accent = "pink";
+      animationSpeed = 2;
+      animations = true;
       allowUnfreePredicate =
         let whitelist = map pkgs.lib.getName [ pkgs.spotify ];
         in  pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
+      blur = true;
       borderSize = 2;
       codeBackgroundOpacity = 0.8;
       codeFontName = "Iosevka Nerd Font Mono";
@@ -79,6 +82,9 @@
           extraSpecialArgs = {
             inherit accent;
             inherit allowUnfreePredicate;
+            inherit animationSpeed;
+            inherit animations;
+            inherit blur;
             inherit borderSize;
             inherit codeBackgroundOpacity;
             inherit codeFontName;

@@ -1,6 +1,9 @@
 {
   accent,
   allowUnfreePredicate,
+  animationSpeed,
+  animations,
+  blur,
   borderSize,
   catppuccin,
   codeBackgroundOpacity,
@@ -81,6 +84,9 @@ in
     })
     (import ./hyprland.nix {
       inherit accent;
+      inherit animationSpeed;
+      inherit animations;
+      inherit blur;
       inherit borderSize;
       inherit config;
       inherit flavor;
