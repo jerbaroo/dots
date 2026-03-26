@@ -111,21 +111,23 @@ in
       "$mod" = "SUPER";
       # https://github.com/end-4/dots-hyprland/blob/main/dots/.config/hypr/hyprland/general.conf
       animations = {
-        animation = [
-          "windowsIn, 1, ${toString (3.0 / animationSpeed)}, emphasizedDecel, popin 80%"
-          "fadeIn, 1, ${toString (3.0 / animationSpeed)}, emphasizedDecel"
-          "windowsOut, 1, ${toString (2.0 / animationSpeed)}, emphasizedDecel, popin 90%"
-          "fadeOut, 1, ${toString (2.0 / animationSpeed)}, emphasizedDecel"
-          "windowsMove, 1, ${toString (3.0 / animationSpeed)}, emphasizedDecel, slide"
-          "border, 1, ${toString (10.0 / animationSpeed)}, emphasizedDecel"
-          "layersIn, 1, ${toString (2.7 / animationSpeed)}, emphasizedDecel, popin 93%"
-          "layersOut, 1, ${toString (2.4 / animationSpeed)}, menu_accel, popin 94%"
-          "fadeLayersIn, 1, ${toString (0.5 / animationSpeed)}, menu_decel"
-          "fadeLayersOut, 1, ${toString (2.7 / animationSpeed)}, stall"
-          "workspaces, 1, ${toString (7.0 / animationSpeed)}, menu_decel, slide"
-          "specialWorkspaceIn, 1, ${toString (2.8 / animationSpeed)}, emphasizedDecel, slidevert"
-          "specialWorkspaceOut, 1, ${toString (1.2 / animationSpeed)}, emphasizedAccel, slidevert"
-        ];
+        animation =
+          let f = speed: toString (speed / animationSpeed);
+          in [
+             "windowsIn, 1, ${f 3.0}, emphasizedDecel, popin 80%"
+             "fadeIn, 1, ${f 3.0}, emphasizedDecel"
+             "windowsOut, 1, ${f 2.0}, emphasizedDecel, popin 90%"
+             "fadeOut, 1, ${f 2.0}, emphasizedDecel"
+             "windowsMove, 1, ${f 3.0}, emphasizedDecel, slide"
+             "border, 1, ${f 10.0}, emphasizedDecel"
+             "layersIn, 1, ${f 2.7}, emphasizedDecel, popin 93%"
+             "layersOut, 1, ${f 2.4}, menu_accel, popin 94%"
+             "fadeLayersIn, 1, ${f 0.5}, menu_decel"
+             "fadeLayersOut, 1, ${f 2.7}, stall"
+             "workspaces, 1, ${f 7.0}, menu_decel, slide"
+             "specialWorkspaceIn, 1, ${f 2.8}, emphasizedDecel, slidevert"
+             "specialWorkspaceOut, 1, ${f 1.2}, emphasizedAccel, slidevert"
+          ];
         bezier = [
           "expressiveFastSpatial, 0.42, 1.67, 0.21, 0.90"
           "expressiveSlowSpatial, 0.39, 1.29, 0.35, 0.98"
@@ -251,6 +253,7 @@ in
         "col.inactive_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.base.hex})";
         gaps_in = gap;
         gaps_out = gap * 2;
+        layout = "scrolling";
         resize_on_border = true;
       };
       input.kb_options = "caps:swapescape";
@@ -263,7 +266,8 @@ in
       monitor = [ ", preferred, auto-up, 1.5" ];
       misc.disable_hyprland_logo = true;
       scrolling = {
-        column_width = 0.5;
+        column_width = 0.3333;
+        fullscreen_on_one_column = true;
         direction = "right";
         focus_fit_method = 1; # Center active column.
       };
