@@ -12,8 +12,8 @@ let
 in {
   hm = {
     home.file.${ignisPath} = {
-      source = ./ignis;
       recursive = true;
+      source = ./ignis;
     };
     # Write command paths to a fixed location, to be picked up at run-time.
     home.file."${ignisPath}/nix_paths.py".text = ''
@@ -30,17 +30,20 @@ in {
       $red: ${palette.red.hex};
       $yellow: ${palette.yellow.hex};
     '';
-    home.packages = [ pkgs.power-profiles-daemon ];
     programs.ignis = {
       enable = true;
-      extraPackages = with pkgs; [ libnotify ];
+      extraPackages = with pkgs; [
+        gnome-bluetooth
+        libnotify
+        power-profiles-daemon
+      ];
       sass = {
         enable = true;
         useDartSass = true;
       };
       services = {
         audio.enable = true;
-        # bluetooth.enable = true;
+        bluetooth.enable = true;
         # recorder.enable = true;
         # network.enable = true;
       };

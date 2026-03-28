@@ -3,22 +3,26 @@ import datetime
 import json
 try:
   import nix_paths
-except ModuleNotFoundError as e:
-    print(f"During development nix_paths is not available: {e}")
-
+except ModuleNotFoundError:
+    class MockPaths:
+        AUDIO_GUI_CMD = "wiremix"
+        POWER_PROFILES_CMD = "powerprofilesctl"
+    nix_paths = MockPaths()
+    print(f"Mocking nix_paths in development")
 from collections import defaultdict
-from ignis import utils
-from ignis.menu_model import IgnisMenuItem, IgnisMenuModel, IgnisMenuSeparator
-from ignis.services.applications import Application, ApplicationsService
+from ignis import utils, widgets
 from ignis.services.audio import AudioService
+from ignis.services.bluetooth import BluetoothService
+from ignis.services.fetch import FetchService
 from ignis.services.hyprland import HyprlandService
-from ignis.services.system_tray import SystemTrayService, SystemTrayItem
+from ignis.services.system_tray import SystemTrayItem, SystemTrayService
 from ignis.services.upower import UPowerService
 from ignis.variable import Variable
-from ignis import widgets
-from typing import List, Optional
+from typing import List
 
 audio = AudioService.get_default()
+bluetooth = BluetoothService.get_default()
+fetch = FetchService.get_default()
 hyprlandService = HyprlandService.get_default()
 system_tray = SystemTrayService.get_default()
 uPowerService = UPowerService.get_default()
@@ -50,6 +54,113 @@ def battery():
                 label=battery.bind("percent", transform=lambda p: f"{p:.0f}%")
             )
         ]
+    )
+
+
+def bluetooth_button() -> widgets.Button:
+    bt_device_name = Variable("")
+    def sync_bt_device():
+        devices = bluetooth.connected_devices
+        if devices:
+            if len(devices) > 1:
+              additional_devices_str = f" +{len(devices) - 1}"
+            else:
+              additional_devices_str = ""
+            bt_device_name.value = f"{devices[0].name}{additional_devices_str}"
+        else:
+            bt_device_name.value = ""
+    bluetooth.connect("notify::connected-devices", sync_bt_device)
+
+    async def initial_bt_sync():
+        # Wait for UI to be rendered before running.
+        await asyncio.sleep(0.01)
+        sync_bt_device()
+    asyncio.create_task(initial_bt_sync())
+
+    def toggle_power():
+        bluetooth.powered = not bluetooth.powered
+
+    return widgets.Button(
+        css_classes=["bar-button", "bluetooth"],
+        on_click=lambda _: toggle_power(),
+        on_right_click=lambda _: exec(nix_paths.BLUETOOTH_GUI_CMD),
+        child=widgets.Box(
+            spacing=tiny_spacing,
+            child=[
+                widgets.Icon(
+                    image=bluetooth.bind("powered", transform=lambda p:
+                        "bluetooth-active-symbolic" if p else "bluetooth-disabled-symbolic"
+                    ),
+                    pixel_size=icon_size
+                ),
+                widgets.Label(
+                    label=bt_device_name.bind("value"),
+                    # Hide the label if no devices are connected.
+                    visible=bt_device_name.bind(
+                      "value", transform=lambda d: len(d) > 0
+                    )
+                )
+            ]
+        )
+    )
+
+
+class CPUMonitor:
+    def __init__(self):
+        self.last_cpu_idle = 0.0
+        self.last_cpu_total = 0.0
+
+    def get_cpu(self, *args) -> float:
+        with open("/proc/stat", "r") as f:
+            components = [float(x) for x in f.readline().strip().split()[1:]]
+        idle = components[3] + components[4]
+        total = sum(components)
+        idle_delta = idle - self.last_cpu_idle
+        total_delta = total - self.last_cpu_total
+        self.last_cpu_idle = idle
+        self.last_cpu_total = total
+        return (1.0 - (idle_delta / total_delta)) * 100.0
+
+
+cpu_mon = CPUMonitor()
+cpu_poll = utils.Poll(2000, cpu_mon.get_cpu)
+
+
+def cpu_button():
+    return widgets.Button(
+        css_classes=["bar-button", "cpu"],
+        on_click=lambda _: exec("ghostty -e htop"), # TODO
+        child=widgets.Box(
+            spacing=tiny_spacing,
+            child=[
+                widgets.Icon(image="cpu-symbolic", pixel_size=icon_size),
+                widgets.Label(
+                    label=cpu_poll.bind("output", transform=lambda c: f"{c:.0f}%")
+                )
+            ]
+        )
+    )
+
+
+def memory_button():
+    return widgets.Button(
+        css_classes=["bar-button", "ram"],
+        on_click=lambda _: exec("ghostty -e htop"),
+        child=widgets.Box(
+            spacing=tiny_spacing,
+            child=[
+                widgets.Icon(
+                    image="memory-symbolic",
+                    pixel_size=icon_size
+                ),
+                widgets.Label(
+                    label=fetch.bind(
+                        "mem_used",
+                        transform=lambda used: f"{(used / fetch.mem_total) * 100:.0f}%" if fetch.mem_total > 0 else "0%"
+                    )
+                )
+            ]
+        )
     )
 
 
@@ -135,7 +246,7 @@ def performance_menu(monitor=0) -> widgets.Button:
             new_profile = stdout.decode('utf-8').strip()
             if new_profile != current_profile.value:
                 current_profile.value = new_profile
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
     asyncio.create_task(poll_current_profile())
 
     profile_icons = {
@@ -229,7 +340,6 @@ def tray():
 
 
 def volume() -> widgets.EventBox:
-
     box = widgets.Box(
             child=[
                 widgets.Icon(
@@ -251,8 +361,8 @@ def volume() -> widgets.EventBox:
     )
 
     return widgets.EventBox(
-        on_scroll_up=lambda x: exec("wpctl set-volume @DEFAULT_SINK@ 5%+"),
-        on_scroll_down=lambda x: exec("wpctl set-volume @DEFAULT_SINK@ 5%-"),
+        on_scroll_up=lambda _: exec("wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"),
+        on_scroll_down=lambda _: exec("wpctl set-volume @DEFAULT_SINK@ 5%-"),
         child=[button],
     )
 
@@ -349,5 +459,15 @@ def right(monitor: int) -> widgets.Box:
     return widgets.Box(
         css_classes=["bar-right"],
         spacing=sml_spacing,
-        child=[battery(), performance_menu(), volume(), do_not_disturb(), notification_count(), power_menu(monitor)],
+        child=[
+          battery(),
+          cpu_button(),
+          memory_button(),
+          bluetooth_button(),
+          performance_menu(),
+          volume(),
+          do_not_disturb(),
+          notification_count(),
+          power_menu(monitor)
+        ],
     )

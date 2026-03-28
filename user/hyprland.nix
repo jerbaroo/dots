@@ -153,7 +153,7 @@ assert lib.assertMsg (lib.elem layout layouts)
         ",XF86MonBrightnessUp  , exec, ${pkgs.brightnessctl}/bin/brightnessctl s +10%"
         ",XF86AudioMute        , exec, ${pkgs.wireplumber}/bin/wpctl set-mute   @DEFAULT_SINK@ toggle"
         ",XF86AudioLowerVolume , exec, ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_SINK@ 5%-"
-        ",XF86AudioRaiseVolume , exec, ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_SINK@ 5%+"
+        ",XF86AudioRaiseVolume , exec, ${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
         # Move focus in direction.
         "$mod, H, movefocus, l"
         "$mod, J, movefocus, d"
