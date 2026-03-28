@@ -1,9 +1,10 @@
 .bar-window {
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 5px;
   .bar-center, .bar-left, .bar-right { font-size: small; }
   .bar-button {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 8px; // Should match rounding in hyprland.nix.
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px; // Should match rounding in hyprland.nix?
     outline-width: 0px;
     min-width: 0;
     padding: 0 16px;

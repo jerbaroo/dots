@@ -96,6 +96,7 @@ in
       inherit hyprland;
       inherit ignis;
       inherit ignisPath;
+      inherit lib;
       inherit lockTimeout;
       inherit palette;
       inherit pkgs;

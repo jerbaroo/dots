@@ -12,8 +12,10 @@
   hyprland,
   ignis,
   ignisPath,
+  lib,
   palette,
   pkgs,
+  rounding,
   system,
   lockTimeout,
   temperature,
@@ -30,6 +32,8 @@ let
   floatSize = fraction: "size (monitor_w*${toString(fraction)}) (monitor_h*${toString(fraction)})";
   ghdashboard = import ./ghdashboard/default.nix { inherit pkgs; };
   ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString(ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
+  layout = "scrolling";
+  layouts = [ "dwindle" "scrolling" ];
   lockAfterNotify = n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString(n)} -m \'Locking in {} seconds\''";
   lockingPath = "/tmp/hypr_locking";
   locks = import ./lock.nix { inherit ignisPath; inherit palette; inherit pkgs; };
@@ -49,6 +53,8 @@ let
   wallpaperPath = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperPath;
   zoomFactor = 0.2;
 in
+assert lib.assertMsg (lib.elem layout layouts)
+  "Invalid layout '${layout}'. Must be one of: ${lib.concatStringsSep ", " layouts}";
 {
   home.packages = [
     ghdashboardwithargs
@@ -142,8 +148,6 @@ in
         enabled = animations;
       };
       bind = [
-        ",Caps_Lock, exec, os-logout-menu" # TODO actives caps lock
-        ",Delete, exec, systemctl suspend"
         # Function keys.
         ",XF86MonBrightnessDown, exec, ${pkgs.brightnessctl}/bin/brightnessctl s 10%-"
         ",XF86MonBrightnessUp  , exec, ${pkgs.brightnessctl}/bin/brightnessctl s +10%"
@@ -156,19 +160,22 @@ in
         "$mod, K, movefocus, u"
         "$mod, L, movefocus, r"
         # Swap windows in direction.
+        "$mod, COMMA, layoutmsg, swapcol l"
+        "$mod, PERIOD, layoutmsg, swapcol r"
         "$mod SHIFT, H, movewindow, l"
         "$mod SHIFT, J, movewindow, d"
         "$mod SHIFT, K, movewindow, u"
         "$mod SHIFT, L, movewindow, r"
+        # Move workspace in direction.
+        "$mod CTRL, H, movecurrentworkspacetomonitor, l"
+        "$mod CTRL, J, movecurrentworkspacetomonitor, d"
+        "$mod CTRL, K, movecurrentworkspacetomonitor, u"
+        "$mod CTRL, L, movecurrentworkspacetomonitor, r"
         # Resize splits.
         "$mod ALT, l, resizeactive, 40 0"
         "$mod ALT, h, resizeactive, -40 0"
         "$mod ALT, k, resizeactive, 0 -40"
         "$mod ALT, j, resizeactive, 0 40"
-        "$mod CTRL, l, resizeactive, 20 0"
-        "$mod CTRL, h, resizeactive, -20 0"
-        "$mod CTRL, k, resizeactive, 0 -20"
-        "$mod CTRL, j, resizeactive, 0 20"
         # Move focus to workspace by ID.
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
@@ -192,38 +199,42 @@ in
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 0"
         # Primary keys.
+        "$mod      , BACKSPACE, exec, ${os-cli.ui-logout-menu-toggle}"
+        "$mod      , DELETE, exec, systemctl suspend"
         "$mod      , RETURN, exec, ghostty"
-        "$mod      , SLASH, exec, ignis open-window ignis-app-launcher"
-        # "$mod      , SPACE, togglesplit, # dwindle"
+        "$mod      , SLASH, exec, ${os-cli.ui-app-launcher-toggle}"
+        "$mod      , SPACE, ${
+          { dwindle = "togglesplit";
+            scrolling = "layoutmsg, fit visible";
+          }.${layout} or (throw "Unsupported layout: ${layout}")
+        }"
         "$mod SHIFT, SPACE, togglefloating"
         "$mod      , TAB, cyclenext"
-        "$mod SHIFT, TAB, workspace, m+1"
+        "$mod SHIFT, TAB, workspace, previous"
         "$mod      , B, exec, ${floatCenter} ${bluetooth.guiCmd}"
         "$mod SHIFT, B, exec, ${os-cli.ui-menu-bar-toggle}"
-        "$mod      , C, exec, ${pkgs.cliphist}/bin/cliphist list | ${pkgs.rofi}/bin/rofi -dmenu | ${pkgs.cliphist}/bin/cliphist decode | ${pkgs.wl-clipboard}/bin/wl-copy"
-        "$mod      , D, exec, ${pkgs.wdisplays}/bin/wdisplays"
+        "$mod      , D, exec, ${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"
+        "$mod SHIFT, D, exec, ${pkgs.wdisplays}/bin/wdisplays"
         "$mod      , E, exec, ${pkgs.emacs-pgtk}/bin/emacs"
-        "$mod      , F, fullscreenstate, 1"
-        "$mod SHIFT, F, fullscreen"
-        "$mod      , I, exec, [float;center;${floatSize(0.5)}] ghostty -e ${os-cli.home-switch}"
+        "$mod      , F, fullscreen"
+        "$mod SHIFT, F, fullscreenstate, 1"
         "$mod      , M, exec, spotify"
         "$mod      , N, exec, ${pkgs.swaynotificationcenter}/bin/swaync-client -t"
-        "$mod      , O, exec, ${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"
         "$mod      , R, exec, ${pkgs.hyprpicker}/bin/hyprpicker --autocopy"
         "$mod SHIFT, R, exec, ${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
         "$mod      , P, focuscurrentorlast"
-        "$mod SHIFT, P, workspace, previous"
+        "$mod SHIFT, P, layoutmsg, promote"
         "$mod      , Q, killactive"
-        "$mod SHIFT, Q, exec, os-logout-menu" # TODO
         "$mod      , S, exec, ${os-cli.screenshot}"
-        "$mod      , T, exec, [float;center;${floatSize(defaultFloatSize)}] ghostty -e ${pkgs.btop}/bin/btop"
+        "$mod SHIFT, S, exec, ${floatCenter} ghostty -e ${os-cli.home-switch}"
+        "$mod      , T, exec, ${floatCenter} ghostty -e ${pkgs.btop}/bin/btop"
         "$mod      , V, exec, ${floatCenter} ${audio.guiCmd}"
         "$mod      , W, exec, chromium"
         "$mod SHIFT, W, exec, ${pkgs.librewolf}/bin/librewolf"
         # Zoom.
-        "$mod CTRL, J, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor |  ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"
-        "$mod CTRL, K, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"
-        "$mod CTRL, H, exec, hyprctl keyword cursor:zoom_factor 1"
+        "$mod ALT, I, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor |  ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"
+        "$mod ALT, O, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"
+        "$mod ALT, R, exec, hyprctl keyword cursor:zoom_factor 1"
       ];
       bindl = [ ", switch:on:Lid Switch, exec, systemctl suspend" ];
       debug.disable_logs = false;
@@ -236,7 +247,7 @@ in
           size = 5;
         };
         inactive_opacity = 1;
-        rounding = 8;
+        rounding = rounding;
       };
       dwindle.preserve_split = true;
       exec-once = [
@@ -253,7 +264,7 @@ in
         "col.inactive_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.base.hex})";
         gaps_in = gap;
         gaps_out = gap * 2;
-        layout = "scrolling";
+        layout = layout;
         resize_on_border = true;
       };
       input.kb_options = "caps:swapescape";

@@ -35,9 +35,9 @@
       borderSize = 2;
       codeBackgroundOpacity = 0.8;
       codeFontName = "Iosevka Nerd Font Mono";
-      codeFontSize = 14;
+      codeFontSize = 12;
       flavor = "mocha";
-      gap = 3;
+      gap = 0;
       ghdashboardPort = 1234;
       hostname = "nixos";
       lockTimeout = 120;
@@ -47,10 +47,10 @@
         ];
         inherit system;
       };
-      rounding = 8;
+      rounding = 1;
       stateVersion = "26.05";
       system = "x86_64-linux";
-      systemFontSize = 16;
+      systemFontSize = 12;
       temperature = 3000;
       username = "jeremy-barisch-rooney";
       wallpaperName = "gengar.png";

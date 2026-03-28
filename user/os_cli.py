@@ -18,11 +18,11 @@ SWAPPY = os.environ.get("OS_SWAPPY_PATH", "swappy")
 USERNAME = os.environ["OS_USERNAME"]
 
 
-def monitor_current() -> Optional[int]:
+def monitor_current() -> Optional[tuple[int, str]]:
     output = subprocess.check_output(f"{HYPRCTL} -j monitors", shell=True, text=True)
     for monitor in json.loads(output):
         if monitor["focused"]:
-            return monitor["id"]
+            return monitor["id"], monitor["name"]
 
 
 def ui_reload():
@@ -141,6 +141,35 @@ def screenshot():
 def ui():
     pass
 
+@ui.group()
+def app_launcher():
+    pass
+
+
+@app_launcher.command()
+def toggle():
+    subprocess.run([IGNIS, "toggle-window", "ignis-app-launcher"])
+
+
+@ui.group()
+def lock_screen():
+    pass
+
+
+@lock_screen.command()
+def toggle():
+    subprocess.run([IGNIS, "toggle-window", f"ignis-lock-screen-{monitor_current()[1]}"])
+
+
+@ui.group()
+def logout_menu():
+    pass
+
+
+@logout_menu.command()
+def toggle():
+    subprocess.run([IGNIS, "toggle-window", f"ignis-logout-menu-{monitor_current()[0]}"])
+
 
 @ui.group()
 def menu_bar():
@@ -149,7 +178,7 @@ def menu_bar():
 
 @menu_bar.command()
 def toggle():
-    subprocess.run([IGNIS, "toggle-window", f"ignis-bar-{monitor_current()}"])
+    subprocess.run([IGNIS, "toggle-window", f"ignis-bar-{monitor_current()[0]}"])
 
 
 @ui.command()

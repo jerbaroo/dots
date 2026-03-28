@@ -28,5 +28,8 @@ in {
   nixos-switch = mkCmd "nixos switch";
   screenshot = mkCmd "screenshot";
   ui-reload = mkCmd "ui reload";
+  ui-app-launcher-toggle = mkCmd "ui app-launcher toggle";
+  ui-lock-screen-toggle = mkCmd "ui lock-screen toggle";
+  ui-logout-menu-toggle = mkCmd "ui logout-menu toggle";
   ui-menu-bar-toggle = mkCmd "ui menu-bar toggle";
 }
