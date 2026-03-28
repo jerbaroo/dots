@@ -19,6 +19,7 @@ in {
     home.file."${ignisPath}/nix_paths.py".text = ''
       AUDIO_GUI_CMD="${audio.guiCmd}"
       BLUETOOTH_GUI_CMD="${bluetooth.guiCmd}"
+      POWER_PROFILES_CMD="${pkgs.power-profiles-daemon}/bin/powerprofilesctl"
     '';
     # Write theme colours to a fixed location, to be picked up at run-time.
     home.file."${ignisPath}/colors.scss".text = ''
@@ -29,8 +30,10 @@ in {
       $red: ${palette.red.hex};
       $yellow: ${palette.yellow.hex};
     '';
+    home.packages = [ pkgs.power-profiles-daemon ];
     programs.ignis = {
       enable = true;
+      extraPackages = with pkgs; [ libnotify ];
       sass = {
         enable = true;
         useDartSass = true;
@@ -41,9 +44,6 @@ in {
         # recorder.enable = true;
         # network.enable = true;
       };
-      extraPackages = with pkgs; [
-        libnotify
-      ];
     };
   };
 }

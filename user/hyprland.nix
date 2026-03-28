@@ -226,15 +226,15 @@ assert lib.assertMsg (lib.elem layout layouts)
         "$mod SHIFT, P, layoutmsg, promote"
         "$mod      , Q, killactive"
         "$mod      , S, exec, ${os-cli.screenshot}"
-        "$mod SHIFT, S, exec, ${floatCenter} ghostty -e ${os-cli.home-switch}"
+        "$mod SHIFT, S, exec, ghostty -e ${os-cli.home-switch}"
         "$mod      , T, exec, ${floatCenter} ghostty -e ${pkgs.btop}/bin/btop"
         "$mod      , V, exec, ${floatCenter} ${audio.guiCmd}"
         "$mod      , W, exec, chromium"
         "$mod SHIFT, W, exec, ${pkgs.librewolf}/bin/librewolf"
         # Zoom.
-        "$mod ALT, I, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor |  ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"
-        "$mod ALT, O, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"
-        "$mod ALT, R, exec, hyprctl keyword cursor:zoom_factor 1"
+        "$mod ALT, U, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor |  ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"
+        "$mod ALT, I, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"
+        "$mod ALT, O, exec, hyprctl keyword cursor:zoom_factor 1"
       ];
       bindl = [ ", switch:on:Lid Switch, exec, systemctl suspend" ];
       debug.disable_logs = false;

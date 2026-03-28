@@ -1,12 +1,10 @@
 import asyncio
 import datetime
-import re
+import json
 try:
   import nix_paths
 except ModuleNotFoundError as e:
     print(f"During development nix_paths is not available: {e}")
-import subprocess
-import time
 
 from collections import defaultdict
 from ignis import utils
@@ -41,80 +39,80 @@ def exec(cmd: str) -> None:
 
 def battery():
     battery = uPowerService.batteries[0]
-    return widgets.Button(
-        css_classes=["bar-button", "battery"],
-        child=widgets.Box(
-                child=utils.Poll(
-                100, # 0.1s
-                lambda self:
-                    [ widgets.Icon(image=battery.icon_name, pixel_size=icon_size)
-                    , widgets.Label(label=f"{battery.percent:.0f}%")
-                    ]
-            ).bind("output")
-        )
+    return widgets.Box(
+        css_classes=["battery"],
+        child=[
+            widgets.Icon(
+                image=battery.bind("icon_name"),
+                pixel_size=icon_size
+            ),
+            widgets.Label(
+                label=battery.bind("percent", transform=lambda p: f"{p:.0f}%")
+            )
+        ]
     )
 
 
+notification_status = Variable({"count": 0, "dnd": False})
+notification_status.connect("notify::value", lambda x, _: print("Notification status changed!: ", x.value))
+async def _watch_notification_status():
+    proc = await asyncio.create_subprocess_shell(
+        "swaync-client -s",
+        stdout=asyncio.subprocess.PIPE,
+    )
+    while True:
+      line = await proc.stdout.readline()
+      data = json.loads(line.decode('utf-8').strip())
+      notification_status.value = {"count": data["count"], "dnd": data["dnd"]}
+asyncio.create_task(_watch_notification_status())
+
+
 def do_not_disturb():
-
-    def get_do_not_disturb_status():
-      result = subprocess.check_output("swaync-client -D", shell=True, text=True)
-      if result == 'true':
-          return True
-      if result == 'false':
-          return False
-      raise Exception(f"Unknown do not disturb status {result}")
-
-    def get_do_not_disturb_icon_name():
-        if get_do_not_disturb_status():
-            return "notifications-disabled-symbolic"
-        return "notifications-symbolic"
-
-
     return widgets.Button(
         css_classes=["bar-button", "do-not-disturb"],
-        on_click=lambda x: exec("swaync-client -d -sw"),
+        on_click=lambda _: exec("swaync-client -d -sw"),
         child=widgets.Box(
-            child=utils.Poll(
-                100, # 0.1s
-                lambda self: [
-                    widgets.Icon(image=get_do_not_disturb_icon_name(), pixel_size=icon_size)
-                ]
-            ).bind("output")
+            child=[
+                widgets.Icon(
+                    image=notification_status.bind("value", transform=lambda s:
+                        "notifications-disabled-symbolic" if s["dnd"] else "notifications-symbolic"
+                    ),
+                    pixel_size=icon_size
+                )
+            ]
         )
     )
 
 
 def notification_count():
-
-    def get_count():
-        return int(subprocess.check_output("swaync-client -c", shell=True, text=True))
-
-    def get_icon(self):
-        count = get_count()
-        icon_name = "mail-unread-symbolic" if count > 0 else "mail-read-symbolic"
-        return [
-            widgets.Icon(image=icon_name, pixel_size=icon_size + 4),
-            widgets.Label(label=str(count), css_classes=["notification-count-label"])
-        ]
-
     return widgets.Button(
         css_classes=["bar-button", "notification-count"],
-        on_click=lambda _: exec("swaync-client -t -sw"),  # Toggle the panel.
+        on_click=lambda _: exec("swaync-client -t -sw"),
         child=widgets.Box(
             spacing=tiny_spacing,
-            child=utils.Poll(100, get_icon).bind("output")
+            child=[
+                widgets.Icon(
+                    image=notification_status.bind("value", transform=lambda s:
+                        "mail-unread-symbolic" if s["count"] > 0 else "mail-read-symbolic"
+                    ),
+                    pixel_size=icon_size + 4
+                ),
+                widgets.Label(
+                    label=notification_status.bind("value", transform=lambda s: str(s["count"])),
+                    css_classes=["notification-count-label"]
+                )
+            ]
         )
     )
 
 
 def performance_menu(monitor=0) -> widgets.Button:
 
-    all_profiles = Variable([])
-    all_profiles.connect("notify::value", lambda x, y: print("Value changed!: ", x.value))
-    async def set_profiles():
-        proc = await asyncio.create_subprocess_shell(
-            "nix run nixpkgs#power-profiles-daemon -- list",
+    all_profiles = Variable(["power-saver", "balanced", "performance"])
+    all_profiles.connect("notify::value", lambda x, _: print("Power profiles available changed!: ", x.value))
+    async def get_profiles():
+        proc = await asyncio.create_subprocess_exec(
+            nix_paths.POWER_PROFILES_CMD, "list",
             stdout=asyncio.subprocess.PIPE,
         )
         stdout, _ = await proc.communicate()
@@ -123,21 +121,21 @@ def performance_menu(monitor=0) -> widgets.Button:
             for line in stdout.decode('utf-8').splitlines()
             if line.strip().endswith(':')
         ]
-    asyncio.create_task(set_profiles())
+    asyncio.create_task(get_profiles())
 
     current_profile = Variable("balanced")
-    current_profile.connect("notify::value", lambda x, y: print("Value changed!: ", x.value))
+    current_profile.connect("notify::value", lambda x, y: print("Power profile changed!: ", x.value))
     async def poll_current_profile():
         while True:
-            proc = await asyncio.create_subprocess_shell(
-                "nix run nixpkgs#power-profiles-daemon -- get",
+            proc = await asyncio.create_subprocess_exec(
+                nix_paths.POWER_PROFILES_CMD, "get",
                 stdout=asyncio.subprocess.PIPE,
             )
             stdout, _ = await proc.communicate()
             new_profile = stdout.decode('utf-8').strip()
             if new_profile != current_profile.value:
                 current_profile.value = new_profile
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(1)
     asyncio.create_task(poll_current_profile())
 
     profile_icons = {
@@ -147,26 +145,30 @@ def performance_menu(monitor=0) -> widgets.Button:
     }
 
     def get_next_profile():
-
-        def get_next_profile_by_index():
-            current_index = all_profiles.value.index(current_profile.value)
-            next_index = (current_index + 1) % len(all_profiles.value)
-            return all_profiles.value[next_index]
-
         cycle = {
             "performance": "power-saver",
             "balanced": "performance",
             "power-saver": "balanced"
         }
+        # If a next power-profile is defined, use that..
         next_profile = cycle.get(current_profile.value)
         if next_profile is not None and next_profile in all_profiles.value:
             return next_profile
-        else:
-            return get_next_profile_by_index()
+        # ..else jump to the next profile in the list 'all_profiles'.
+        current_index = all_profiles.value.index(current_profile.value)
+        next_index = (current_index + 1) % len(all_profiles.value)
+        return all_profiles.value[next_index]
 
     def set_next_profile():
         next_profile = get_next_profile()
-        exec(f"nix run nixpkgs#power-profiles-daemon -- set {next_profile}")
+        async def apply_and_update():
+            proc = await asyncio.create_subprocess_exec(
+              nix_paths.POWER_PROFILES_CMD, "set", next_profile
+            )
+            await proc.communicate()
+            # . Now that the OS is updated, change the UI safely!
+            current_profile.value = next_profile
+        asyncio.create_task(apply_and_update())
 
     return widgets.Button(
         css_classes=["bar-button", "performance-button"],
@@ -331,7 +333,7 @@ def center() -> widgets.Label:
     return widgets.Label(
         css_classes=["bar-center"],
         label=utils.Poll(
-            1_000, lambda self: datetime.datetime.now().strftime("%b %-d %H:%M")
+            1_000, lambda _: datetime.datetime.now().strftime("%b %-d %H:%M")
         ).bind("output"),
     )
 
@@ -347,5 +349,5 @@ def right(monitor: int) -> widgets.Box:
     return widgets.Box(
         css_classes=["bar-right"],
         spacing=sml_spacing,
-        child=[performance_menu(), volume(), battery(), do_not_disturb(), notification_count(), power_menu(monitor)],
+        child=[battery(), performance_menu(), volume(), do_not_disturb(), notification_count(), power_menu(monitor)],
     )
