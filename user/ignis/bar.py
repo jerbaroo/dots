@@ -10,6 +10,7 @@ except ModuleNotFoundError:
     nix_paths = MockPaths()
     print(f"Mocking nix_paths in development")
 from collections import defaultdict
+from gi.repository import Gdk
 from ignis import utils, widgets
 from ignis.services.audio import AudioService
 from ignis.services.bluetooth import BluetoothService
@@ -32,6 +33,10 @@ namespace = lambda x: f"{barName}-{x}"
 tiny_spacing = 4
 sml_spacing = 6
 icon_size = 18
+
+
+def button_widget(**kwargs):
+  return widgets.Button(cursor=Gdk.Cursor.new_from_name("pointer"), **kwargs)
 
 
 def exec(cmd: str) -> None:
@@ -80,7 +85,7 @@ def bluetooth_button() -> widgets.Button:
     def toggle_power():
         bluetooth.powered = not bluetooth.powered
 
-    return widgets.Button(
+    return button_widget(
         css_classes=["bar-button", "bluetooth"],
         on_click=lambda _: toggle_power(),
         on_right_click=lambda _: exec(nix_paths.BLUETOOTH_GUI_CMD),
@@ -126,8 +131,8 @@ cpu_mon = CPUMonitor()
 cpu_poll = utils.Poll(2000, cpu_mon.get_cpu)
 
 
-def cpu_button():
-    return widgets.Button(
+def cpu_button() -> widgets.Button:
+    return button_widget(
         css_classes=["bar-button", "cpu"],
         on_click=lambda _: exec("ghostty -e htop"), # TODO
         child=widgets.Box(
@@ -142,8 +147,8 @@ def cpu_button():
     )
 
 
-def memory_button():
-    return widgets.Button(
+def memory_button() -> widgets.Button:
+    return button_widget(
         css_classes=["bar-button", "ram"],
         on_click=lambda _: exec("ghostty -e htop"),
         child=widgets.Box(
@@ -178,8 +183,8 @@ async def _watch_notification_status():
 asyncio.create_task(_watch_notification_status())
 
 
-def do_not_disturb():
-    return widgets.Button(
+def do_not_disturb() -> widgets.Button:
+    return button_widget(
         css_classes=["bar-button", "do-not-disturb"],
         on_click=lambda _: exec("swaync-client -d -sw"),
         child=widgets.Box(
@@ -195,8 +200,8 @@ def do_not_disturb():
     )
 
 
-def notification_count():
-    return widgets.Button(
+def notification_count() -> widgets.Button:
+    return button_widget(
         css_classes=["bar-button", "notification-count"],
         on_click=lambda _: exec("swaync-client -t -sw"),
         child=widgets.Box(
@@ -281,7 +286,7 @@ def performance_menu(monitor=0) -> widgets.Button:
             current_profile.value = next_profile
         asyncio.create_task(apply_and_update())
 
-    return widgets.Button(
+    return button_widget(
         css_classes=["bar-button", "performance-button"],
         on_click=lambda _: set_next_profile(),
         child=widgets.Box(
@@ -300,7 +305,7 @@ def performance_menu(monitor=0) -> widgets.Button:
 
 def power_menu(monitor: int) -> widgets.Button:
 
-    return widgets.Button(
+    return button_widget(
         css_classes=["bar-button", "powermenu-button"],
         on_click=lambda _: exec(f"ignis toggle-window ignis-logout-menu-{monitor}"),
         child=widgets.Box(
@@ -315,7 +320,7 @@ def tray_item(item: SystemTrayItem) -> widgets.Button:
     else:
         menu = None
 
-    return widgets.Button(
+    return button_widget(
         child=widgets.Box(
             child=[
                 widgets.Icon(image=item.bind("icon"), pixel_size=icon_size),
@@ -354,7 +359,7 @@ def volume() -> widgets.EventBox:
         )
 
     # For the "button" look and click action.
-    button = widgets.Button(
+    button = button_widget(
         css_classes=["bar-button", "volume"],
         on_click=lambda _: exec(nix_paths.AUDIO_GUI_CMD),
         child=box
@@ -389,7 +394,7 @@ def workspace_buttons(bar_monitor: int, workspaces: List[dict]) -> List[widgets.
         return ""
 
     return [
-        widgets.Button(
+        button_widget(
             css_classes=[
                 "bar-button",
                 active_or_open_workspace_class(w.id),
@@ -427,7 +432,7 @@ def bar(monitor: int) -> widgets.Window:
         anchor=["left", "top", "right"],
         css_classes=["bar-window"],
         exclusivity="exclusive",
-        layer="bottom",
+        layer="top",
         namespace=namespace(monitor),
         monitor=monitor,
         child=widgets.CenterBox(
@@ -463,11 +468,12 @@ def right(monitor: int) -> widgets.Box:
           battery(),
           cpu_button(),
           memory_button(),
-          bluetooth_button(),
           performance_menu(),
+          bluetooth_button(),
+          # TODO wifi
           volume(),
           do_not_disturb(),
           notification_count(),
-          power_menu(monitor)
+          power_menu(monitor),
         ],
     )

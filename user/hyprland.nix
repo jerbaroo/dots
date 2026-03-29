@@ -273,6 +273,8 @@ assert lib.assertMsg (lib.elem layout layouts)
         "blur on, match:namespace ^(ignis-bar-.*)$"
         # Ignore the transparent gaps.
         # "ignore_alpha 0.1, match:namespace ^(ignis-bar-.*)$"
+        # Respect the transparent hitboxes of your bar.
+        "ignore_alpha 0.0, match:namespace ^(ignis-bar.*)$"
       ];
       monitor = [ ", preferred, auto-up, 1.5" ];
       misc.disable_hyprland_logo = true;
