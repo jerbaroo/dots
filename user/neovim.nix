@@ -1,5 +1,8 @@
 { pkgs, ... }:
 {
+  catppuccin.nvim.settings = {
+    transparent_background = true;
+  };
   programs.neovim = {
     defaultEditor = true;
     enable = true;
