@@ -32,6 +32,7 @@ let
   floatSize = fraction: "size (monitor_w*${toString(fraction)}) (monitor_h*${toString(fraction)})";
   ghdashboard = import ./ghdashboard/default.nix { inherit pkgs; };
   ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString(ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
+  kanataRun = (import ./kanata.nix { inherit pkgs; }).run;
   layout = "scrolling";
   layouts = [ "dwindle" "scrolling" ];
   lockAfterNotify = n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString(n)} -m \'Locking in {} seconds\''";
@@ -253,7 +254,7 @@ assert lib.assertMsg (lib.elem layout layouts)
       dwindle.preserve_split = true;
       exec-once = [
         # "openrgb -m static -c ff1e00"
-        "${pkgs.kanata}/bin/kanata -c ~/.config/kanata/config.kbd"
+        kanataRun
         setWallpaperCmd
         "ignis init >> /tmp/ignis.log 2>&1"
         "${monitorListener}"

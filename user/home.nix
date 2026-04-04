@@ -116,7 +116,7 @@ in
       inherit palette;
       inherit pkgs;
     }).hm
-    ./kanata.nix
+    (import ./kanata.nix { inherit pkgs; }).hm
     (import ./kitty.nix {
       inherit codeBackgroundOpacity;
       inherit codeFontName;

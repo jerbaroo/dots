@@ -1,0 +1,29 @@
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes ;; Tap then hold to repeat key.
+)
+
+;; Physical keys to intercept.
+(defsrc a s d f j k l ;)
+
+;; Timing variables in milliseconds.
+(defvar
+  tap-time 200
+  hold-time 200
+)
+
+;; Tap for letter, hold for modifier.
+(defalias
+  a (tap-hold $tap-time $hold-time a lalt) ;; Left Alt
+  s (tap-hold $tap-time $hold-time s lctl) ;; Left Ctrl
+  d (tap-hold $tap-time $hold-time d lsft) ;; Left Shift
+  f (tap-hold $tap-time $hold-time f lmet) ;; Left Super
+
+  j (tap-hold $tap-time $hold-time j rmet) ;; Right Super
+  k (tap-hold $tap-time $hold-time k rsft) ;; Right Shift
+  l (tap-hold $tap-time $hold-time l rctl) ;; Right Ctrl
+  ; (tap-hold $tap-time $hold-time ; ralt) ;; Right Alt
+)
+
+;; Map the aliases to the intercepted keys.
+(deflayer base @a @s @d @f @j @k @l @;)
