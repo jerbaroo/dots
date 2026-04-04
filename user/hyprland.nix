@@ -177,6 +177,15 @@ assert lib.assertMsg (lib.elem layout layouts)
         "$mod ALT, h, resizeactive, -40 0"
         "$mod ALT, k, resizeactive, 0 -40"
         "$mod ALT, j, resizeactive, 0 40"
+        # Resize column width.
+        "$mod ALT, 1, layoutmsg, colresize 1"
+        "$mod ALT, 2, layoutmsg, colresize 0.5"
+        "$mod ALT, 3, layoutmsg, colresize 0.333333"
+        "$mod ALT, 4, layoutmsg, colresize 0.25"
+        "$mod ALT, 5, layoutmsg, colresize 0.2"
+        "$mod ALT, 6, layoutmsg, colresize 0.666666"
+        "$mod ALT, 9, layoutmsg, colresize -conf"
+        "$mod ALT, 0, layoutmsg, colresize +conf"
         # Move focus to workspace by ID.
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
