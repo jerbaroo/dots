@@ -252,6 +252,7 @@ assert lib.assertMsg (lib.elem layout layouts)
       dwindle.preserve_split = true;
       exec-once = [
         # "openrgb -m static -c ff1e00"
+        "${pkgs.kanata}/bin/kanata -c ~/.config/kanata/config.kbd"
         setWallpaperCmd
         "ignis init >> /tmp/ignis.log 2>&1"
         "${monitorListener}"
