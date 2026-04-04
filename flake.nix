@@ -33,7 +33,7 @@
         in  pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
       blur = true;
       borderSize = 2;
-      codeBackgroundOpacity = 0.8;
+      codeBackgroundOpacity = 0.7;
       codeFontName = "Iosevka Nerd Font Mono";
       codeFontSize = 12;
       flavor = "mocha";
@@ -51,7 +51,7 @@
       stateVersion = "26.05";
       system = "x86_64-linux";
       systemFontSize = 12;
-      temperature = 3000;
+      temperature = 4500;
       username = "jeremy-barisch-rooney";
       wallpaperName = "gengar.png";
     in

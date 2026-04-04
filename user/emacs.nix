@@ -3,6 +3,7 @@
   codeFontName,
   codeFontSize,
   flavor,
+  palette,
   pkgs,
   ...
 }:
@@ -13,6 +14,7 @@
       inherit codeFontName;
       inherit codeFontSize;
       inherit flavor;
+      inherit palette;
       inherit pkgs;
     })
     ./emacs-init.nix

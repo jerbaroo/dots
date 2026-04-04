@@ -53,12 +53,14 @@ in
       inherit codeFontSize;
       inherit codeBackgroundOpacity;
       inherit flavor;
+      inherit palette;
       inherit pkgs;
     })
     ./eza.nix
     (import ./fish.nix {
       inherit accent;
       inherit lib;
+      inherit palette;
       inherit pkgs;
       inherit username;
     })
@@ -123,9 +125,7 @@ in
       inherit pkgs;
       inherit wrapGL;
     })
-    (import ./neovim.nix {
-      inherit pkgs;
-    })
+    ./neovim.nix
     ./notifications.nix
     ./packages.nix
     ./quickshell.nix

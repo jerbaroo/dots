@@ -237,6 +237,7 @@ assert lib.assertMsg (lib.elem layout layouts)
         "$mod ALT, O, exec, hyprctl keyword cursor:zoom_factor 1"
       ];
       bindl = [ ", switch:on:Lid Switch, exec, systemctl suspend" ];
+      # cursor.no_hardware_cursors = true;
       debug.disable_logs = false;
       decoration = {
         active_opacity = 1;
@@ -274,14 +275,20 @@ assert lib.assertMsg (lib.elem layout layouts)
         "blur on, match:namespace ^(ignis-bar-.*)$"
         # Ignore the transparent gaps.
         # "ignore_alpha 0.1, match:namespace ^(ignis-bar-.*)$"
-        # Respect the transparent hitboxes of your bar.
+        # Respect the transparent hitboxes of the menu bar.
         "ignore_alpha 0.0, match:namespace ^(ignis-bar.*)$"
       ];
-      monitor = [ ", preferred, auto-up, 1.5" ];
-      misc.disable_hyprland_logo = true;
+      monitor = [
+        "HDMI-A-1, 5120x2160@30, auto-up, 1.6"
+        ", preferred, auto-up, 1.6"
+      ];
+      misc = {
+        disable_hyprland_logo = true;
+        vrr = 1;
+      };
       scrolling = {
-        column_width = 0.3333;
-        fullscreen_on_one_column = true;
+        column_width = 0.333333;
+        fullscreen_on_one_column = false;
         direction = "right";
         focus_fit_method = 1; # Center active column.
       };
@@ -291,11 +298,8 @@ assert lib.assertMsg (lib.elem layout layouts)
             "center true, match:title ^(${title})$"
             "${floatSize(defaultFloatSize)}, match:title ^(${title})$"
           ];
-        in
-          floatCenterRule audio.guiTitle
-          ++ floatCenterRule bluetooth.guiTitle
-          ++ floatCenterRule "wdisplays";
-      workspace = ["1, monitor:DP-1, default:true" ];
+        in map floatCenterRule [audio.guiTitle bluetooth.guiTitle "wdisplays"];
+      workspace = ["1, monitor:HDMI-A-1, default:true" ];
       xwayland = {
         force_zero_scaling = true;
       };
