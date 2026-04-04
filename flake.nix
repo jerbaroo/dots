@@ -53,7 +53,7 @@
       systemFontSize = 12;
       temperature = 4500;
       username = "jeremy-barisch-rooney";
-      wallpaperName = "gengar.png";
+      wallpaperName = "jellyfish-purple.png";
     in
     {
       nixosConfigurations = {
