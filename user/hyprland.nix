@@ -32,7 +32,7 @@ let
   floatSize = fraction: "size (monitor_w*${toString(fraction)}) (monitor_h*${toString(fraction)})";
   ghdashboard = import ./ghdashboard/default.nix { inherit pkgs; };
   ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString(ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
-  kanataRun = (import ./kanata.nix { inherit pkgs; }).run;
+  kanataRun = (import ./kanata/kanata.nix { inherit pkgs; }).run;
   layout = "scrolling";
   layouts = [ "dwindle" "scrolling" ];
   lockAfterNotify = n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString(n)} -m \'Locking in {} seconds\''";

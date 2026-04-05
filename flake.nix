@@ -29,7 +29,7 @@
       animationSpeed = 2;
       animations = true;
       allowUnfreePredicate =
-        let whitelist = map pkgs.lib.getName [ pkgs.spotify ];
+        let whitelist = map pkgs.lib.getName [ pkgs.spotify pkgs.symbola ];
         in  pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
       blur = true;
       borderSize = 2;
@@ -51,7 +51,7 @@
       stateVersion = "26.05";
       system = "x86_64-linux";
       systemFontSize = 12;
-      temperature = 4500;
+      temperature = 4000;
       username = "jeremy-barisch-rooney";
       wallpaperName = "jellyfish-purple.jpg";
     in

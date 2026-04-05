@@ -1,5 +1,3 @@
-{
-  home.file.".config/doom/init.el".text = ''
 ;;; init.el -*- lexical-binding: t; -*-
 
 (doom! :input
@@ -184,5 +182,3 @@
        :config
        ;;literate
        (default +bindings +smartparens))
-  '';
-}

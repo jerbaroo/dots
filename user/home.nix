@@ -48,7 +48,7 @@ in
     (import ./bluetooth.nix { inherit pkgs; }).hm
     (import ./browser.nix { inherit ghdashboardPort; inherit pkgs; })
     ./direnv.nix
-    (import ./emacs.nix {
+    (import ./emacs/emacs.nix {
       inherit codeFontName;
       inherit codeFontSize;
       inherit codeBackgroundOpacity;
@@ -116,7 +116,7 @@ in
       inherit palette;
       inherit pkgs;
     }).hm
-    (import ./kanata.nix { inherit pkgs; }).hm
+    (import ./kanata/kanata.nix { inherit pkgs; }).hm
     (import ./kitty.nix {
       inherit codeBackgroundOpacity;
       inherit codeFontName;
