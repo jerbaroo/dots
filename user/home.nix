@@ -22,6 +22,7 @@
   lockTimeout,
   nixgl,
   pkgs,
+  quickshell,
   rounding,
   spicetify,
   stateVersion,
@@ -128,7 +129,7 @@ in
     ./neovim.nix
     ./notifications.nix
     ./packages.nix
-    ./quickshell.nix
+    (import ./quickshell.nix { inherit pkgs; inherit quickshell; inherit system; })
     ./sound.nix
     (import ./spicetify.nix {
       inherit accent;
