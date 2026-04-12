@@ -1,7 +1,12 @@
 { pkgs, wallpaperName, ... }:
 let
-  wallpaperBlurred = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperBlurred;
+  wallpaperBlurred =
+    (import ./wallpaper.nix {
+      inherit pkgs;
+      inherit wallpaperName;
+    }).wallpaperBlurred;
   wallpaperBlurredPath = ".config/wallpaper-blurred.jpg";
-in {
+in
+{
   home.file.${wallpaperBlurredPath}.source = wallpaperBlurred;
 }

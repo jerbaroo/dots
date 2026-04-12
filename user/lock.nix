@@ -1,4 +1,9 @@
-{ ignisPath, palette, pkgs, ... }:
+{
+  ignisPath,
+  palette,
+  pkgs,
+  ...
+}:
 let
   c = colour: pkgs.lib.strings.removePrefix "#" palette.${colour}.hex;
   swaylock = pkgs.writeShellScriptBin "swaylock_" ''
@@ -9,11 +14,11 @@ let
       --indicator-radius 256 \
       --indicator-thickness 64 \
       \
-        --color ${c "base"} \
-        --inside-color ${c "base"} \
-        --line-color ${c "base"} \
+        --color 000000 \
+        --inside-color 000000 \
+        --line-color 000000 \
         --ring-color ${c "blue"} \
-        --separator-color ${c "base"} \
+        --separator-color 000000 \
         --text-color ${c "text"} \
       \
         --key-hl-color ${c "pink"} \
@@ -44,7 +49,7 @@ let
         --layout-bg-color ${c "base"} \
         --layout-border-color ${c "surface0"} \
         --layout-text-color ${c "text"}
-'';
+  '';
 in
 {
   ignis-lock = pkgs.writeShellScriptBin "ignis-lock" ''

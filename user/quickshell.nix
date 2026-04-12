@@ -1,4 +1,10 @@
-{ pkgs, quickshell, system, ... }:
+{
+  lib,
+  pkgs,
+  quickshell,
+  system,
+  ...
+}:
 let
   # Packages and paths of dependencies.
   qt-base-pkg = pkgs.kdePackages.qtdeclarative;
@@ -9,9 +15,10 @@ let
   qmlls-wrapper = pkgs.writeShellScriptBin "qmlls" ''
     exec ${qt-base-pkg}/bin/qmlls -I "${quickshell-path}" -I "${qt-base-path}" "$@"
   '';
-in {
+in
+{
   home.packages = [
-    (pkgs.hiPrio qmlls-wrapper) # Prioritize qmlls with library paths.
+    (lib.hiPrio qmlls-wrapper) # Prioritize qmlls with library paths.
     qt-base-pkg # For qmlformat and other tools.
   ];
   programs.quickshell = {

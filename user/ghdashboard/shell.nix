@@ -1,9 +1,14 @@
-{ pkgs ? import <nixpkgs> {} }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 
 pkgs.mkShell {
   buildInputs = with pkgs; [
-    (python3.withPackages (python-pkgs: with python-pkgs; [
-      flask requests
-    ]))
+    (python3.withPackages (
+      python-pkgs: with python-pkgs; [
+        flask
+        requests
+      ]
+    ))
   ];
 }

@@ -1,13 +1,18 @@
 { pkgs, ... }:
-let name = "ghdashboard";
-in pkgs.python3Packages.buildPythonApplication {
+let
+  name = "ghdashboard";
+in
+pkgs.python3Packages.buildPythonApplication {
   pname = name;
   version = "1.0.0";
   src = ./.;
   # Build-time deps.
   nativeBuildInputs = [ pkgs.makeWrapper ];
   # Run-time deps.
-  propagatedBuildInputs = with pkgs.python3Packages; [ flask requests ];
+  propagatedBuildInputs = with pkgs.python3Packages; [
+    flask
+    requests
+  ];
   # Tells Nix NOT to look for setup.py or pyproject.toml.
   format = "other";
   installPhase = ''

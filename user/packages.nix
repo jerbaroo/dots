@@ -14,7 +14,7 @@
     niv # Nix dependency manager.
     nitch # System info fetch.
     nix # Nix package manager.
-    nixfmt-rfc-style # Nix formatter.
+    nixfmt # Nix formatter.
     nix-output-monitor # Pretty nix command info.
     nix-tree # Nix dependency browser.
     nh # Nix helper.

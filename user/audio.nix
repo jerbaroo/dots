@@ -1,7 +1,8 @@
-{pkgs}:
+{ pkgs }:
 let
   guiTitle = "wiremix";
-in {
+in
+{
   inherit guiTitle;
   guiCmd = "ghostty --title=${guiTitle} -e ${pkgs.wiremix}/bin/wiremix --tab output";
 }

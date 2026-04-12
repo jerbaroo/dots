@@ -14,7 +14,6 @@
 }:
 {
   home-manager = {
-    backupFileExtension = ".backup";
     extraSpecialArgs = {
       inherit accent;
       inherit codeFontName;

@@ -26,19 +26,39 @@
 }:
 let
   audio = (import ./audio.nix { inherit pkgs; });
+  bitDepth = 10;
+  bitDepthStr = ", bitdepth, ${toString (bitDepth)}";
   bluetooth = (import ./bluetooth.nix { inherit pkgs; });
   defaultFloatSize = 0.8;
-  floatCenter = "[float;center;${floatSize(defaultFloatSize)}]";
-  floatSize = fraction: "size (monitor_w*${toString(fraction)}) (monitor_h*${toString(fraction)})";
+  floatCenter = "[float;center;${floatSize (defaultFloatSize)}]";
+  floatSize = fraction: "size (monitor_w*${toString (fraction)}) (monitor_h*${toString (fraction)})";
   ghdashboard = import ./ghdashboard/default.nix { inherit pkgs; };
-  ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString(ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
+  ghdashboardwithargs = pkgs.writeShellScriptBin "ghdashboardwithargs" "${ghdashboard}/bin/ghdashboard ${toString (ghdashboardPort)} /home/${username}/.config/read-gh-token.sh";
+  hdr = true;
+  # hdrStr = if hdr then ", cm, hdr" else "";
+  hdrStr = if hdr then "" else "";
   kanataRun = (import ./kanata/kanata.nix { inherit pkgs; }).run;
   layout = "scrolling";
-  layouts = [ "dwindle" "scrolling" ];
-  lockAfterNotify = n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString(n)} -m \'Locking in {} seconds\''";
+  layouts = [
+    "dwindle"
+    "scrolling"
+  ];
+  lockAfterNotify =
+    n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString (n)} -m \'Locking in {} seconds\''";
   lockingPath = "/tmp/hypr_locking";
-  locks = import ./lock.nix { inherit ignisPath; inherit palette; inherit pkgs; };
-  os-cli = import ./os-cli.nix { inherit ignis; inherit hostname; inherit hyprland; inherit pkgs; inherit system; inherit username; };
+  locks = import ./lock.nix {
+    inherit ignisPath;
+    inherit palette;
+    inherit pkgs;
+  };
+  os-cli = import ./os-cli.nix {
+    inherit ignis;
+    inherit hostname;
+    inherit hyprland;
+    inherit pkgs;
+    inherit system;
+    inherit username;
+  };
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
     ${pkgs.socat}/bin/socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
       case "$line" in
@@ -50,8 +70,12 @@ let
       esac
     done
   '';
-  setWallpaperCmd = "swww img ${wallpaperPath}";
-  wallpaperPath = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaperPath;
+  setWallpaperCmd = "awww img ${wallpaperPath}";
+  wallpaperPath =
+    (import ./wallpaper.nix {
+      inherit pkgs;
+      inherit wallpaperName;
+    }).wallpaperPath;
   zoomFactor = 0.2;
 in
 assert lib.assertMsg (lib.elem layout layouts)
@@ -72,13 +96,14 @@ assert lib.assertMsg (lib.elem layout layouts)
         # Lock before sleeping.
         before_sleep_cmd = "loginctl lock-session";
         # Lock if not already locked.
-        lock_cmd = "pidof os-lock || os-lock ";
+        # TODO ${pkgs.playerctl}/bin/playerctl pause
+        lock_cmd = "pidof os-lock || os-lock "; # TODO
       };
       listener = [
         # Locking notification.
         {
           on-resume = "rm ${lockingPath}";
-          on-timeout = "touch ${lockingPath}; " + lockAfterNotify(10);
+          on-timeout = "touch ${lockingPath}; " + lockAfterNotify (10);
           timeout = lockTimeout - 10;
         }
         # Lock.
@@ -95,14 +120,17 @@ assert lib.assertMsg (lib.elem layout layouts)
         # Sleep.
         {
           on-timeout = "systemctl suspend";
-          timeout = lockTimeout + 120;
+          timeout = lockTimeout + (60 * 5);
         }
       ];
     };
   };
   services.hyprsunset = {
-    enable = true;
-    extraArgs = ["-t" "${toString(temperature)}"];
+    enable = false;
+    extraArgs = [
+      "-t"
+      "${toString (temperature)}"
+    ];
   };
   wayland.windowManager.hyprland = {
     enable = true;
@@ -114,26 +142,31 @@ assert lib.assertMsg (lib.elem layout layouts)
     package = ((if wrapGL then config.lib.nixGL.wrap else (x: x)) hyprland.packages.${system}.hyprland);
     settings = {
       # "env" = "GTK_THEME, catppuccin-${flavor}-${accent}-standard";
-      env = "GDK_BACKEND, wayland";
+      env = [
+        "GDK_BACKEND, wayland"
+        "XDG_CURRENT_DESKTOP, hyprland"
+      ];
       "$mod" = "SUPER";
       # https://github.com/end-4/dots-hyprland/blob/main/dots/.config/hypr/hyprland/general.conf
       animations = {
         animation =
-          let f = speed: toString (speed / animationSpeed);
-          in [
-             "windowsIn, 1, ${f 3.0}, emphasizedDecel, popin 80%"
-             "fadeIn, 1, ${f 3.0}, emphasizedDecel"
-             "windowsOut, 1, ${f 2.0}, emphasizedDecel, popin 90%"
-             "fadeOut, 1, ${f 2.0}, emphasizedDecel"
-             "windowsMove, 1, ${f 3.0}, emphasizedDecel, slide"
-             "border, 1, ${f 10.0}, emphasizedDecel"
-             "layersIn, 1, ${f 2.7}, emphasizedDecel, popin 93%"
-             "layersOut, 1, ${f 2.4}, menu_accel, popin 94%"
-             "fadeLayersIn, 1, ${f 0.5}, menu_decel"
-             "fadeLayersOut, 1, ${f 2.7}, stall"
-             "workspaces, 1, ${f 7.0}, menu_decel, slide"
-             "specialWorkspaceIn, 1, ${f 2.8}, emphasizedDecel, slidevert"
-             "specialWorkspaceOut, 1, ${f 1.2}, emphasizedAccel, slidevert"
+          let
+            f = speed: toString (speed / animationSpeed);
+          in
+          [
+            "windowsIn, 1, ${f 3.0}, emphasizedDecel, popin 80%"
+            "fadeIn, 1, ${f 3.0}, emphasizedDecel"
+            "windowsOut, 1, ${f 2.0}, emphasizedDecel, popin 90%"
+            "fadeOut, 1, ${f 2.0}, emphasizedDecel"
+            "windowsMove, 1, ${f 3.0}, emphasizedDecel, slide"
+            "border, 1, ${f 10.0}, emphasizedDecel"
+            "layersIn, 1, ${f 2.7}, emphasizedDecel, popin 93%"
+            "layersOut, 1, ${f 2.4}, menu_accel, popin 94%"
+            "fadeLayersIn, 1, ${f 0.5}, menu_decel"
+            "fadeLayersOut, 1, ${f 2.7}, stall"
+            "workspaces, 1, ${f 7.0}, menu_decel, slide"
+            "specialWorkspaceIn, 1, ${f 2.8}, emphasizedDecel, slidevert"
+            "specialWorkspaceOut, 1, ${f 1.2}, emphasizedAccel, slidevert"
           ];
         bezier = [
           "expressiveFastSpatial, 0.42, 1.67, 0.21, 0.90"
@@ -212,11 +245,14 @@ assert lib.assertMsg (lib.elem layout layouts)
         "$mod      , BACKSPACE, exec, ${os-cli.ui-logout-menu-toggle}"
         "$mod      , DELETE, exec, systemctl suspend"
         "$mod      , RETURN, exec, ghostty"
+        "$mod SHIFT, RETURN, exec, konsole"
         "$mod      , SLASH, exec, ${os-cli.ui-app-launcher-toggle}"
         "$mod      , SPACE, ${
-          { dwindle = "togglesplit";
+          {
+            dwindle = "togglesplit";
             scrolling = "layoutmsg, fit visible";
-          }.${layout} or (throw "Unsupported layout: ${layout}")
+          }
+          .${layout} or (throw "Unsupported layout: ${layout}")
         }"
         "$mod SHIFT, SPACE, togglefloating"
         "$mod      , TAB, cyclenext"
@@ -281,35 +317,47 @@ assert lib.assertMsg (lib.elem layout layouts)
       };
       input.kb_options = "caps:swapescape";
       layerrule = [
-        # Blur the menu bar.
-        "blur on, match:namespace ^(ignis-bar-.*)$"
-        # Ignore the transparent gaps.
-        # "ignore_alpha 0.1, match:namespace ^(ignis-bar-.*)$"
-        # Respect the transparent hitboxes of the menu bar.
-        "ignore_alpha 0.0, match:namespace ^(ignis-bar.*)$"
+        "blur on, match:namespace ^(ignis-bar-.*)$" # Blur the menu bar.
       ];
       monitor = [
-        "HDMI-A-1, 5120x2160@30, auto-up, 1.6"
+        "HDMI-A-1, 5120x2160@30, auto-up, 1.6${bitDepthStr}${hdrStr}"
+        # "HDMI-A-1, 3840x2160@60, auto-up, 1.5"
         ", preferred, auto-up, 1.6"
       ];
       misc = {
         disable_hyprland_logo = true;
         vrr = 1;
       };
+      render = {
+        cm_auto_hdr = 1;
+        cm_fs_passthrough = 2;
+      };
       scrolling = {
         column_width = 0.333333;
-        fullscreen_on_one_column = false;
         direction = "right";
         focus_fit_method = 1; # Center active column.
+        fullscreen_on_one_column = false;
       };
       windowrule =
-        let floatCenterRule = title: [
+        let
+          floatCenterRule = title: [
             "float true, match:title ^(${title})$"
             "center true, match:title ^(${title})$"
-            "${floatSize(defaultFloatSize)}, match:title ^(${title})$"
+            "${floatSize (defaultFloatSize)}, match:title ^(${title})$"
           ];
-        in map floatCenterRule [audio.guiTitle bluetooth.guiTitle "wdisplays"];
-      workspace = ["1, monitor:HDMI-A-1, default:true" ];
+        in
+        map floatCenterRule [
+          audio.guiTitle
+          bluetooth.guiTitle
+          "wdisplays"
+        ]
+        ++ [
+          # No border when only a single tiled window.
+          # "border_size 0, match:workspace w[t1]"
+          # No border in full screen state.
+          "border_size 0, match:float 0, match:workspace f[1]"
+        ];
+      workspace = [ "1, monitor:HDMI-A-1, default:true" ];
       xwayland = {
         force_zero_scaling = true;
       };

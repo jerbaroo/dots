@@ -16,7 +16,8 @@ let
     #!/usr/bin/env fish
     ${pkgs.tmux}/bin/tmux new-session -A -s main
   '';
-in {
+in
+{
   programs.ghostty = {
     enable = true;
     package = (if wrapGL then config.lib.nixGL.wrap else (x: x)) pkgs.ghostty;

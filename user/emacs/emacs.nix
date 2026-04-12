@@ -11,8 +11,8 @@
   home.file.".config/doom/config.el".source = pkgs.replaceVars ./config.el {
     inherit codeFontName;
     inherit flavor;
-    codeBackgroundOpacity = toString(builtins.floor(codeBackgroundOpacity * 100));
-    codeFontSize = toString(codeFontSize) + ".0";
+    codeBackgroundOpacity = toString (builtins.floor (codeBackgroundOpacity * 100));
+    codeFontSize = toString (codeFontSize) + ".0";
     colourComment = palette.rosewater.hex;
     colourLineNumber = palette.subtext0.hex;
     colourLineNumberCurrent = palette.peach.hex;

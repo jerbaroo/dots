@@ -5,7 +5,7 @@ import Quickshell.Networking
 
 FloatingWindow {
     id: root
-    color: "transparent"
+    color: Qt.rgba(0, 0, 0, 0.5)
     height: 800
     width: 1000
 
@@ -129,7 +129,7 @@ FloatingWindow {
         Rectangle {
             border.color: "white"
             border.width: 2
-            color: Qt.rgba(0, 0, 0, 0.2)
+            color: "transparent"
             height: 400
             radius: 8
             width: parent.width
@@ -187,7 +187,7 @@ FloatingWindow {
 
                     // Highlight the selected row.
                     highlight: Rectangle {
-                        color: Qt.rgba(0, 0, 0, 0.5)
+                        color: Qt.rgba(0, 0, 0, 0.3)
                         radius: 8
                         width: apList.width
                     }
@@ -262,7 +262,7 @@ FloatingWindow {
         Rectangle {
             border.color: "white"
             border.width: 2
-            color: Qt.rgba(0, 0, 0, 0.2)
+            color: "transparent"
             radius: 8
             height: 150
             width: parent.width

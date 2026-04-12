@@ -1,8 +1,13 @@
 { pkgs, wallpaperName, ... }:
 let
-  wallpaper = (import ./wallpaper.nix { inherit pkgs; inherit wallpaperName; }).wallpaper;
+  wallpaper =
+    (import ./wallpaper.nix {
+      inherit pkgs;
+      inherit wallpaperName;
+    }).wallpaper;
 in
 {
+  services.awww.enable = true;
   services.hyprpaper = {
     enable = false;
     settings = {
@@ -12,5 +17,4 @@ in
       wallpaper = [ ",${wallpaper}" ];
     };
   };
-  services.swww.enable = true;
 }

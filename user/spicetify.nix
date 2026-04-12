@@ -1,12 +1,24 @@
-{ accent, flavor, palette, pkgs, spicetify }:
+{
+  accent,
+  flavor,
+  palette,
+  pkgs,
+  spicetify,
+}:
 let
-in {
+in
+{
   programs.spicetify =
-    let spicePkgs = spicetify.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-    in {
+    let
+      spicePkgs = spicetify.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+    in
+    {
       colorScheme = flavor;
       enable = true;
-      enabledExtensions = with spicePkgs.extensions; [ fullAppDisplay keyboardShortcut ];
+      enabledExtensions = with spicePkgs.extensions; [
+        fullAppDisplay
+        keyboardShortcut
+      ];
       theme = spicePkgs.themes.catppuccin;
       wayland = true;
     };

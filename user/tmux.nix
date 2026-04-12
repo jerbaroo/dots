@@ -1,4 +1,9 @@
-{ accent, palette, pkgs, ... }:
+{
+  accent,
+  palette,
+  pkgs,
+  ...
+}:
 let
   # Run git in the current directory with a tmux background.
   # The caller must ensure they are in the correct directory.
@@ -40,9 +45,15 @@ let
 
     with_tmux_bg 'Sessions' 'tmux_session_open'
   '';
-in {
+in
+{
   catppuccin.tmux.enable = false;
-  home.packages = [ tmux-git-open tmux-project-edit tmux-project-open tmux-session-open ];
+  home.packages = [
+    tmux-git-open
+    tmux-project-edit
+    tmux-project-open
+    tmux-session-open
+  ];
   programs.tmux = {
     aggressiveResize = true;
     baseIndex = 1;

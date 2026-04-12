@@ -9,7 +9,8 @@
 let
   audio = (import ./audio.nix { inherit pkgs; });
   bluetooth = (import ./bluetooth.nix { inherit pkgs; });
-in {
+in
+{
   hm = {
     home.file.${ignisPath} = {
       recursive = true;

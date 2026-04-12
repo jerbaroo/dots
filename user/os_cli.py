@@ -85,7 +85,7 @@ def switch():
     flake_path = f"{home_path}/nixos-config"
     flake_attribute = f"{USERNAME}@{HOSTNAME}"
     click.echo(f"Switching home configuration using {flake_path}")
-    subprocess.run([NH, "home", "switch", flake_path, "-c", flake_attribute], cwd=home_path)
+    subprocess.run([NH, "home", "switch", flake_path, "-c", flake_attribute, "-b", "backup"], cwd=home_path)
     # We also reload the UI to avoid issues with missing icons.
     ui_reload()
 

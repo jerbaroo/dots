@@ -1,10 +1,20 @@
-{ ignis, hostname, hyprland, pkgs, system, username, ... }:
+{
+  ignis,
+  hostname,
+  hyprland,
+  pkgs,
+  system,
+  username,
+  ...
+}:
 let
   audio = (import ./audio.nix { inherit pkgs; });
   bluetooth = (import ./bluetooth.nix { inherit pkgs; });
   cli =
-    let python = pkgs.python3.withPackages (ps: with ps; [ click ]);
-    in pkgs.writeShellScriptBin "os" ''
+    let
+      python = pkgs.python3.withPackages (ps: with ps; [ click ]);
+    in
+    pkgs.writeShellScriptBin "os" ''
       export OS_AUDIO_GUI_CMD="${audio.guiCmd}"
       export OS_BLUETOOTH_GUI_CMD="${bluetooth.guiCmd}"
       export OS_GRIM_PATH="${pkgs.grim}/bin/grim"
@@ -18,10 +28,16 @@ let
       exec ${python}/bin/python3 ${./os_cli.py} "$@"
     '';
   mkCmd = args: "${cli}/bin/os ${args}";
-in {
+in
+{
   inherit cli;
   # Packages to be exported to ease development of the CLI outside Nix.
-  packages = with pkgs; [grim nh slurp swappy];
+  packages = with pkgs; [
+    grim
+    nh
+    slurp
+    swappy
+  ];
   # Commands available via CLI in type-safe wrappers.
   home-switch = mkCmd "home switch";
   monitor-current = mkCmd "monitor current";

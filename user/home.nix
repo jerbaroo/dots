@@ -41,13 +41,21 @@ let
     (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
 in
 {
+  home = {
+    homeDirectory = "/home/${username}";
+    stateVersion = stateVersion;
+    username = "${username}";
+  };
   imports = [
     catppuccin.homeModules.catppuccin
     ignis.homeManagerModules.default
     spicetify.homeManagerModules.default
 
     (import ./bluetooth.nix { inherit pkgs; }).hm
-    (import ./browser.nix { inherit ghdashboardPort; inherit pkgs; })
+    (import ./browser.nix {
+      inherit ghdashboardPort;
+      inherit pkgs;
+    })
     ./direnv.nix
     (import ./emacs/emacs.nix {
       inherit codeFontName;
@@ -65,7 +73,10 @@ in
       inherit pkgs;
       inherit username;
     })
-    (import ./fonts.nix { inherit pkgs; inherit systemFontSize; })
+    (import ./fonts.nix {
+      inherit pkgs;
+      inherit systemFontSize;
+    })
     (import ./ghostty.nix {
       inherit accent;
       inherit codeFontName;
@@ -129,7 +140,12 @@ in
     ./neovim.nix
     ./notifications.nix
     ./packages.nix
-    (import ./quickshell.nix { inherit pkgs; inherit quickshell; inherit system; })
+    (import ./quickshell.nix {
+      inherit lib;
+      inherit pkgs;
+      inherit quickshell;
+      inherit system;
+    })
     ./sound.nix
     (import ./spicetify.nix {
       inherit accent;
@@ -158,11 +174,6 @@ in
       inherit wallpaperName;
     })
   ];
-  home = {
-    homeDirectory = "/home/${username}";
-    stateVersion = stateVersion;
-    username = "${username}";
-  };
   nixpkgs.config = {
     inherit allowUnfreePredicate;
   };
