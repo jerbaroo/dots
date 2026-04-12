@@ -8,7 +8,7 @@
 
 (setq
   catppuccin-flavor '@flavor@
-  display-line-numbers-type t
+  display-line-numbers-type 'relative
   doom-font (font-spec :family "@codeFontName@" :size @codeFontSize@)
   doom-theme 'catppuccin
   flycheck-checker-error-threshold 1000
