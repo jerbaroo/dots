@@ -35,8 +35,13 @@
       animationSpeed = 2;
       animations = true;
       allowUnfreePredicate =
-        let whitelist = map pkgs.lib.getName [ pkgs.spotify pkgs.symbola ];
-        in  pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
+        let
+          whitelist = map pkgs.lib.getName [
+            pkgs.spotify
+            pkgs.symbola
+          ];
+        in
+        pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
       blur = true;
       borderSize = 2;
       codeBackgroundOpacity = 0.7;
