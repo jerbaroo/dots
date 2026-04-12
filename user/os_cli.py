@@ -85,7 +85,10 @@ def switch():
     flake_path = f"{home_path}/nixos-config"
     flake_attribute = f"{USERNAME}@{HOSTNAME}"
     click.echo(f"Switching home configuration using {flake_path}")
-    subprocess.run([NH, "home", "switch", flake_path, "-c", flake_attribute, "-b", "backup"], cwd=home_path)
+    subprocess.run(
+        [NH, "home", "switch", flake_path, "-c", flake_attribute, "-b", "backup"],
+        cwd=home_path,
+    )
     # We also reload the UI to avoid issues with missing icons.
     ui_reload()
 
@@ -118,7 +121,9 @@ def switch():
     """Switch NixOS configuration."""
     config_path = f"/home/{USERNAME}/nixos-config"
     click.echo(f"Switching NixOS configuration using {config_path}")
-    subprocess.run(["sudo", "nixos-rebuild", "switch", "--flake", ".#nixos"], cwd=config_path)
+    subprocess.run(
+        ["sudo", "nixos-rebuild", "switch", "--flake", ".#nixos"], cwd=config_path
+    )
 
 
 ##### SCREENSHOT ###############################################################
@@ -130,8 +135,10 @@ def screenshot():
     slurp_proc = subprocess.run([SLURP], capture_output=True, text=True)
     geometry = slurp_proc.stdout.strip()
     click.echo(f"Capturing area: {geometry}")
-    with subprocess.Popen([GRIM, "-l", "0", "-g", geometry, "-"], stdout=subprocess.PIPE) as grim_proc:
-      subprocess.run([SWAPPY, "-f", "-"], stdin=grim_proc.stdout)
+    with subprocess.Popen(
+        [GRIM, "-l", "0", "-g", geometry, "-"], stdout=subprocess.PIPE
+    ) as grim_proc:
+        subprocess.run([SWAPPY, "-f", "-"], stdin=grim_proc.stdout)
 
 
 ##### UI #######################################################################
@@ -140,6 +147,7 @@ def screenshot():
 @cli.group()
 def ui():
     pass
+
 
 @ui.group()
 def app_launcher():
@@ -158,7 +166,9 @@ def lock_screen():
 
 @lock_screen.command()
 def toggle():
-    subprocess.run([IGNIS, "toggle-window", f"ignis-lock-screen-{monitor_current()[1]}"])
+    subprocess.run(
+        [IGNIS, "toggle-window", f"ignis-lock-screen-{monitor_current()[1]}"]
+    )
 
 
 @ui.group()
@@ -168,7 +178,9 @@ def logout_menu():
 
 @logout_menu.command()
 def toggle():
-    subprocess.run([IGNIS, "toggle-window", f"ignis-logout-menu-{monitor_current()[0]}"])
+    subprocess.run(
+        [IGNIS, "toggle-window", f"ignis-logout-menu-{monitor_current()[0]}"]
+    )
 
 
 @ui.group()
@@ -186,5 +198,5 @@ def reload():
     ui_reload()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

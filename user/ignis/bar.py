@@ -1,12 +1,15 @@
 import asyncio
 import datetime
 import json
+
 try:
-  import nix_paths
+    import nix_paths
 except ModuleNotFoundError:
+
     class MockPaths:
         AUDIO_GUI_CMD = "wiremix"
         POWER_PROFILES_CMD = "powerprofilesctl"
+
     nix_paths = MockPaths()
     print(f"Mocking nix_paths in development")
 from collections import defaultdict
@@ -36,7 +39,7 @@ icon_size = 18
 
 
 def button_widget(**kwargs):
-  return widgets.Button(cursor=Gdk.Cursor.new_from_name("pointer"), **kwargs)
+    return widgets.Button(cursor=Gdk.Cursor.new_from_name("pointer"), **kwargs)
 
 
 def exec(cmd: str) -> None:
@@ -51,35 +54,35 @@ def battery():
     return widgets.Box(
         css_classes=["battery"],
         child=[
-            widgets.Icon(
-                image=battery.bind("icon_name"),
-                pixel_size=icon_size
-            ),
+            widgets.Icon(image=battery.bind("icon_name"), pixel_size=icon_size),
             widgets.Label(
                 label=battery.bind("percent", transform=lambda p: f"{p:.0f}%")
-            )
-        ]
+            ),
+        ],
     )
 
 
 def bluetooth_button() -> widgets.Button:
     bt_device_name = Variable("")
+
     def sync_bt_device():
         devices = bluetooth.connected_devices
         if devices:
             if len(devices) > 1:
-              additional_devices_str = f" +{len(devices) - 1}"
+                additional_devices_str = f" +{len(devices) - 1}"
             else:
-              additional_devices_str = ""
+                additional_devices_str = ""
             bt_device_name.value = f"{devices[0].name}{additional_devices_str}"
         else:
             bt_device_name.value = ""
+
     bluetooth.connect("notify::connected-devices", sync_bt_device)
 
     async def initial_bt_sync():
         # Wait for UI to be rendered before running.
         await asyncio.sleep(0.01)
         sync_bt_device()
+
     asyncio.create_task(initial_bt_sync())
 
     def toggle_power():
@@ -93,20 +96,25 @@ def bluetooth_button() -> widgets.Button:
             spacing=tiny_spacing,
             child=[
                 widgets.Icon(
-                    image=bluetooth.bind("powered", transform=lambda p:
-                        "bluetooth-active-symbolic" if p else "bluetooth-disabled-symbolic"
+                    image=bluetooth.bind(
+                        "powered",
+                        transform=lambda p: (
+                            "bluetooth-active-symbolic"
+                            if p
+                            else "bluetooth-disabled-symbolic"
+                        ),
                     ),
-                    pixel_size=icon_size
+                    pixel_size=icon_size,
                 ),
                 widgets.Label(
                     label=bt_device_name.bind("value"),
                     # Hide the label if no devices are connected.
                     visible=bt_device_name.bind(
-                      "value", transform=lambda d: len(d) > 0
-                    )
-                )
-            ]
-        )
+                        "value", transform=lambda d: len(d) > 0
+                    ),
+                ),
+            ],
+        ),
     )
 
 
@@ -134,16 +142,16 @@ cpu_poll = utils.Poll(2000, cpu_mon.get_cpu)
 def cpu_button() -> widgets.Button:
     return button_widget(
         css_classes=["bar-button", "cpu"],
-        on_click=lambda _: exec("ghostty -e htop"), # TODO
+        on_click=lambda _: exec("ghostty -e htop"),  # TODO
         child=widgets.Box(
             spacing=tiny_spacing,
             child=[
                 widgets.Icon(image="cpu-symbolic", pixel_size=icon_size),
                 widgets.Label(
                     label=cpu_poll.bind("output", transform=lambda c: f"{c:.0f}%")
-                )
-            ]
-        )
+                ),
+            ],
+        ),
     )
 
 
@@ -154,32 +162,39 @@ def memory_button() -> widgets.Button:
         child=widgets.Box(
             spacing=tiny_spacing,
             child=[
-                widgets.Icon(
-                    image="memory-symbolic",
-                    pixel_size=icon_size
-                ),
+                widgets.Icon(image="memory-symbolic", pixel_size=icon_size),
                 widgets.Label(
                     label=fetch.bind(
                         "mem_used",
-                        transform=lambda used: f"{(used / fetch.mem_total) * 100:.0f}%" if fetch.mem_total > 0 else "0%"
+                        transform=lambda used: (
+                            f"{(used / fetch.mem_total) * 100:.0f}%"
+                            if fetch.mem_total > 0
+                            else "0%"
+                        ),
                     )
-                )
-            ]
-        )
+                ),
+            ],
+        ),
     )
 
 
 notification_status = Variable({"count": 0, "dnd": False})
-notification_status.connect("notify::value", lambda x, _: print("Notification status changed!: ", x.value))
+notification_status.connect(
+    "notify::value", lambda x, _: print("Notification status changed!: ", x.value)
+)
+
+
 async def _watch_notification_status():
     proc = await asyncio.create_subprocess_shell(
         "swaync-client -s",
         stdout=asyncio.subprocess.PIPE,
     )
     while True:
-      line = await proc.stdout.readline()
-      data = json.loads(line.decode('utf-8').strip())
-      notification_status.value = {"count": data["count"], "dnd": data["dnd"]}
+        line = await proc.stdout.readline()
+        data = json.loads(line.decode("utf-8").strip())
+        notification_status.value = {"count": data["count"], "dnd": data["dnd"]}
+
+
 asyncio.create_task(_watch_notification_status())
 
 
@@ -190,13 +205,18 @@ def do_not_disturb() -> widgets.Button:
         child=widgets.Box(
             child=[
                 widgets.Icon(
-                    image=notification_status.bind("value", transform=lambda s:
-                        "notifications-disabled-symbolic" if s["dnd"] else "notifications-symbolic"
+                    image=notification_status.bind(
+                        "value",
+                        transform=lambda s: (
+                            "notifications-disabled-symbolic"
+                            if s["dnd"]
+                            else "notifications-symbolic"
+                        ),
                     ),
-                    pixel_size=icon_size
+                    pixel_size=icon_size,
                 )
             ]
-        )
+        ),
     )
 
 
@@ -208,50 +228,68 @@ def notification_count() -> widgets.Button:
             spacing=tiny_spacing,
             child=[
                 widgets.Icon(
-                    image=notification_status.bind("value", transform=lambda s:
-                        "mail-unread-symbolic" if s["count"] > 0 else "mail-read-symbolic"
+                    image=notification_status.bind(
+                        "value",
+                        transform=lambda s: (
+                            "mail-unread-symbolic"
+                            if s["count"] > 0
+                            else "mail-read-symbolic"
+                        ),
                     ),
-                    pixel_size=icon_size + 4
+                    pixel_size=icon_size + 4,
                 ),
                 widgets.Label(
-                    label=notification_status.bind("value", transform=lambda s: str(s["count"])),
-                    css_classes=["notification-count-label"]
-                )
-            ]
-        )
+                    label=notification_status.bind(
+                        "value", transform=lambda s: str(s["count"])
+                    ),
+                    css_classes=["notification-count-label"],
+                ),
+            ],
+        ),
     )
 
 
 def performance_menu(monitor=0) -> widgets.Button:
 
     all_profiles = Variable(["power-saver", "balanced", "performance"])
-    all_profiles.connect("notify::value", lambda x, _: print("Power profiles available changed!: ", x.value))
+    all_profiles.connect(
+        "notify::value",
+        lambda x, _: print("Power profiles available changed!: ", x.value),
+    )
+
     async def get_profiles():
         proc = await asyncio.create_subprocess_exec(
-            nix_paths.POWER_PROFILES_CMD, "list",
+            nix_paths.POWER_PROFILES_CMD,
+            "list",
             stdout=asyncio.subprocess.PIPE,
         )
         stdout, _ = await proc.communicate()
         all_profiles.value = [
-            line.strip(' *:')
-            for line in stdout.decode('utf-8').splitlines()
-            if line.strip().endswith(':')
+            line.strip(" *:")
+            for line in stdout.decode("utf-8").splitlines()
+            if line.strip().endswith(":")
         ]
+
     asyncio.create_task(get_profiles())
 
     current_profile = Variable("balanced")
-    current_profile.connect("notify::value", lambda x, y: print("Power profile changed!: ", x.value))
+    current_profile.connect(
+        "notify::value", lambda x, y: print("Power profile changed!: ", x.value)
+    )
+
     async def poll_current_profile():
         while True:
             proc = await asyncio.create_subprocess_exec(
-                nix_paths.POWER_PROFILES_CMD, "get",
+                nix_paths.POWER_PROFILES_CMD,
+                "get",
                 stdout=asyncio.subprocess.PIPE,
             )
             stdout, _ = await proc.communicate()
-            new_profile = stdout.decode('utf-8').strip()
+            new_profile = stdout.decode("utf-8").strip()
             if new_profile != current_profile.value:
                 current_profile.value = new_profile
             await asyncio.sleep(2)
+
     asyncio.create_task(poll_current_profile())
 
     profile_icons = {
@@ -264,7 +302,7 @@ def performance_menu(monitor=0) -> widgets.Button:
         cycle = {
             "performance": "power-saver",
             "balanced": "performance",
-            "power-saver": "balanced"
+            "power-saver": "balanced",
         }
         # If a next power-profile is defined, use that..
         next_profile = cycle.get(current_profile.value)
@@ -277,13 +315,15 @@ def performance_menu(monitor=0) -> widgets.Button:
 
     def set_next_profile():
         next_profile = get_next_profile()
+
         async def apply_and_update():
             proc = await asyncio.create_subprocess_exec(
-              nix_paths.POWER_PROFILES_CMD, "set", next_profile
+                nix_paths.POWER_PROFILES_CMD, "set", next_profile
             )
             await proc.communicate()
             # . Now that the OS is updated, change the UI safely!
             current_profile.value = next_profile
+
         asyncio.create_task(apply_and_update())
 
     return button_widget(
@@ -294,8 +334,9 @@ def performance_menu(monitor=0) -> widgets.Button:
                 widgets.Icon(
                     image=current_profile.bind(
                         "value",
-                        transform=lambda p:
-                          profile_icons.get(p, "dialog-question-symbolic")
+                        transform=lambda p: profile_icons.get(
+                            p, "dialog-question-symbolic"
+                        ),
                     )
                 ),
             ]
@@ -309,7 +350,9 @@ def power_menu(monitor: int) -> widgets.Button:
         css_classes=["bar-button", "powermenu-button"],
         on_click=lambda _: exec(f"ignis toggle-window ignis-logout-menu-{monitor}"),
         child=widgets.Box(
-            child=[widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size + 4)]
+            child=[
+                widgets.Icon(image="system-shutdown-symbolic", pixel_size=icon_size + 4)
+            ]
         ),
     )
 
@@ -346,23 +389,23 @@ def tray():
 
 def volume() -> widgets.EventBox:
     box = widgets.Box(
-            child=[
-                widgets.Icon(
-                    image=audio.speaker.bind("icon_name"),
-                    pixel_size=icon_size,
-                    style=f"margin-right: {tiny_spacing}px;"
-                ),
-                widgets.Label(
-                    label=audio.speaker.bind("volume", transform=lambda p: f"{p}%")
-                ),
-            ]
-        )
+        child=[
+            widgets.Icon(
+                image=audio.speaker.bind("icon_name"),
+                pixel_size=icon_size,
+                style=f"margin-right: {tiny_spacing}px;",
+            ),
+            widgets.Label(
+                label=audio.speaker.bind("volume", transform=lambda p: f"{p}%")
+            ),
+        ]
+    )
 
     # For the "button" look and click action.
     button = button_widget(
         css_classes=["bar-button", "volume"],
         on_click=lambda _: exec(nix_paths.AUDIO_GUI_CMD),
-        child=box
+        child=box,
     )
 
     return widgets.EventBox(
@@ -383,14 +426,18 @@ def scroll_workspaces(f) -> None:
 
 
 active_workspaces = defaultdict(lambda: -1)
+
+
 def workspace_buttons(bar_monitor: int, workspaces: List[dict]) -> List[widgets.Button]:
     active_workspace = hyprlandService.active_workspace.id
     active_workspace_monitor = hyprlandService.active_workspace.monitor_id
     active_workspaces[active_workspace_monitor] = active_workspace
 
     def active_or_open_workspace_class(id_: int):
-        if id_ == active_workspace: return "active-workspace" 
-        if id_ == active_workspaces[bar_monitor]: return "open-workspace"   
+        if id_ == active_workspace:
+            return "active-workspace"
+        if id_ == active_workspaces[bar_monitor]:
+            return "open-workspace"
         return ""
 
     return [
@@ -402,8 +449,7 @@ def workspace_buttons(bar_monitor: int, workspaces: List[dict]) -> List[widgets.
             ],
             on_click=lambda x, id=w.id: hyprlandService.switch_to_workspace(id),
             child=widgets.Label(
-                css_classes=["workspace-button-label"],
-                label=str(w.id)[-1]
+                css_classes=["workspace-button-label"], label=str(w.id)[-1]
             ),
         )
         for w in workspaces
@@ -420,7 +466,7 @@ def workspaces(monitor: int) -> widgets.EventBox:
         child=hyprlandService.bind_many(
             ["active_workspace", "workspaces"],
             transform=lambda _, workspaces: workspace_buttons(monitor, workspaces),
-        )
+        ),
     )
 
 
@@ -454,10 +500,7 @@ def center() -> widgets.Label:
 
 
 def left(monitor: int) -> widgets.Box:
-    return widgets.Box(
-        css_classes=["bar-left"],
-        child=[workspaces(monitor)]
-    )
+    return widgets.Box(css_classes=["bar-left"], child=[workspaces(monitor)])
 
 
 def right(monitor: int) -> widgets.Box:
@@ -465,15 +508,15 @@ def right(monitor: int) -> widgets.Box:
         css_classes=["bar-right"],
         spacing=sml_spacing,
         child=[
-          battery(),
-          cpu_button(),
-          memory_button(),
-          performance_menu(),
-          bluetooth_button(),
-          # TODO wifi
-          volume(),
-          do_not_disturb(),
-          notification_count(),
-          power_menu(monitor),
+            battery(),
+            cpu_button(),
+            memory_button(),
+            performance_menu(),
+            bluetooth_button(),
+            # TODO wifi
+            volume(),
+            do_not_disturb(),
+            notification_count(),
+            power_menu(monitor),
         ],
     )

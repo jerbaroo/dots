@@ -27,8 +27,9 @@ def button(icon_name: str, command: str, ignis_app: IgnisApp, monitor: int):
     return widgets.Button(
         css_classes=["logout-menu-button"],
         on_click=lambda _: execute(),
-        child=widgets.Icon(icon_name=icon_name, pixel_size=64)
+        child=widgets.Icon(icon_name=icon_name, pixel_size=64),
     )
+
 
 def logout_menu(ignis_app: IgnisApp, monitor: int) -> widgets.Window:
     buttons = [
@@ -36,7 +37,7 @@ def logout_menu(ignis_app: IgnisApp, monitor: int) -> widgets.Window:
         ("system-log-out-symbolic", "hyprctl dispatch exit"),
         ("system-suspend-symbolic", "systemctl suspend"),
         ("system-reboot-symbolic", "systemctl reboot"),
-        ("system-shutdown-symbolic", "systemctl poweroff")
+        ("system-shutdown-symbolic", "systemctl poweroff"),
     ]
 
     button_box = widgets.Box(
@@ -53,8 +54,8 @@ def logout_menu(ignis_app: IgnisApp, monitor: int) -> widgets.Window:
         kb_mode="on_demand",
         layer="top",
         namespace=logout_name(monitor),
-        popup=True,      # Close on ESC.
-        visible=False,   # Initially hidden.
+        popup=True,  # Close on ESC.
+        visible=False,  # Initially hidden.
         child=widgets.Overlay(
             child=widgets.Button(
                 css_classes=["logout-menu-overlay"],

@@ -54,17 +54,21 @@ def set_hyprland_mode(lock: Lock):
             raise e
 
 
-def create_lock_screen_window(connector: str, monitor_id: int, on_close, visible=True) -> widgets.Window:
+def create_lock_screen_window(
+    connector: str, monitor_id: int, on_close, visible=True
+) -> widgets.Window:
 
-    def reset_entry(entry: widgets.Entry, css_classes=[], reset_text: bool=False):
+    def reset_entry(entry: widgets.Entry, css_classes=[], reset_text: bool = False):
         entry.css_classes = ["lock-screen-entry"] + css_classes
         if reset_text:
             entry.text = ""
 
     just_failed = False
+
     def on_accept(entry: widgets.Entry):
         reset_entry(entry, ["authenticating"])
         entry.sensitive = False
+
         def go():
             success = authenticate(entry.text)
             entry.sensitive = True
@@ -76,6 +80,7 @@ def create_lock_screen_window(connector: str, monitor_id: int, on_close, visible
                 just_failed = True
                 reset_entry(entry, ["error"], reset_text=True)
                 entry.grab_focus()
+
         # Small timeout to allow render before authentication.
         utils.timeout.Timeout(50, go)
 
@@ -103,7 +108,7 @@ def create_lock_screen_window(connector: str, monitor_id: int, on_close, visible
         spacing=24,
         valign="center",
         vertical=True,
-        child=[entry]
+        child=[entry],
     )
 
     def on_open(_window, _):
@@ -116,7 +121,7 @@ def create_lock_screen_window(connector: str, monitor_id: int, on_close, visible
     return widgets.Window(
         anchor=["top", "left", "right", "bottom"],
         css_classes=["lock-screen"],
-        exclusivity="ignore", # Completely ignore other surfaces.
+        exclusivity="ignore",  # Completely ignore other surfaces.
         kb_mode="exclusive",
         layer="overlay",
         monitor=monitor_id,
@@ -179,7 +184,7 @@ def register_lock_screen(app: IgnisApp):
                     connector,
                     monitor_id,
                     lambda: close_lock_screen(app),
-                    visible=IS_LOCKED
+                    visible=IS_LOCKED,
                 )
 
     def destroy_windows(monitors):
@@ -188,7 +193,6 @@ def register_lock_screen(app: IgnisApp):
             if connector not in connectors:
                 app.close_window(namespace(connector))
                 del windows[connector]
-
 
     # When a monitor is connected/disconnected, create/destroy a window.
     def adjust_windows(monitors, _a, _b, _c):
