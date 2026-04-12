@@ -1,17 +1,9 @@
+# TODO some routes are executing per bar created.
+
 import asyncio
 import datetime
 import json
-
-try:
-    import nix_paths
-except ModuleNotFoundError:
-
-    class MockPaths:
-        AUDIO_GUI_CMD = "wiremix"
-        POWER_PROFILES_CMD = "powerprofilesctl"
-
-    nix_paths = MockPaths()
-    print(f"Mocking nix_paths in development")
+import re
 from collections import defaultdict
 from gi.repository import Gdk
 from ignis import utils, widgets
@@ -22,7 +14,20 @@ from ignis.services.hyprland import HyprlandService
 from ignis.services.system_tray import SystemTrayItem, SystemTrayService
 from ignis.services.upower import UPowerService
 from ignis.variable import Variable
+from threading import Lock, Timer
 from typing import List
+
+try:
+    import nix_paths
+except ModuleNotFoundError:
+
+    class MockPaths:
+        AUDIO_GUI_CMD = "wiremix"
+        DESK_CMD = "idasen"
+        POWER_PROFILES_CMD = "powerprofilesctl"
+
+    nix_paths = MockPaths()
+    print(f"Mocking nix_paths in development")
 
 audio = AudioService.get_default()
 bluetooth = BluetoothService.get_default()
@@ -37,9 +42,59 @@ tiny_spacing = 4
 sml_spacing = 6
 icon_size = 18
 
+##### Globals ##################################################################
+
+globals_ = {}
+globals_lock = Lock()
+
+
+def only_once(name: str, f):
+    """Run code only once, not per bar created."""
+    with globals_lock:
+        if name not in globals_:
+            globals_[name] = True
+            f()
+
+
+desk_command_lock = asyncio.Lock()
+desk_position = Variable(None)
+desk_height = Variable(None)
+desk_heights = Variable({})
+
+
+##### Utilities ################################################################
+
 
 def button_widget(**kwargs):
     return widgets.Button(cursor=Gdk.Cursor.new_from_name("pointer"), **kwargs)
+
+
+def debounce(wait_time):
+    """Debouncer that schedules the wait on the asyncio event loop."""
+
+    def decorator(function):
+        _task = None
+
+        def debounced(*args, **kwargs):
+            nonlocal _task
+            # If a timer is already running, cancel it
+            if _task is not None and not _task.done():
+                _task.cancel()
+
+            async def call_function():
+                try:
+                    await asyncio.sleep(wait_time)
+                    # Function must be async to await it properly
+                    await function(*args, **kwargs)
+                except asyncio.CancelledError:
+                    pass  # Task cancelled because of rapid clicks
+
+            # Schedule the task on the existing main event loop
+            _task = asyncio.create_task(call_function())
+
+        return debounced
+
+    return decorator
 
 
 def exec(cmd: str) -> None:
@@ -65,7 +120,7 @@ def battery():
 def bluetooth_button() -> widgets.Button:
     bt_device_name = Variable("")
 
-    def sync_bt_device():
+    def sync_bt_device(_a=None, _b=None):
         devices = bluetooth.connected_devices
         if devices:
             if len(devices) > 1:
@@ -142,7 +197,7 @@ cpu_poll = utils.Poll(2000, cpu_mon.get_cpu)
 def cpu_button() -> widgets.Button:
     return button_widget(
         css_classes=["bar-button", "cpu"],
-        on_click=lambda _: exec("ghostty -e htop"),  # TODO
+        on_click=lambda _: exec("ghostty -e btop"),  # TODO
         child=widgets.Box(
             spacing=tiny_spacing,
             child=[
@@ -155,10 +210,121 @@ def cpu_button() -> widgets.Button:
     )
 
 
+def desk_button(monitor: int) -> widgets.Button:
+
+    async def read_desk_height(with_lock=True):
+        async def go():
+            proc = await asyncio.create_subprocess_exec(
+                nix_paths.DESK_CMD,
+                "height",
+                stdout=asyncio.subprocess.PIPE,
+            )
+            stdout, _ = await proc.communicate()
+            stdout_ = stdout.decode("utf-8").strip()
+            try:
+                cm = float(stdout_.split()[0]) * 100
+                print(f"Monitor {monitor}: read desk height: {cm}cm")
+                desk_height.value = cm
+            except:
+                await asyncio.create_subprocess_exec(
+                    "notify-send",
+                    "Communication with desk failed" + stdout_,
+                    stdout=asyncio.subprocess.PIPE,
+                )
+
+        if with_lock:
+            async with desk_command_lock:
+                await go()
+        else:
+            await go()
+
+    only_once("get_height", lambda: asyncio.create_task(read_desk_height()))
+
+    async def read_desk_heights():
+        from pathlib import Path
+
+        config_path = Path("~/.config/idasen/idasen.yaml").expanduser()
+        try:
+            with open(config_path, "r") as file:
+                content = file.read()
+            sit_match = re.search(r"sit:\s*([0-9.]+)", content)
+            stand_match = re.search(r"stand:\s*([0-9.]+)", content)
+            if sit_match and stand_match:
+                sit_height = float(sit_match.group(1))
+                stand_height = float(stand_match.group(1))
+                print(f"Monitor {monitor}: read sit height {sit_height}")
+                print(f"Monitor {monitor}: read stand height: {stand_height}")
+                desk_heights.value = {"sit": sit_height, "stand": stand_height}
+            else:
+                print(f"Monitor {monitor}: could not read desk heights from: {content}")
+        except FileNotFoundError:
+            print(f"Config file not found at {config_path}")
+
+    only_once("read_desk_heights", lambda: asyncio.create_task(read_desk_heights()))
+
+    async def set_desk_position(position: str):
+        proc = await asyncio.create_subprocess_exec(
+            nix_paths.DESK_CMD,
+            position,
+            stdout=asyncio.subprocess.PIPE,
+        )
+        stdout, _ = await proc.communicate()
+        stdout_ = stdout.decode("utf-8").strip()
+        print(f"Monitor {monitor}: desk moved to {position} position: {stdout_}")
+
+    def transform_label(h: float | None) -> str:
+        if h is None:
+            return "    cm"
+        print(f"Monitor {monitor}: displaying desk height = {h}cm")
+        return f"{h}cm"
+
+    def transform_image(position) -> str:
+        if position == "sit":
+            return "go-down-symbolic"
+        elif position == "stand":
+            return "go-up-symbolic"
+        return "list-remove-symbolic"
+
+    @debounce(0.2)
+    async def apply_position(position: str):
+        """Wait 0.2 seconds until firing."""
+        print(f"Monitor {monitor}: setting desk to {desk_position.value} position")
+        async with desk_command_lock:
+            # Since we can't get updates until command has run.
+            desk_height.value = None
+            await set_desk_position(position)
+            await read_desk_height(with_lock=False)
+
+    def set_position():
+        if desk_position.value in [None, "stand"]:
+            new_position = "sit"
+        else:
+            new_position = "stand"
+        desk_position.value = new_position
+        _ = apply_position(new_position)
+
+    return button_widget(
+        css_classes=["bar-button", "desk"],
+        on_click=lambda _: set_position(),
+        child=widgets.Box(
+            spacing=tiny_spacing,
+            child=[
+                widgets.Icon(
+                    image=desk_position.bind("value", transform=transform_image),
+                    pixel_size=icon_size,
+                ),
+                widgets.Label(
+                    label=desk_height.bind("value", transform=transform_label)
+                ),
+            ],
+        ),
+    )
+
+
 def memory_button() -> widgets.Button:
     return button_widget(
         css_classes=["bar-button", "ram"],
-        on_click=lambda _: exec("ghostty -e htop"),
+        on_click=lambda _: exec("ghostty -e btop"),  # TODO
         child=widgets.Box(
             spacing=tiny_spacing,
             child=[
@@ -510,6 +676,7 @@ def right(monitor: int) -> widgets.Box:
         child=[
             battery(),
             cpu_button(),
+            desk_button(monitor),
             memory_button(),
             performance_menu(),
             bluetooth_button(),

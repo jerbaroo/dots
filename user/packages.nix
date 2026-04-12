@@ -9,7 +9,9 @@
     ffmpeg # Video converter.
     footage # Video editor.
     gcc # GNU Compiler Collection.
+    idasen # Desk control.
     jq # JSON processor.
+    mpv # Better HDR support.
     neo # The one screensaver.
     niv # Nix dependency manager.
     nitch # System info fetch.
@@ -20,7 +22,9 @@
     nh # Nix helper.
     obs-studio # Video recorder.
     pandoc # Document converter.
+    pre-commit # House cleaning.
     python3 # For quick scripts.
+    python3Packages.black # Python formatter.
     shellcheck # Shell script analyser.
     shfmt # Shell parser and formatter.
     texliveFull # LaTeX.
