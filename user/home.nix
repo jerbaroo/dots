@@ -140,6 +140,7 @@ in
     ./neovim.nix
     ./notifications.nix
     ./packages.nix
+    ./qt.nix
     (import ./quickshell.nix {
       inherit lib;
       inherit pkgs;
