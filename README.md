@@ -22,9 +22,11 @@
 [Desktop Entry]
 Name=Hyprland
 Comment=An intelligent dynamic tiling Wayland compositor
-Exec=/home/jer/.nix-profile/bin/start-hyprland
+Exec=/home/jer/.nix-profile/bin/start-hyprland --no-nixgl
 Type=Application
 ```
+
+You may need to run `start-hyprland --no-nixgl` from a TTY once.
 
 ### Doom Emacs
 - `git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs`
@@ -33,5 +35,6 @@ Type=Application
 
 ## Develop ignis components
 ``` bash
+ignis quit
 ignis init -c ./user/ignis/config.py
 ```
