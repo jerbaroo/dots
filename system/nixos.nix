@@ -1,6 +1,6 @@
 {
   accent,
-  allowUnfree,
+  allowUnfreePredicate,
   codeFontName,
   config,
   flavor,
@@ -24,7 +24,7 @@
     };
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.${username} = import ../user/home.nix;
+    # users.${username} = import ../user/home.nix;
   };
   imports = [
     ./boot.nix
@@ -51,8 +51,8 @@
   ];
   nix.settings = {
     experimental-features = [
-      "nix-command"
       "flakes"
+      "nix-command"
     ];
     substituters = [
       "https://cosmic.cachix.org/"
@@ -63,14 +63,11 @@
       "ryantrinkle.com-1:JJiAKaRv9mWgpVAz8dwewnZe0AzzEAzPkagE9SP5NWI="
     ];
   };
-  nixpkgs.config.allowUnfree = allowUnfree;
-  programs.adb.enable = true; # TODO
+  nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
   system.stateVersion = stateVersion;
   users.users.${username} = {
     extraGroups = [
-      "adbusers"
       "docker"
-      "kvm"
       "networkmanager"
       "wheel"
     ];
