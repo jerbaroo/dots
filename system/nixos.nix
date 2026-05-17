@@ -1,30 +1,76 @@
 {
   accent,
   allowUnfreePredicate,
+  animationSpeed,
+  animations,
+  blur,
+  borderSize,
+  catppuccin,
+  codeBackgroundOpacity,
   codeFontName,
+  codeFontSize,
+  color-schemes,
   config,
   flavor,
+  gap,
+  ghdashboardPort,
   hostname,
   hyprland,
+  genericLinux,
+  ignis,
+  lib,
+  lockTimeout,
+  nixgl,
   pkgs,
+  quickshell,
+  rounding,
+  spicetify,
   stateVersion,
   system,
+  systemFontSize,
+  temperature,
   username,
+  wallpaperName,
+  wrapGL,
   ...
 }:
 {
   home-manager = {
     extraSpecialArgs = {
-      inherit accent;
-      inherit codeFontName;
-      inherit flavor;
-      inherit stateVersion;
-      inherit system;
-      inherit username;
+            inherit accent;
+            inherit allowUnfreePredicate;
+            inherit animationSpeed;
+            inherit animations;
+            inherit blur;
+            inherit borderSize;
+            inherit codeBackgroundOpacity;
+            inherit codeFontName;
+            inherit codeFontSize;
+            inherit flavor;
+            inherit gap;
+            inherit ghdashboardPort;
+            inherit hostname;
+            inherit hyprland;
+            inherit ignis;
+            inherit lockTimeout;
+            inherit nixgl;
+            inherit quickshell;
+            inherit rounding;
+            inherit spicetify;
+            inherit stateVersion;
+            inherit system;
+            inherit systemFontSize;
+            inherit temperature;
+            inherit username;
+            inherit wallpaperName;
+            inherit catppuccin;
+            inherit color-schemes;
+            genericLinux = true;
+            wrapGL = true;
     };
     useGlobalPkgs = true;
     useUserPackages = true;
-    # users.${username} = import ../user/home.nix;
+    users.${username} = import ../user/home.nix;
   };
   imports = [
     ./boot.nix
@@ -54,14 +100,8 @@
       "flakes"
       "nix-command"
     ];
-    substituters = [
-      "https://cosmic.cachix.org/"
-      "https://nixcache.reflex-frp.org"
-    ];
-    trusted-public-keys = [
-      "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
-      "ryantrinkle.com-1:JJiAKaRv9mWgpVAz8dwewnZe0AzzEAzPkagE9SP5NWI="
-    ];
+    substituters = [];
+    trusted-public-keys = [];
   };
   nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
   system.stateVersion = stateVersion;

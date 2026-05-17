@@ -38,6 +38,8 @@
         let
           whitelist = map pkgs.lib.getName [
             pkgs.spotify
+            pkgs.steam
+            pkgs.steam-unwrapped
             pkgs.symbola
           ];
         in
@@ -50,7 +52,8 @@
       flavor = "mocha";
       gap = 0;
       ghdashboardPort = 1234;
-      hostname = "nixos";
+      hostnameNixOS = "nixos";
+      hostnameUbuntu = "ubuntu";
       lockTimeout = 120;
       pkgs = import inputs.nixpkgs {
         overlays = [
@@ -63,12 +66,12 @@
       system = "x86_64-linux";
       systemFontSize = 12;
       temperature = 4000;
-      username = "jeremy-barisch-rooney";
+      username = "jer";
       wallpaperName = "jellyfish-purple.jpg";
     in
     {
       nixosConfigurations = {
-        ${hostname} = inputs.nixpkgs.lib.nixosSystem {
+        ${hostnameNixOS} = inputs.nixpkgs.lib.nixosSystem {
           inherit system;
           modules = [
             ./system/nixos.nix
@@ -77,18 +80,40 @@
           ];
           specialArgs = {
             inherit accent;
+            inherit allowUnfreePredicate;
+            inherit animationSpeed;
+            inherit animations;
+            inherit blur;
+            inherit borderSize;
+            inherit codeBackgroundOpacity;
             inherit codeFontName;
             inherit codeFontSize;
             inherit flavor;
+            inherit gap;
+            inherit ghdashboardPort;
+            inherit lockTimeout;
+            inherit rounding;
             inherit stateVersion;
             inherit system;
+            inherit systemFontSize;
+            inherit temperature;
             inherit username;
+            inherit wallpaperName;
+            catppuccin = inputs.catppuccin;
+            color-schemes = inputs.color-schemes;
+            genericLinux = true;
             hyprland = inputs.hyprland;
+            hostname = hostnameNixOS;
+            ignis = inputs.ignis;
+            nixgl = inputs.nixgl;
+            quickshell = inputs.quickshell;
+            spicetify = inputs.spicetify;
+            wrapGL = true;
           };
         };
       };
       homeConfigurations = {
-        "${username}@${hostname}" = inputs.home-manager.lib.homeManagerConfiguration {
+        "${username}@${hostnameUbuntu}" = inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
             inherit accent;
@@ -103,7 +128,6 @@
             inherit flavor;
             inherit gap;
             inherit ghdashboardPort;
-            inherit hostname;
             inherit lockTimeout;
             inherit rounding;
             inherit stateVersion;
@@ -116,6 +140,7 @@
             color-schemes = inputs.color-schemes;
             genericLinux = true;
             hyprland = inputs.hyprland;
+            hostname = hostnameUbuntu;
             ignis = inputs.ignis;
             nixgl = inputs.nixgl;
             quickshell = inputs.quickshell;
