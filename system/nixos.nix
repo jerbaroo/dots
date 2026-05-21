@@ -73,7 +73,8 @@
     users.${username} = import ../user/home.nix;
   };
   imports = [
-    ./boot.nix
+    (import ./boot.nix { inherit pkgs; })
+    (import ./bluetooth.nix { inherit lib; })
     ./docker.nix
     (import ./graphics.nix {
       inherit hyprland;
@@ -86,7 +87,7 @@
     (import ./network.nix { inherit hostname; })
     ./openrgb.nix
     ./printing.nix
-    ./sound.nix
+    (import ./sound.nix { inherit pkgs; })
     ./steam.nix
     ./store.nix
     (import ./theme.nix {
