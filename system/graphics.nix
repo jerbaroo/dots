@@ -8,11 +8,10 @@
     enable = true;
     package = hyprland.packages.${system}.hyprland;
   };
-  # services.desktopManager.cosmic.enable = true;
-  # services.displayManager.cosmic-greeter.enable = true;
-  services.xserver = {
+  hardware.graphics = {
     enable = true;
-    desktopManager.gnome.enable = true;
-    displayManager.gdm.enable = true;
+    enable32Bit = true;
   };
+  services.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
 }

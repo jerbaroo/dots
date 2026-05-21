@@ -66,7 +66,8 @@
       system = "x86_64-linux";
       systemFontSize = 12;
       temperature = 4000;
-      username = "jer";
+      usernameNixOS = "jer";
+      usernameUbuntu = "jer";
       wallpaperName = "jellyfish-purple.jpg";
     in
     {
@@ -97,7 +98,6 @@
             inherit system;
             inherit systemFontSize;
             inherit temperature;
-            inherit username;
             inherit wallpaperName;
             catppuccin = inputs.catppuccin;
             color-schemes = inputs.color-schemes;
@@ -108,12 +108,13 @@
             nixgl = inputs.nixgl;
             quickshell = inputs.quickshell;
             spicetify = inputs.spicetify;
+            username = usernameNixOS;
             wrapGL = true;
           };
         };
       };
       homeConfigurations = {
-        "${username}@${hostnameUbuntu}" = inputs.home-manager.lib.homeManagerConfiguration {
+        "${usernameUbuntu}@${hostnameUbuntu}" = inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
             inherit accent;
@@ -134,7 +135,6 @@
             inherit system;
             inherit systemFontSize;
             inherit temperature;
-            inherit username;
             inherit wallpaperName;
             catppuccin = inputs.catppuccin;
             color-schemes = inputs.color-schemes;
@@ -145,6 +145,7 @@
             nixgl = inputs.nixgl;
             quickshell = inputs.quickshell;
             spicetify = inputs.spicetify;
+            username = usernameUbuntu;
             wrapGL = true;
           };
           modules = [ ./user/home.nix ];

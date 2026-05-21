@@ -53,8 +53,10 @@ in
 
     (import ./bluetooth.nix { inherit pkgs; }).hm
     (import ./browser.nix {
+      inherit config;
       inherit ghdashboardPort;
       inherit pkgs;
+      inherit wrapGL;
     })
     ./direnv.nix
     (import ./emacs/emacs.nix {

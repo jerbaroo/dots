@@ -37,36 +37,36 @@
 {
   home-manager = {
     extraSpecialArgs = {
-            inherit accent;
-            inherit allowUnfreePredicate;
-            inherit animationSpeed;
-            inherit animations;
-            inherit blur;
-            inherit borderSize;
-            inherit codeBackgroundOpacity;
-            inherit codeFontName;
-            inherit codeFontSize;
-            inherit flavor;
-            inherit gap;
-            inherit ghdashboardPort;
-            inherit hostname;
-            inherit hyprland;
-            inherit ignis;
-            inherit lockTimeout;
-            inherit nixgl;
-            inherit quickshell;
-            inherit rounding;
-            inherit spicetify;
-            inherit stateVersion;
-            inherit system;
-            inherit systemFontSize;
-            inherit temperature;
-            inherit username;
-            inherit wallpaperName;
-            inherit catppuccin;
-            inherit color-schemes;
-            genericLinux = true;
-            wrapGL = true;
+      inherit accent;
+      inherit allowUnfreePredicate;
+      inherit animationSpeed;
+      inherit animations;
+      inherit blur;
+      inherit borderSize;
+      inherit codeBackgroundOpacity;
+      inherit codeFontName;
+      inherit codeFontSize;
+      inherit flavor;
+      inherit gap;
+      inherit ghdashboardPort;
+      inherit hostname;
+      inherit hyprland;
+      inherit ignis;
+      inherit lockTimeout;
+      inherit nixgl;
+      inherit quickshell;
+      inherit rounding;
+      inherit spicetify;
+      inherit stateVersion;
+      inherit system;
+      inherit systemFontSize;
+      inherit temperature;
+      inherit username;
+      inherit wallpaperName;
+      inherit catppuccin;
+      inherit color-schemes;
+      genericLinux = true;
+      wrapGL = true;
     };
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -100,8 +100,8 @@
       "flakes"
       "nix-command"
     ];
-    substituters = [];
-    trusted-public-keys = [];
+    substituters = [ ];
+    trusted-public-keys = [ ];
   };
   nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
   system.stateVersion = stateVersion;

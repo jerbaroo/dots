@@ -70,7 +70,7 @@ let
       esac
     done
   '';
-  setWallpaperCmd = "awww img ${wallpaperPath}";
+  setWallpaperCmd = "awww img ${wallpaperPath}"; # TODO factor out
   wallpaperPath =
     (import ./wallpaper.nix {
       inherit pkgs;
@@ -78,9 +78,11 @@ let
     }).wallpaperPath;
   zoomFactor = 0.2;
 in
+# TODO enum.
 assert lib.assertMsg (lib.elem layout layouts)
   "Invalid layout '${layout}'. Must be one of: ${lib.concatStringsSep ", " layouts}";
 {
+  catppuccin.hyprland.enable = false; # TODO
   home.packages = [
     ghdashboardwithargs
     locks.os-lock
@@ -127,248 +129,300 @@ assert lib.assertMsg (lib.elem layout layouts)
   };
   services.hyprsunset = {
     enable = false;
-    extraArgs = [
-      "-t"
-      "${toString (temperature)}"
-    ];
+    extraArgs = [ "-t" "${toString (temperature)}" ];
   };
   wayland.windowManager.hyprland = {
+    configType = "lua";
     enable = true;
-    extraConfig = ''
-      submap = locked
-      bind = , code:255, exec, true
-      submap = reset
-    '';
+    # TODO locked submap.
+    # extraConfig = ''
+    #   submap = locked
+    #   bind = , code:255, exec, true
+    #   submap = reset
+    # '';
     package = ((if wrapGL then config.lib.nixGL.wrap else (x: x)) hyprland.packages.${system}.hyprland);
-    settings = {
-      # "env" = "GTK_THEME, catppuccin-${flavor}-${accent}-standard";
-      env = [
-        "GDK_BACKEND, wayland"
-        "XDG_CURRENT_DESKTOP, hyprland"
-      ];
-      "$mod" = "SUPER";
-      # https://github.com/end-4/dots-hyprland/blob/main/dots/.config/hypr/hyprland/general.conf
-      animations = {
-        animation =
-          let
-            f = speed: toString (speed / animationSpeed);
-          in
-          [
-            "windowsIn, 1, ${f 3.0}, emphasizedDecel, popin 80%"
-            "fadeIn, 1, ${f 3.0}, emphasizedDecel"
-            "windowsOut, 1, ${f 2.0}, emphasizedDecel, popin 90%"
-            "fadeOut, 1, ${f 2.0}, emphasizedDecel"
-            "windowsMove, 1, ${f 3.0}, emphasizedDecel, slide"
-            "border, 1, ${f 10.0}, emphasizedDecel"
-            "layersIn, 1, ${f 2.7}, emphasizedDecel, popin 93%"
-            "layersOut, 1, ${f 2.4}, menu_accel, popin 94%"
-            "fadeLayersIn, 1, ${f 0.5}, menu_decel"
-            "fadeLayersOut, 1, ${f 2.7}, stall"
-            "workspaces, 1, ${f 7.0}, menu_decel, slide"
-            "specialWorkspaceIn, 1, ${f 2.8}, emphasizedDecel, slidevert"
-            "specialWorkspaceOut, 1, ${f 1.2}, emphasizedAccel, slidevert"
-          ];
-        bezier = [
-          "expressiveFastSpatial, 0.42, 1.67, 0.21, 0.90"
-          "expressiveSlowSpatial, 0.39, 1.29, 0.35, 0.98"
-          "expressiveDefaultSpatial, 0.38, 1.21, 0.22, 1.00"
-          "emphasizedDecel, 0.05, 0.7, 0.1, 1"
-          "emphasizedAccel, 0.3, 0, 0.8, 0.15"
-          "standardDecel, 0, 0, 0, 1"
-          "menu_decel, 0.1, 1, 0, 1"
-          "menu_accel, 0.52, 0.03, 0.72, 0.08"
-          "stall, 1, -0.1, 0.7, 0.85"
-        ];
-        enabled = animations;
-      };
-      bind = [
-        # Function keys.
-        ",XF86MonBrightnessDown, exec, ${pkgs.brightnessctl}/bin/brightnessctl s 10%-"
-        ",XF86MonBrightnessUp  , exec, ${pkgs.brightnessctl}/bin/brightnessctl s +10%"
-        ",XF86AudioMute        , exec, ${pkgs.wireplumber}/bin/wpctl set-mute   @DEFAULT_SINK@ toggle"
-        ",XF86AudioLowerVolume , exec, ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_SINK@ 5%-"
-        ",XF86AudioRaiseVolume , exec, ${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
-        # Move focus in direction.
-        "$mod, H, movefocus, l"
-        "$mod, J, movefocus, d"
-        "$mod, K, movefocus, u"
-        "$mod, L, movefocus, r"
-        # Swap windows in direction.
-        "$mod, COMMA, layoutmsg, swapcol l"
-        "$mod, PERIOD, layoutmsg, swapcol r"
-        "$mod SHIFT, H, movewindow, l"
-        "$mod SHIFT, J, movewindow, d"
-        "$mod SHIFT, K, movewindow, u"
-        "$mod SHIFT, L, movewindow, r"
-        # Move workspace in direction.
-        "$mod CTRL, H, movecurrentworkspacetomonitor, l"
-        "$mod CTRL, J, movecurrentworkspacetomonitor, d"
-        "$mod CTRL, K, movecurrentworkspacetomonitor, u"
-        "$mod CTRL, L, movecurrentworkspacetomonitor, r"
-        # Resize splits.
-        "$mod ALT, l, resizeactive, 40 0"
-        "$mod ALT, h, resizeactive, -40 0"
-        "$mod ALT, k, resizeactive, 0 -40"
-        "$mod ALT, j, resizeactive, 0 40"
-        # Resize column width.
-        "$mod ALT, 1, layoutmsg, colresize 1"
-        "$mod ALT, 2, layoutmsg, colresize 0.5"
-        "$mod ALT, 3, layoutmsg, colresize 0.333333"
-        "$mod ALT, 4, layoutmsg, colresize 0.25"
-        "$mod ALT, 5, layoutmsg, colresize 0.2"
-        "$mod ALT, 6, layoutmsg, colresize 0.666666"
-        "$mod ALT, 9, layoutmsg, colresize -conf"
-        "$mod ALT, 0, layoutmsg, colresize +conf"
-        # Move focus to workspace by ID.
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
-        "$mod, 5, workspace, 5"
-        "$mod, 6, workspace, 6"
-        "$mod, 7, workspace, 7"
-        "$mod, 8, workspace, 8"
-        "$mod, 9, workspace, 9"
-        "$mod, 0, workspace, 0"
-        # Move window to workspace by ID.
-        "$mod SHIFT, 1, movetoworkspace, 1"
-        "$mod SHIFT, 2, movetoworkspace, 2"
-        "$mod SHIFT, 3, movetoworkspace, 3"
-        "$mod SHIFT, 4, movetoworkspace, 4"
-        "$mod SHIFT, 5, movetoworkspace, 5"
-        "$mod SHIFT, 6, movetoworkspace, 6"
-        "$mod SHIFT, 7, movetoworkspace, 7"
-        "$mod SHIFT, 8, movetoworkspace, 8"
-        "$mod SHIFT, 9, movetoworkspace, 9"
-        "$mod SHIFT, 0, movetoworkspace, 0"
-        # Primary keys.
-        "$mod      , BACKSPACE, exec, ${os-cli.ui-logout-menu-toggle}"
-        "$mod      , DELETE, exec, systemctl suspend"
-        "$mod      , RETURN, exec, ghostty"
-        "$mod SHIFT, RETURN, exec, konsole"
-        "$mod      , SLASH, exec, ${os-cli.ui-app-launcher-toggle}"
-        "$mod      , SPACE, ${
-          {
-            dwindle = "togglesplit";
-            scrolling = "layoutmsg, fit visible";
-          }
-          .${layout} or (throw "Unsupported layout: ${layout}")
-        }"
-        "$mod SHIFT, SPACE, togglefloating"
-        "$mod      , TAB, cyclenext"
-        "$mod SHIFT, TAB, workspace, previous"
-        "$mod      , B, exec, ${floatCenter} ${bluetooth.guiCmd}"
-        "$mod SHIFT, B, exec, ${os-cli.ui-menu-bar-toggle}"
-        "$mod      , D, exec, ${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"
-        "$mod SHIFT, D, exec, ${pkgs.wdisplays}/bin/wdisplays"
-        "$mod      , E, exec, ${pkgs.emacs-pgtk}/bin/emacs"
-        "$mod      , F, fullscreen"
-        "$mod SHIFT, F, fullscreenstate, 1"
-        "$mod      , M, exec, spotify"
-        "$mod      , N, exec, ${pkgs.swaynotificationcenter}/bin/swaync-client -t"
-        "$mod      , R, exec, ${pkgs.hyprpicker}/bin/hyprpicker --autocopy"
-        "$mod SHIFT, R, exec, ${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
-        "$mod      , P, focuscurrentorlast"
-        "$mod SHIFT, P, layoutmsg, promote"
-        "$mod      , Q, killactive"
-        "$mod      , S, exec, ${os-cli.screenshot}"
-        "$mod SHIFT, S, exec, ghostty -e ${os-cli.home-switch}"
-        "$mod      , T, exec, ${floatCenter} ghostty -e ${pkgs.btop}/bin/btop"
-        "$mod      , V, exec, ${floatCenter} ${audio.guiCmd}"
-        "$mod      , W, exec, chromium"
-        "$mod SHIFT, W, exec, ${pkgs.librewolf}/bin/librewolf"
-        # Zoom.
-        "$mod ALT, U, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor |  ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"
-        "$mod ALT, I, exec, hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"
-        "$mod ALT, O, exec, hyprctl keyword cursor:zoom_factor 1"
-      ];
-      bindl = [ ", switch:on:Lid Switch, exec, systemctl suspend" ];
-      # cursor.no_hardware_cursors = true;
-      debug.disable_logs = false;
-      decoration = {
-        active_opacity = 1;
-        blur = {
-          enabled = blur;
-          noise = 0.02;
-          passes = 4;
-          size = 5;
+    settings =
+      let
+        # Parameters to Lua function "hl.bind".
+        bind = keys: action:
+          { _args = [ keys (lib.generators.mkLuaInline action) ]; };
+        execCmd = cmd: "hl.dsp.exec_cmd(\"${cmd}\")";
+        hyprctlDispatch = disp: arg: execCmd("HI");
+      in
+      {
+        config = {
+          animations = {
+            enabled = animations;
+            # TODO lua.
+            animation =
+              let f = speed: toString (speed / animationSpeed);
+              in [
+                "windowsIn, 1, ${f 3.0}, emphasizedDecel, popin 80%"
+                "fadeIn, 1, ${f 3.0}, emphasizedDecel"
+                "windowsOut, 1, ${f 2.0}, emphasizedDecel, popin 90%"
+                "fadeOut, 1, ${f 2.0}, emphasizedDecel"
+                "windowsMove, 1, ${f 3.0}, emphasizedDecel, slide"
+                "border, 1, ${f 10.0}, emphasizedDecel"
+                "layersIn, 1, ${f 2.7}, emphasizedDecel, popin 93%"
+                "layersOut, 1, ${f 2.4}, menu_accel, popin 94%"
+                "fadeLayersIn, 1, ${f 0.5}, menu_decel"
+                "fadeLayersOut, 1, ${f 2.7}, stall"
+                "workspaces, 1, ${f 7.0}, menu_decel, slide"
+                "specialWorkspaceIn, 1, ${f 2.8}, emphasizedDecel, slidevert"
+                "specialWorkspaceOut, 1, ${f 1.2}, emphasizedAccel, slidevert"
+              ];
+            # TODO lua.
+            bezier = [
+              "expressiveFastSpatial, 0.42, 1.67, 0.21, 0.90"
+              "expressiveSlowSpatial, 0.39, 1.29, 0.35, 0.98"
+              "expressiveDefaultSpatial, 0.38, 1.21, 0.22, 1.00"
+              "emphasizedDecel, 0.05, 0.7, 0.1, 1"
+              "emphasizedAccel, 0.3, 0, 0.8, 0.15"
+              "standardDecel, 0, 0, 0, 1"
+              "menu_decel, 0.1, 1, 0, 1"
+              "menu_accel, 0.52, 0.03, 0.72, 0.08"
+              "stall, 1, -0.1, 0.7, 0.85"
+            ];
+          };
+          decoration = {
+            active_opacity = 1;
+            inactive_opacity = 1;
+            rounding = rounding;
+            blur = {
+              enabled = blur;
+              noise = 0.02;
+              passes = 4;
+              size = 5;
+            };
+          };
+          dwindle.preserve_split = true;
+          general = {
+            border_size = borderSize;
+            "col.active_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.${accent}.hex})";
+            "col.inactive_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.base.hex})";
+            gaps_in = gap;
+            gaps_out = gap * 2;
+            layout = layout;
+            resize_on_border = true;
+          };
+          input.kb_options = "caps:swapescape";
+          misc = {
+            disable_hyprland_logo = true;
+            vrr = 1;
+          };
+          render.cm_auto_hdr = 1;
+          scrolling = {
+            column_width = 0.333333;
+            direction = "right";
+            focus_fit_method = 1;
+            fullscreen_on_one_column = false;
+          };
+          xwayland.force_zero_scaling = true;
+          debug.disable_logs = false;
         };
-        inactive_opacity = 1;
-        rounding = rounding;
-      };
-      dwindle.preserve_split = true;
-      exec-once = [
-        # "openrgb -m static -c ff1e00"
-        kanataRun
-        setWallpaperCmd
-        "ignis init >> /tmp/ignis.log 2>&1"
-        "${monitorListener}"
-        "${ghdashboardwithargs}/bin/ghdashboardwithargs"
-        "1password --silent"
-      ];
-      general = {
-        border_size = borderSize;
-        "col.active_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.${accent}.hex})";
-        "col.inactive_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.base.hex})";
-        gaps_in = gap;
-        gaps_out = gap * 2;
-        layout = layout;
-        resize_on_border = true;
-      };
-      input.kb_options = "caps:swapescape";
-      layerrule = [
-        "blur on, match:namespace ^(ignis-bar-.*)$" # Blur the menu bar.
-      ];
-      monitor = [
-        "HDMI-A-1, 5120x2160@30, auto-up, 1.6${bitDepthStr}${hdrStr}"
-        # "HDMI-A-1, 3840x2160@60, auto-up, 1.5"
-        ", preferred, auto-up, 1.6"
-      ];
-      misc = {
-        disable_hyprland_logo = true;
-        vrr = 1;
-      };
-      render = {
-        cm_auto_hdr = 1;
-        cm_fs_passthrough = 2;
-      };
-      scrolling = {
-        column_width = 0.333333;
-        direction = "right";
-        focus_fit_method = 1; # Center active column.
-        fullscreen_on_one_column = false;
-      };
-      windowrule =
-        let
-          floatCenterRule = title: [
-            "float true, match:title ^(${title})$"
-            "center true, match:title ^(${title})$"
-            "${floatSize (defaultFloatSize)}, match:title ^(${title})$"
-          ];
-        in
-        map floatCenterRule [
-          audio.guiTitle
-          bluetooth.guiTitle
-          "wdisplays"
-        ]
-        ++ [
-          # No border when only a single tiled window.
-          # "border_size 0, match:workspace w[t1]"
-          # No border in full screen state.
-          "border_size 0, match:float 0, match:workspace f[1]"
+        # Environment variables
+        # env = [
+        #   "GDK_BACKEND, wayland"
+        #   "XDG_CURRENT_DESKTOP, hyprland"
+        # ];
+        # Standard monitors array
+        # monitor = [
+        #   "HDMI-A-1, 5120x2160@30, auto-up, 1.6${bitDepthStr}${hdrStr}"
+        #   ", preferred, auto-up, 1.6"
+        # ];
+        # Hyprland hooks.
+        on =
+          let execOnStart = cmd:
+                { _args = [ "hyprland.start" (lib.generators.mkLuaInline ("function()" + execCmd cmd + "end")) ]; };
+          in map execOnStart
+            [
+              kanataRun
+              setWallpaperCmd
+              "ignis init >> /tmp/ignis.log 2>&1"
+              "${monitorListener}"
+              "${ghdashboardwithargs}/bin/ghdashboardwithargs"
+              "1password --silent"
+            ];
+        bind =
+          let hl = action: arg: "hl.${action}(${arg})";
+              dispatch = action: arg: hl "dsp.${action}" arg;
+              dispatchFocusMoveInDirection = direction: dispatch "focus" "{ direction = \"${direction}\" }";
+              dispatchFocusMoveToWorkspace = workspace: "hl.dsp.focus({ workspace = \"${workspace}\" })";
+              dispatchLayoutSwapCol = direction : "hl.dsp.layout(\"swapcol ${direction}\")";
+              dispatchWindowMoveInDirection = direction: "hl.dsp.window.move({ direction = \"${direction}\" })";
+              dispatchWindowMoveToWorkspace = workspace: "hl.dsp.window.move({ workspace = \"${workspace}\" })";
+              dispatchWorkspaceMoveInDirection = direction: "hl.dsp.workspace.move({ monitor = \"${direction}\" })";
+              mod = "SUPER";
+          in [
+          # Function keys
+          (bind "XF86MonBrightnessDown" (execCmd "${pkgs.brightnessctl}/bin/brightnessctl s 10%-"))
+          (bind "XF86MonBrightnessUp"   (execCmd "${pkgs.brightnessctl}/bin/brightnessctl s +10%"))
+          (bind "XF86AudioMute"         (execCmd "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_SINK@ toggle"))
+          (bind "XF86AudioLowerVolume"  (execCmd "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_SINK@ 5%-"))
+          (bind "XF86AudioRaiseVolume"  (execCmd "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"))
+
+          # Alphabet keys.
+          (bind "${mod} + B" (execCmd "${floatCenter} ${bluetooth.guiCmd}"))
+          (bind "${mod} + SHIFT + B" (execCmd os-cli.ui-menu-bar-toggle))
+          (bind "${mod} + D" (execCmd "${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"))
+          (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
+          (bind "${mod} + E" (execCmd "${pkgs.emacs-pgtk}/bin/emacs"))
+          (bind "${mod} + F" (dispatch "window.fullscreen" "{ mode = \"fullscreen\" }"))
+          # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
+          (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))
+          (bind "${mod} + M" (execCmd "spotify"))
+          (bind "${mod} + N" (execCmd "${pkgs.swaynotificationcenter}/bin/swaync-client -t"))
+          (bind "${mod} + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy"))
+          (bind "${mod} + SHIFT + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"))
+          (bind "${mod} + P" (dispatch "layout" "promote"))
+          (bind "${mod} + Q" (dispatch "window.kill" ""))
+          (bind "${mod} + S" (execCmd os-cli.screenshot))
+          (bind "${mod} + SHIFT + S" (execCmd "ghostty -e ${os-cli.home-switch}"))
+          (bind "${mod} + T" (execCmd "${floatCenter} ghostty -e ${pkgs.btop}/bin/btop"))
+          (bind "${mod} + V" (execCmd "${floatCenter} ${audio.guiCmd}"))
+          (bind "${mod} + W" (execCmd "chromium")) # TODO pass this in.
+          (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))
+
+          # Other keys
+          (bind "${mod} + BACKSPACE" (execCmd os-cli.ui-logout-menu-toggle))
+          (bind "${mod} + DELETE" (execCmd "systemctl suspend"))
+          (bind "${mod} + RETURN" (execCmd "ghostty"))
+          (bind "${mod} + SHIFT + RETURN" (execCmd "konsole")) # Backup terminal.
+          (bind "${mod} + SLASH" (execCmd os-cli.ui-app-launcher-toggle))
+          (bind "${mod} + SPACE"
+            ( execCmd
+              ( if layout == "dwindle" then
+                  "hyprctl dispatch togglesplit"
+                else if layout == "scrolling" then
+                  "hyprctl dispatch layoutmsg fit visible"
+                else throw "Unsupported layout: ${layout}" # TODO Enum.
+              )
+            )
+          )
+          (bind "${mod} + SHIFT + SPACE" (dispatch "window.float" ""))
+          (bind "${mod} + TAB" (dispatch "window.cycle_next" ""))
+          (bind "${mod} + SHIFT + TAB" (dispatch "group.prev" ""))
+
+          ##### Focus #####
+
+          # Move focus in direction.
+          (bind "${mod} + H" (dispatchFocusMoveInDirection "l"))
+          (bind "${mod} + J" (dispatchFocusMoveInDirection "d"))
+          (bind "${mod} + K" (dispatchFocusMoveInDirection "u"))
+          (bind "${mod} + L" (dispatchFocusMoveInDirection "r"))
+
+          # Move focus to workspace.
+          (bind "${mod} + 0" (dispatchFocusMoveToWorkspace "0"))
+          (bind "${mod} + 1" (dispatchFocusMoveToWorkspace "1"))
+          (bind "${mod} + 2" (dispatchFocusMoveToWorkspace "2"))
+          (bind "${mod} + 3" (dispatchFocusMoveToWorkspace "3"))
+          (bind "${mod} + 4" (dispatchFocusMoveToWorkspace "4"))
+          (bind "${mod} + 5" (dispatchFocusMoveToWorkspace "5"))
+          (bind "${mod} + 6" (dispatchFocusMoveToWorkspace "6"))
+          (bind "${mod} + 7" (dispatchFocusMoveToWorkspace "7"))
+          (bind "${mod} + 8" (dispatchFocusMoveToWorkspace "8"))
+          (bind "${mod} + 9" (dispatchFocusMoveToWorkspace "9"))
+
+          ##### Windows #####
+
+          # Move window in direction.
+          (bind "${mod} + SHIFT + H" (dispatchWindowMoveInDirection "l"))
+          (bind "${mod} + SHIFT + J" (dispatchWindowMoveInDirection "d"))
+          (bind "${mod} + SHIFT + K" (dispatchWindowMoveInDirection "u"))
+          (bind "${mod} + SHIFT + L" (dispatchWindowMoveInDirection "r"))
+
+          # Move window to workspace.
+          (bind "${mod} + SHIFT + 0" (dispatchWindowMoveToWorkspace "0"))
+          (bind "${mod} + SHIFT + 1" (dispatchWindowMoveToWorkspace "1"))
+          (bind "${mod} + SHIFT + 2" (dispatchWindowMoveToWorkspace "2"))
+          (bind "${mod} + SHIFT + 3" (dispatchWindowMoveToWorkspace "3"))
+          (bind "${mod} + SHIFT + 4" (dispatchWindowMoveToWorkspace "4"))
+          (bind "${mod} + SHIFT + 5" (dispatchWindowMoveToWorkspace "5"))
+          (bind "${mod} + SHIFT + 6" (dispatchWindowMoveToWorkspace "6"))
+          (bind "${mod} + SHIFT + 7" (dispatchWindowMoveToWorkspace "7"))
+          (bind "${mod} + SHIFT + 8" (dispatchWindowMoveToWorkspace "8"))
+          (bind "${mod} + SHIFT + 9" (dispatchWindowMoveToWorkspace "9"))
+
+          # Move column horizontally in scrolling mode.
+          (bind "${mod} + COMMA"  (dispatchLayoutSwapCol "l"))
+          (bind "${mod} + PERIOD" (dispatchLayoutSwapCol "r"))
+
+          ##### Workspaces #####
+
+          # Move workspace in direction.
+          (bind "${mod} + CTRL + H" (dispatchWorkspaceMoveInDirection "l"))
+          (bind "${mod} + CTRL + J" (dispatchWorkspaceMoveInDirection "d"))
+          (bind "${mod} + CTRL + K" (dispatchWorkspaceMoveInDirection "u"))
+          (bind "${mod} + CTRL + L" (dispatchWorkspaceMoveInDirection "r"))
+
+          ##### Resizing and zooming #####
+
+          # Resize splits.
+          # (bind "${mod} + ALT + L" (dispatch "window.resize" "40 0"))
+          # (bind "${mod} + ALT + H" (dispatch "window.resize" "-40 0"))
+          # (bind "${mod} + ALT + K" (dispatch "window.resize" "0 -40"))
+          # (bind "${mod} + ALT + J" (dispatch "window.resize" "0 40"))
+
+          # Resize column width
+          (bind "${mod} + ALT + 1" (hyprctlDispatch "layoutmsg" "colresize 1"))
+          (bind "${mod} + ALT + 2" (hyprctlDispatch "layoutmsg" "colresize 0.5"))
+          (bind "${mod} + ALT + 3" (hyprctlDispatch "layoutmsg" "colresize 0.333333"))
+          (bind "${mod} + ALT + 4" (hyprctlDispatch "layoutmsg" "colresize 0.25"))
+          (bind "${mod} + ALT + 5" (hyprctlDispatch "layoutmsg" "colresize 0.2"))
+          (bind "${mod} + ALT + 6" (hyprctlDispatch "layoutmsg" "colresize 0.666666"))
+          (bind "${mod} + ALT + 9" (hyprctlDispatch "layoutmsg" "colresize -conf"))
+          (bind "${mod} + ALT + 0" (hyprctlDispatch "layoutmsg" "colresize +conf"))
+
+          # Zoom
+          (bind "${mod} + SHIFT + U" (execCmd "hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"))
+          (bind "${mod} + SHIFT + I" (execCmd "hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"))
+          (bind "${mod} + SHIFT + O" (execCmd "hyprctl keyword cursor:zoom_factor 1"))
+
+          # Suspend system on laptop-lid close
+          {
+            _args = [
+              "switch:on:Lid Switch"
+              (lib.generators.mkLuaInline (execCmd "systemctl suspend"))
+              { locked = true; } # Suspend system even if locked.
+            ];
+          }
         ];
-      workspace = [ "1, monitor:HDMI-A-1, default:true" ];
-      xwayland = {
-        force_zero_scaling = true;
+        # Blur the menu bar.
+        layer_rule = [
+          {
+            match.namespace = "^(ignis-bar-.*)$"; # TODO factor out name.
+            blur = true;
+          }
+        ];
+        # Workspace rule maps
+        # workspace_rule = [
+        #   { match.workspace = "1"; monitor = "HDMI-A-1"; default = true; }
+        # ];
+        window_rule =
+          let
+            floatRule = title:
+                {
+                  center = true;
+                  float = true;
+                  match.title = "^(${title})$";
+                  size = "(monitor_w*${toString defaultFloatSize}) (monitor_h*${toString defaultFloatSize})";
+                };
+            noBorderIfSoleTile = {
+                match = {
+                  float = false;
+                  workspace = "f[1]";
+                };
+                border_size = 0;
+              };
+          in
+            map floatRule [audio.guiTitle bluetooth.guiTitle "wdisplays"]
+            ++ [ noBorderIfSoleTile ];
       };
-    };
     systemd = {
       enable = true;
       enableXdgAutostart = false;
     };
-    xwayland = {
-      enable = true;
-    };
+    xwayland.enable = true;
   };
   xdg.portal.enable = true;
 }
