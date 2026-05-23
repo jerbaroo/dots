@@ -1,4 +1,3 @@
 ``` bash
-cd user
-quickshell -p quickshell
+quickshell -p quickshell/nmtui.qml
 ```

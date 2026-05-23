@@ -3,6 +3,7 @@
   allowUnfreePredicate,
   animationSpeed,
   animations,
+  bitDepth,
   blur,
   borderSize,
   catppuccin,
@@ -11,13 +12,16 @@
   codeFontSize,
   color-schemes,
   config,
+  defaultFloatSize,
   flavor,
   gap,
   ghdashboardPort,
+  hdr,
   hostname,
   hyprland,
   genericLinux,
   ignis,
+  layout,
   lib,
   lockTimeout,
   nixgl,
@@ -41,23 +45,28 @@ let
     (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
 in
 {
+  # Custom Home Manager options.
+  desktop.hyprland.layout = layout;
+
   home = {
     homeDirectory = "/home/${username}";
     stateVersion = stateVersion;
     username = "${username}";
   };
   imports = [
+    # 3rd-party Home Manager modules.
     catppuccin.homeModules.catppuccin
     ignis.homeManagerModules.default
     spicetify.homeManagerModules.default
 
+    # Personal Home Manager modules.
     (import ./bluetooth.nix { inherit pkgs; }).hm
     (import ./browser.nix {
       inherit config;
       inherit ghdashboardPort;
       inherit pkgs;
       inherit wrapGL;
-    })
+    }).hm
     ./direnv.nix
     (import ./emacs/emacs.nix {
       inherit codeFontName;
@@ -91,6 +100,11 @@ in
       inherit system;
       inherit wrapGL;
     })
+    (import ./ghdashboard.nix {
+      inherit ghdashboardPort;
+      inherit pkgs;
+      inherit username;
+    }).hm
     ./git.nix
     (import ./helix.nix {
       inherit accent;
@@ -98,16 +112,23 @@ in
       inherit lib;
       inherit pkgs;
     })
+    (import ./hypridle.nix {
+      inherit lockTimeout;
+      inherit pkgs;
+    })
     (import ./hyprland.nix {
       inherit accent;
       inherit animationSpeed;
       inherit animations;
+      inherit bitDepth;
       inherit blur;
       inherit borderSize;
       inherit config;
+      inherit defaultFloatSize;
       inherit flavor;
       inherit gap;
       inherit ghdashboardPort;
+      inherit hdr;
       inherit hostname;
       inherit hyprland;
       inherit ignis;
@@ -123,6 +144,7 @@ in
       inherit wallpaperName;
       inherit wrapGL;
     })
+    (import ./hyprsunset.nix { inherit temperature; })
     (import ./ignis.nix {
       inherit accent;
       inherit ignis;
@@ -139,6 +161,7 @@ in
       inherit pkgs;
       inherit wrapGL;
     })
+    (import ./openrgb.nix { inherit pkgs; }).hm
     ./neovim.nix
     ./notifications.nix
     ./packages.nix

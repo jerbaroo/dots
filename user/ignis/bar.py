@@ -105,16 +105,17 @@ def exec(cmd: str) -> None:
 
 
 def battery():
-    battery = uPowerService.batteries[0]
-    return widgets.Box(
-        css_classes=["battery"],
-        child=[
-            widgets.Icon(image=battery.bind("icon_name"), pixel_size=icon_size),
-            widgets.Label(
-                label=battery.bind("percent", transform=lambda p: f"{p:.0f}%")
-            ),
-        ],
-    )
+    if len(uPowerService.batteries) >= 1:
+        battery = uPowerService.batteries[0]
+        return widgets.Box(
+            css_classes=["battery"],
+            child=[
+                widgets.Icon(image=battery.bind("icon_name"), pixel_size=icon_size),
+                widgets.Label(
+                    label=battery.bind("percent", transform=lambda p: f"{p:.0f}%")
+                ),
+            ],
+            )
 
 
 def bluetooth_button() -> widgets.Button:

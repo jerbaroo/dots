@@ -1,8 +1,3 @@
-(defcfg
-  process-unmapped-keys yes
-  concurrent-tap-hold yes ;; Tap then hold to repeat key.
-)
-
 ;; Physical keys to intercept.
 (defsrc a s d f j k l ;)
 

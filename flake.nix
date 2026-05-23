@@ -32,7 +32,7 @@
     inputs:
     let
       accent = "pink";
-      animationSpeed = 2;
+      animationSpeed = 1;
       animations = true;
       allowUnfreePredicate =
         let
@@ -44,16 +44,20 @@
           ];
         in
         pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
+      bitDepth = 10;
       blur = true;
       borderSize = 2;
       codeBackgroundOpacity = 0.7;
       codeFontName = "Iosevka Nerd Font Mono";
       codeFontSize = 12;
+      defaultFloatSize = 0.8;
       flavor = "mocha";
       gap = 0;
       ghdashboardPort = 1234;
+      hdr = true;
       hostnameNixOS = "nixos";
       hostnameUbuntu = "ubuntu";
+      layout = "scrolling";
       lockTimeout = 120;
       pkgs = import inputs.nixpkgs {
         overlays = [
@@ -65,7 +69,7 @@
       stateVersion = "26.05";
       system = "x86_64-linux";
       systemFontSize = 12;
-      temperature = 4000;
+      temperature = 5500;
       usernameNixOS = "jer";
       usernameUbuntu = "jer";
       wallpaperName = "jellyfish-purple.jpg";
@@ -80,25 +84,31 @@
             inputs.home-manager.nixosModules.home-manager
           ];
           specialArgs = {
-            inherit accent;
-            inherit allowUnfreePredicate;
-            inherit animationSpeed;
-            inherit animations;
-            inherit blur;
-            inherit borderSize;
-            inherit codeBackgroundOpacity;
-            inherit codeFontName;
-            inherit codeFontSize;
-            inherit flavor;
-            inherit gap;
-            inherit ghdashboardPort;
-            inherit lockTimeout;
-            inherit rounding;
-            inherit stateVersion;
-            inherit system;
-            inherit systemFontSize;
-            inherit temperature;
-            inherit wallpaperName;
+            inherit
+              accent
+              allowUnfreePredicate
+              animationSpeed
+              animations
+              bitDepth
+              blur
+              borderSize
+              codeBackgroundOpacity
+              codeFontName
+              codeFontSize
+              defaultFloatSize
+              flavor
+              gap
+              ghdashboardPort
+              hdr
+              layout
+              lockTimeout
+              rounding
+              stateVersion
+              system
+              systemFontSize
+              temperature
+              wallpaperName
+              ;
             catppuccin = inputs.catppuccin;
             color-schemes = inputs.color-schemes;
             genericLinux = true;
@@ -109,7 +119,7 @@
             quickshell = inputs.quickshell;
             spicetify = inputs.spicetify;
             username = usernameNixOS;
-            wrapGL = true;
+            wrapGL = false;
           };
         };
       };
@@ -117,25 +127,31 @@
         "${usernameUbuntu}@${hostnameUbuntu}" = inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
-            inherit accent;
-            inherit allowUnfreePredicate;
-            inherit animationSpeed;
-            inherit animations;
-            inherit blur;
-            inherit borderSize;
-            inherit codeBackgroundOpacity;
-            inherit codeFontName;
-            inherit codeFontSize;
-            inherit flavor;
-            inherit gap;
-            inherit ghdashboardPort;
-            inherit lockTimeout;
-            inherit rounding;
-            inherit stateVersion;
-            inherit system;
-            inherit systemFontSize;
-            inherit temperature;
-            inherit wallpaperName;
+            inherit
+              accent
+              allowUnfreePredicate
+              animationSpeed
+              animations
+              bitDepth
+              blur
+              borderSize
+              codeBackgroundOpacity
+              codeFontName
+              codeFontSize
+              defaultFloatSize
+              flavor
+              hdr
+              gap
+              ghdashboardPort
+              layout
+              lockTimeout
+              rounding
+              stateVersion
+              system
+              systemFontSize
+              temperature
+              wallpaperName
+              ;
             catppuccin = inputs.catppuccin;
             color-schemes = inputs.color-schemes;
             genericLinux = true;

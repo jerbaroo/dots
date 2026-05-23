@@ -1,4 +1,5 @@
-{lib, ...}: {
+{ lib, ... }:
+{
   hardware.bluetooth = {
     enable = true;
     # settings = {

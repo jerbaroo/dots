@@ -12,6 +12,7 @@ GRIM = os.environ.get("OS_GRIM_PATH", "grim")
 HOSTNAME = os.environ["OS_HOSTNAME"]
 HYPRCTL = os.environ.get("OS_HYPRCTL_PATH", "hyprctl")
 IGNIS = os.environ.get("OS_IGNIS_PATH", "ignis")
+KANATA_CMD = os.environ.get("OS_KANATA_CMD")
 NH = os.environ.get("OS_NH_PATH", "nh")
 SLURP = os.environ.get("OS_SLURP_PATH", "slurp")
 SWAPPY = os.environ.get("OS_SWAPPY_PATH", "swappy")
@@ -54,6 +55,11 @@ def audio():
 @app.command()
 def bluetooth():
     subprocess.run(BLUETOOTH_GUI_CMD, shell=True)
+
+
+@app.command()
+def kanata():
+    subprocess.run(KANATA_CMD, shell=True)
 
 
 ##### INFO #####################################################################

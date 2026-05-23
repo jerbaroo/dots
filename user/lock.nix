@@ -6,7 +6,10 @@
 }:
 let
   c = colour: pkgs.lib.strings.removePrefix "#" palette.${colour}.hex;
-  swaylock = pkgs.writeShellScriptBin "swaylock_" ''
+  # The lock screen program we currently use.
+  os-lock = pkgs.writeShellScriptBin "os-lock" "${swaylock_}/bin/swaylock_";
+  # We wrap the distro-specific swaylock package.
+  swaylock_ = pkgs.writeShellScriptBin "swaylock_" ''
     swaylock \
       --font 'Atkinson Hyperlegible' \
       --font-size 196 \
@@ -52,10 +55,11 @@ let
   '';
 in
 {
-  ignis-lock = pkgs.writeShellScriptBin "ignis-lock" ''
-    cd $HOME/${ignisPath}
-    ignis run-file lock_screen_open.py
-  '';
-  os-lock = pkgs.writeShellScriptBin "os-lock" "${swaylock}/bin/swaylock_";
-  inherit swaylock;
+  hm = {
+    home.packages = [
+      os-lock
+      swaylock_
+    ];
+  };
+  inherit os-lock swaylock_;
 }

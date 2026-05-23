@@ -3,6 +3,7 @@
   allowUnfreePredicate,
   animationSpeed,
   animations,
+  bitDepth,
   blur,
   borderSize,
   catppuccin,
@@ -11,13 +12,16 @@
   codeFontSize,
   color-schemes,
   config,
+  defaultFloatSize,
   flavor,
   gap,
   ghdashboardPort,
+  hdr,
   hostname,
   hyprland,
   genericLinux,
   ignis,
+  layout,
   lib,
   lockTimeout,
   nixgl,
@@ -41,17 +45,21 @@
       inherit allowUnfreePredicate;
       inherit animationSpeed;
       inherit animations;
+      inherit bitDepth;
       inherit blur;
       inherit borderSize;
       inherit codeBackgroundOpacity;
       inherit codeFontName;
       inherit codeFontSize;
+      inherit defaultFloatSize;
       inherit flavor;
       inherit gap;
       inherit ghdashboardPort;
+      inherit hdr;
       inherit hostname;
       inherit hyprland;
       inherit ignis;
+      inherit layout;
       inherit lockTimeout;
       inherit nixgl;
       inherit quickshell;
@@ -82,10 +90,11 @@
       inherit system;
     })
     ./hardware-configuration.nix
+    (import ../user/kanata/kanata.nix { inherit pkgs; }).nixos
     ./keyboard.nix
     ./locale.nix
     (import ./network.nix { inherit hostname; })
-    ./openrgb.nix
+    (import ../user/openrgb.nix { inherit pkgs; }).nixos
     ./printing.nix
     (import ./sound.nix { inherit pkgs; })
     ./steam.nix
