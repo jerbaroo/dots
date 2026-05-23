@@ -1,19 +1,14 @@
 {
   config,
   ghdashboardPort,
+  lib,
   pkgs,
-  wrapGL,
   ...
 }:
-let
-  pkg = pkgs.chromium;
-  # pkg = (if wrapGL then config.lib.nixGL.wrap else (x: x)) pkgs.chromium;
-in
 {
-  cmd = "${pkg}/bin/chromium --disable-gpu"; # FIXME
-  hm = {
+  config = {
+    desktop.browser.cmd = "${pkgs.chromium}/bin/chromium --disable-gpu"; # FIXME
     programs.chromium = {
-      # commandLineArgs = ["--enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo"];
       enable = true;
       extensions = [
         { id = "ebboehhiijjcihmopcggopfgchnfepkn"; } # CHROLED Theme
@@ -22,6 +17,12 @@ in
         { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
         { id = "ddkjiahejlhfcafbddmgiahcphecmpfh"; } # uBlock Origin Lite
       ];
+      homepageLocation = "http://localhost:${ghdashboardPort}";
     };
+  };
+  options.desktop.browser.cmd = lib.mkOption {
+    description = "Command to open a browser";
+    readOnly = true;
+    type = lib.types.str;
   };
 }
