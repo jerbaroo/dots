@@ -38,3 +38,10 @@ You may need to run `start-hyprland --no-nixgl` from a TTY once.
 ignis quit
 ignis init -c ./user/ignis/config.py
 ```
+
+## Pre-commit
+
+``` bash
+pre-commit install # Only once.
+pre-commit run --all-files
+```

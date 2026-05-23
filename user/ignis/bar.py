@@ -115,7 +115,7 @@ def battery():
                     label=battery.bind("percent", transform=lambda p: f"{p:.0f}%")
                 ),
             ],
-            )
+        )
 
 
 def bluetooth_button() -> widgets.Button:
