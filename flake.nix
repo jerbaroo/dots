@@ -32,8 +32,7 @@
     inputs:
     let
       accent = "pink";
-      animationSpeed = 1;
-      animations = true;
+      animationSpeed = 1.0;
       allowUnfreePredicate =
         let
           whitelist = map pkgs.lib.getName [
@@ -88,7 +87,6 @@
               accent
               allowUnfreePredicate
               animationSpeed
-              animations
               bitDepth
               blur
               borderSize
@@ -131,7 +129,6 @@
               accent
               allowUnfreePredicate
               animationSpeed
-              animations
               bitDepth
               blur
               borderSize

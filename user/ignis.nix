@@ -1,5 +1,6 @@
 {
   accent,
+  config,
   ignis,
   ignisPath,
   palette,
@@ -8,7 +9,6 @@
 }:
 let
   audio = (import ./audio.nix { inherit pkgs; });
-  bluetooth = (import ./bluetooth.nix { inherit pkgs; });
 in
 {
   barRegex = "^(ignis-bar-.*)$";
@@ -20,7 +20,7 @@ in
     # Write command paths to a fixed location, to be picked up at run-time.
     home.file."${ignisPath}/nix_paths.py".text = ''
       AUDIO_GUI_CMD="${audio.guiCmd}"
-      BLUETOOTH_GUI_CMD="${bluetooth.guiCmd}"
+      BLUETOOTH_GUI_CMD="${config.desktop.bluetooth.guiCmd}"
       DESK_CMD="${pkgs.idasen}/bin/idasen"
       POWER_PROFILES_CMD="${pkgs.power-profiles-daemon}/bin/powerprofilesctl"
     '';

@@ -1,12 +1,39 @@
-{ pkgs, wallpaperName, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  wallpaper = builtins.toString wallpaperPath;
-  wallpaperPath = ./wallpapers/${wallpaperName};
+  wallpaperPath = ./wallpapers/${config.desktop.wallpaperName};
 in
 {
-  inherit wallpaper wallpaperPath;
-  setWallpaperCmd = "${pkgs.awww}/bin/awww img ${wallpaperPath}";
-  wallpaperBlurred = pkgs.runCommand "blur-image" {
-    nativeBuildInputs = [ pkgs.imagemagick ];
-  } "magick ${wallpaperPath} -blur 20x20 $out";
+  config = {
+    desktop = {
+      setWallpaperCmd = "${pkgs.awww}/bin/awww img ${wallpaperPath}";
+      wallpaper = toString wallpaperPath;
+      wallpaperBlurred = pkgs.runCommand "blur-image" {
+        nativeBuildInputs = [ pkgs.imagemagick ];
+      } "magick ${wallpaperPath} -blur 20x20 $out";
+    };
+  };
+  options.desktop.setWallpaperCmd = lib.mkOption {
+    description = "Command to set the current wallpaper.";
+    readOnly = true;
+    type = lib.types.str;
+  };
+  options.desktop.wallpaper = lib.mkOption {
+    description = "The wallpaper as a string.";
+    readOnly = true;
+    type = lib.types.str;
+  };
+  options.desktop.wallpaperName = lib.mkOption {
+    description = "The filename of the wallpaper.";
+    type = lib.types.str;
+  };
+  options.desktop.wallpaperBlurred = lib.mkOption {
+    description = "A derivation that produces the blurred wallpaper.";
+    readOnly = true;
+    type = lib.types.package;
+  };
 }

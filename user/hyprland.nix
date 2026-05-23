@@ -1,15 +1,11 @@
 {
   accent,
-  animationSpeed,
-  animations,
   bitDepth,
-  blur,
   borderSize,
   config,
   defaultFloatSize,
   flavor,
   ghdashboardPort,
-  gap,
   hdr,
   hostname,
   hyprland,
@@ -18,19 +14,15 @@
   lib,
   palette,
   pkgs,
-  rounding,
   system,
   lockTimeout,
-  temperature,
   username,
-  wallpaperName,
   wrapGL,
   ...
 }:
 let
   audio = (import ./audio.nix { inherit pkgs; });
   bitDepthStr = ", bitdepth, ${toString bitDepth}";
-  bluetooth = (import ./bluetooth.nix { inherit pkgs; });
   browser = (
     import ./browser.nix {
       inherit
@@ -47,6 +39,7 @@ let
     import ./ignis.nix {
       inherit
         accent
+        config
         ignis
         ignisPath
         palette
@@ -56,9 +49,10 @@ let
   );
   kanata = (import ./kanata/kanata.nix { inherit pkgs; });
   locks = import ./lock.nix { inherit ignisPath palette pkgs; };
-  monitor = import ./monitor.nix { inherit os-cli pkgs wallpaperName; };
+  monitor = import ./monitor.nix { inherit config os-cli pkgs; };
   os-cli = import ./os-cli.nix {
     inherit
+      config
       ignis
       hostname
       hyprland
@@ -77,25 +71,32 @@ let
       esac
     done
   '';
-  setWallpaperCmd = (import ./wallpaper.nix { inherit pkgs wallpaperName; }).setWallpaperCmd;
   startup = (
     import ./startup.nix {
       inherit
+        config
         ghdashboardPort
         pkgs
         username
-        wallpaperName
         ;
     }
   );
   zoomFactor = 0.2;
 in
 {
-  options.desktop.hyprland.layout = lib.mkOption {
-    type = lib.types.enum [
-      "dwindle"
-      "scrolling"
-    ];
+  options.desktop.hyprland = {
+    animationSpeed = lib.mkOption {
+      type = lib.types.nullOr (lib.types.addCheck lib.types.float (x: x > 0));
+    };
+    blur = lib.mkOption { type = lib.types.bool; };
+    gap = lib.mkOption { type = lib.types.ints.unsigned; };
+    layout = lib.mkOption {
+      type = lib.types.enum [
+        "dwindle"
+        "scrolling"
+      ];
+    };
+    rounding = lib.mkOption { type = lib.types.ints.unsigned; };
   };
   config = {
     catppuccin.hyprland.enable = false;
@@ -126,27 +127,35 @@ in
                     styleStr = if style == null then "" else ", style=\"${style}\"";
                   in
                   "{ leaf=\"${leaf}\", enabled=true, speed=${
-                    toString (speed / animationSpeed)
+                    toString (
+                      if config.desktop.hyprland.animationSpeed == null then
+                        speed
+                      else
+                        speed / config.desktop.hyprland.animationSpeed
+                    )
                   }, bezier=\"${curve}\" ${styleStr} }"
                 ))
               ];
             };
           in
-          [
-            (animation "windowsIn" 3.0 "emphasizedDecel" "popin 80%")
-            (animation "fadeIn" 3.0 "emphasizedDecel" null)
-            (animation "windowsOut" 2.0 "emphasizedDecel" "popin 90%")
-            (animation "fadeOut" 2.0 "emphasizedDecel" null)
-            (animation "windowsMove" 3.0 "emphasizedDecel" "slide")
-            (animation "border" 10.0 "emphasizedDecel" null)
-            (animation "layersIn" 2.7 "emphasizedDecel" "popin 93%")
-            (animation "layersOut" 2.4 "menu_accel" "popin 94%")
-            (animation "fadeLayersIn" 0.5 "menu_decel" null)
-            (animation "fadeLayersOut" 2.7 "stall" null)
-            (animation "workspaces" 7.0 "menu_decel" "slide")
-            (animation "specialWorkspaceIn" 2.8 "emphasizedDecel" "slidevert")
-            (animation "specialWorkspaceOut" 1.2 "emphasizedAccel" "slidevert")
-          ];
+          if config.desktop.hyprland.animationSpeed == null then
+            [ ]
+          else
+            [
+              (animation "windowsIn" 3.0 "emphasizedDecel" "popin 80%")
+              (animation "fadeIn" 3.0 "emphasizedDecel" null)
+              (animation "windowsOut" 2.0 "emphasizedDecel" "popin 90%")
+              (animation "fadeOut" 2.0 "emphasizedDecel" null)
+              (animation "windowsMove" 3.0 "emphasizedDecel" "slide")
+              (animation "border" 10.0 "emphasizedDecel" null)
+              (animation "layersIn" 2.7 "emphasizedDecel" "popin 93%")
+              (animation "layersOut" 2.4 "menu_accel" "popin 94%")
+              (animation "fadeLayersIn" 0.5 "menu_decel" null)
+              (animation "fadeLayersOut" 2.7 "stall" null)
+              (animation "workspaces" 7.0 "menu_decel" "slide")
+              (animation "specialWorkspaceIn" 2.8 "emphasizedDecel" "slidevert")
+              (animation "specialWorkspaceOut" 1.2 "emphasizedAccel" "slidevert")
+            ];
         curve =
           let
             bezier = name: x0: x1: y0: y1: {
@@ -170,23 +179,23 @@ in
         config = {
           debug.disable_logs = false;
           decoration = {
-            inherit rounding;
             active_opacity = 1;
             blur = {
-              enabled = blur;
+              enabled = config.desktop.hyprland.blur;
               noise = 0.02;
               passes = 4;
               size = 5;
             };
             inactive_opacity = 1;
+            rounding = config.desktop.hyprland.rounding;
           };
           dwindle.preserve_split = true;
           general = {
             border_size = borderSize;
             "col.active_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.${accent}.hex})";
             "col.inactive_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.base.hex})";
-            gaps_in = gap;
-            gaps_out = gap * 2;
+            gaps_in = config.desktop.hyprland.gap;
+            gaps_out = config.desktop.hyprland.gap * 2;
             layout = config.desktop.hyprland.layout;
             resize_on_border = true;
           };
@@ -250,7 +259,7 @@ in
             ))
 
             # Alphabet keys.
-            (bind "${mod} + B" (execCmd "${floatCenter 0} ${bluetooth.guiCmd}"))
+            (bind "${mod} + B" (execCmd "${floatCenter 0} ${config.desktop.bluetooth.guiCmd}"))
             (bind "${mod} + SHIFT + B" (execCmd os-cli.ui-menu-bar-toggle))
             (bind "${mod} + D" (execCmd "${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"))
             (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
@@ -402,7 +411,7 @@ in
           in
           map floatRule [
             audio.guiTitle
-            bluetooth.guiTitle
+            config.desktop.bluetooth.guiTitle
             "wdisplays"
           ]
           ++ [ noBorderIfSoleTile ];

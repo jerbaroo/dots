@@ -1,20 +1,13 @@
-{ pkgs, wallpaperName, ... }:
-let
-  wallpaper =
-    (import ./wallpaper.nix {
-      inherit pkgs;
-      inherit wallpaperName;
-    }).wallpaper;
-in
+{ config, pkgs, ... }:
 {
   services.awww.enable = true;
   services.hyprpaper = {
     enable = false;
     settings = {
       ipc = "off";
-      preload = [ wallpaper ];
+      preload = [ config.desktop.wallpaper ];
       splash = false;
-      wallpaper = [ ",${wallpaper}" ];
+      wallpaper = [ ",${config.desktop.wallpaper}" ];
     };
   };
 }

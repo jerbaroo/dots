@@ -2,7 +2,6 @@
   accent,
   allowUnfreePredicate,
   animationSpeed,
-  animations,
   bitDepth,
   blur,
   borderSize,
@@ -46,7 +45,17 @@ let
 in
 {
   # Custom Home Manager options.
-  desktop.hyprland.layout = layout;
+  desktop.hyprland = {
+    inherit
+      animationSpeed
+      blur
+      gap
+      layout
+      rounding
+      ;
+  };
+  desktop.hyprsunset.temperature = temperature;
+  desktop.wallpaperName = wallpaperName;
 
   home = {
     homeDirectory = "/home/${username}";
@@ -60,7 +69,7 @@ in
     spicetify.homeManagerModules.default
 
     # Personal Home Manager modules.
-    (import ./bluetooth.nix { inherit pkgs; }).hm
+    ./bluetooth.nix
     (import ./browser.nix {
       inherit config;
       inherit ghdashboardPort;
@@ -118,15 +127,11 @@ in
     })
     (import ./hyprland.nix {
       inherit accent;
-      inherit animationSpeed;
-      inherit animations;
       inherit bitDepth;
-      inherit blur;
       inherit borderSize;
       inherit config;
       inherit defaultFloatSize;
       inherit flavor;
-      inherit gap;
       inherit ghdashboardPort;
       inherit hdr;
       inherit hostname;
@@ -137,16 +142,14 @@ in
       inherit lockTimeout;
       inherit palette;
       inherit pkgs;
-      inherit rounding;
       inherit system;
-      inherit temperature;
       inherit username;
-      inherit wallpaperName;
       inherit wrapGL;
     })
-    (import ./hyprsunset.nix { inherit temperature; })
+    ./hyprsunset.nix
     (import ./ignis.nix {
       inherit accent;
+      inherit config;
       inherit ignis;
       inherit ignisPath;
       inherit palette;
@@ -191,14 +194,9 @@ in
       inherit palette;
       inherit pkgs;
     })
-    (import ./wallpaper-service.nix {
-      inherit pkgs;
-      inherit wallpaperName;
-    })
-    (import ./wlogout.nix {
-      inherit pkgs;
-      inherit wallpaperName;
-    })
+    ./wallpaper.nix
+    ./wallpaper-service.nix
+    ./wlogout.nix
   ];
   nixpkgs.config = {
     inherit allowUnfreePredicate;

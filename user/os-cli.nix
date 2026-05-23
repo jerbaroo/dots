@@ -1,4 +1,5 @@
 {
+  config,
   ignis,
   hostname,
   hyprland,
@@ -9,14 +10,13 @@
 }:
 let
   audio = (import ./audio.nix { inherit pkgs; });
-  bluetooth = (import ./bluetooth.nix { inherit pkgs; });
   cli =
     let
       python = pkgs.python3.withPackages (ps: with ps; [ click ]);
     in
     pkgs.writeShellScriptBin "os" ''
       export OS_AUDIO_GUI_CMD="${audio.guiCmd}"
-      export OS_BLUETOOTH_GUI_CMD="${bluetooth.guiCmd}"
+      export OS_BLUETOOTH_GUI_CMD="${config.desktop.bluetooth.guiCmd}"
       export OS_GRIM_PATH="${pkgs.grim}/bin/grim"
       export OS_NH_PATH="${pkgs.nh}/bin/nh"
       export OS_HOSTNAME="${hostname}"
