@@ -7,9 +7,6 @@
   pkgs,
   ...
 }:
-let
-  audio = (import ./audio.nix { inherit pkgs; });
-in
 {
   barRegex = "^(ignis-bar-.*)$";
   hm = {
@@ -19,7 +16,7 @@ in
     };
     # Write command paths to a fixed location, to be picked up at run-time.
     home.file."${ignisPath}/nix_paths.py".text = ''
-      AUDIO_GUI_CMD="${audio.guiCmd}"
+      AUDIO_GUI_CMD="${config.desktop.audio.guiCmd}"
       BLUETOOTH_GUI_CMD="${config.desktop.bluetooth.guiCmd}"
       DESK_CMD="${pkgs.idasen}/bin/idasen"
       POWER_PROFILES_CMD="${pkgs.power-profiles-daemon}/bin/powerprofilesctl"

@@ -44,19 +44,20 @@ let
     (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
 in
 {
-  # Custom Home Manager options.
-  desktop.hyprland = {
-    inherit
-      animationSpeed
-      blur
-      gap
-      layout
-      rounding
-      ;
+  # Set custom Home Manager options.
+  desktop = {
+    inherit username wallpaperName;
+    hyprland = {
+      inherit
+        animationSpeed
+        blur
+        gap
+        layout
+        rounding
+        ;
+    };
+    hyprsunset.temperature = temperature;
   };
-  desktop.hyprsunset.temperature = temperature;
-  desktop.wallpaperName = wallpaperName;
-
   home = {
     homeDirectory = "/home/${username}";
     stateVersion = stateVersion;
@@ -69,6 +70,7 @@ in
     spicetify.homeManagerModules.default
 
     # Personal Home Manager modules.
+    ./audio.nix
     ./bluetooth.nix
     (import ./browser.nix {
       inherit config;
@@ -176,7 +178,6 @@ in
       inherit quickshell;
       inherit system;
     })
-    ./sound.nix
     (import ./spicetify.nix {
       inherit accent;
       inherit flavor;

@@ -9,13 +9,12 @@
   ...
 }:
 let
-  audio = (import ./audio.nix { inherit pkgs; });
   cli =
     let
       python = pkgs.python3.withPackages (ps: with ps; [ click ]);
     in
     pkgs.writeShellScriptBin "os" ''
-      export OS_AUDIO_GUI_CMD="${audio.guiCmd}"
+      export OS_AUDIO_GUI_CMD="${config.desktop.audio.guiCmd}"
       export OS_BLUETOOTH_GUI_CMD="${config.desktop.bluetooth.guiCmd}"
       export OS_GRIM_PATH="${pkgs.grim}/bin/grim"
       export OS_NH_PATH="${pkgs.nh}/bin/nh"
