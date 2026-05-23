@@ -28,6 +28,7 @@ let
       inherit
         config
         ghdashboardPort
+        lib
         pkgs
         wrapGL
         ;
@@ -279,7 +280,7 @@ in
             (bind "${mod} + SHIFT + S" (execCmd "ghostty -e ${os-cli.home-switch}"))
             (bind "${mod} + T" (execCmd "${floatCenter 0} ghostty -e ${pkgs.btop}/bin/btop"))
             (bind "${mod} + V" (execCmd "${floatCenter 0} ${audio.guiCmd}"))
-            (bind "${mod} + W" (execCmd browser.cmd))
+            (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
             (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))
 
             # Other keys

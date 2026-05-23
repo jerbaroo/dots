@@ -73,9 +73,10 @@ in
     (import ./browser.nix {
       inherit config;
       inherit ghdashboardPort;
+      inherit lib;
       inherit pkgs;
-      inherit wrapGL;
-    }).hm
+    })
+    # ./os-cli.nix
     ./direnv.nix
     (import ./emacs/emacs.nix {
       inherit codeFontName;

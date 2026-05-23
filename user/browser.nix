@@ -7,7 +7,7 @@
 }:
 {
   config = {
-    desktop.browser.cmd = "${pkgs.chromium}/bin/chromium --disable-gpu"; # FIXME
+    desktop.browser.cmd = "chromium";
     programs.chromium = {
       enable = true;
       extensions = [
@@ -17,7 +17,10 @@
         { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
         { id = "ddkjiahejlhfcafbddmgiahcphecmpfh"; } # uBlock Origin Lite
       ];
-      homepageLocation = "http://localhost:${ghdashboardPort}";
+      commandLineArgs = [
+        "--disable-gpu" # FIXME
+        "http://localhost:${toString ghdashboardPort}"
+      ];
     };
   };
   options.desktop.browser.cmd = lib.mkOption {
