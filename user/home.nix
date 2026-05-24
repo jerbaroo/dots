@@ -120,12 +120,6 @@ in
         ;
     })
     ./git.nix
-    (import ./helix.nix {
-      inherit accent;
-      inherit flavor;
-      inherit lib;
-      inherit pkgs;
-    })
     (import ./hypridle.nix {
       inherit lockTimeout;
       inherit pkgs;
