@@ -1,6 +1,5 @@
 {
   config,
-  ghdashboardPort,
   lib,
   pkgs,
   ...
@@ -19,7 +18,7 @@
       ];
       commandLineArgs = [
         "--disable-gpu" # FIXME
-        "http://localhost:${toString ghdashboardPort}"
+        "http://localhost:${toString config.desktop.ghdashboard.port}"
       ];
     };
   };

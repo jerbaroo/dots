@@ -5,7 +5,6 @@
   config,
   defaultFloatSize,
   flavor,
-  ghdashboardPort,
   hdr,
   hostname,
   hyprland,
@@ -22,17 +21,7 @@
 }:
 let
   bitDepthStr = ", bitdepth, ${toString bitDepth}";
-  browser = (
-    import ./browser.nix {
-      inherit
-        config
-        ghdashboardPort
-        lib
-        pkgs
-        wrapGL
-        ;
-    }
-  );
+  browser = (import ./browser.nix { inherit config lib pkgs; });
   floatCenter = _: "[float;center;${floatSize defaultFloatSize}]";
   floatSize = fraction: "size (monitor_w*${toString fraction}) (monitor_h*${toString fraction})";
   ignisModule = (
@@ -75,7 +64,6 @@ let
     import ./startup.nix {
       inherit
         config
-        ghdashboardPort
         pkgs
         username
         ;
@@ -103,11 +91,6 @@ in
     wayland.windowManager.hyprland = {
       configType = "lua";
       enable = true;
-      # Environment variables
-      # env = [
-      #   "GDK_BACKEND, wayland"
-      #   "XDG_CURRENT_DESKTOP, hyprland"
-      # ];
       # TODO locked submap.
       # extraConfig = ''
       #   submap = locked

@@ -47,6 +47,7 @@ in
   # Set custom Home Manager options.
   desktop = {
     inherit username wallpaperName;
+    ghdashboard.port = ghdashboardPort;
     hyprland = {
       inherit
         animationSpeed
@@ -113,10 +114,13 @@ in
       inherit wrapGL;
     })
     (import ./ghdashboard.nix {
-      inherit ghdashboardPort;
-      inherit pkgs;
-      inherit username;
-    }).hm
+      inherit
+        config
+        lib
+        pkgs
+        username
+        ;
+    })
     ./git.nix
     (import ./helix.nix {
       inherit accent;
@@ -135,7 +139,6 @@ in
       inherit config;
       inherit defaultFloatSize;
       inherit flavor;
-      inherit ghdashboardPort;
       inherit hdr;
       inherit hostname;
       inherit hyprland;
