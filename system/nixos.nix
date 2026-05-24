@@ -100,10 +100,7 @@
     (import ./sound.nix { inherit pkgs; })
     ./steam.nix
     ./store.nix
-    (import ./theme.nix {
-      inherit accent;
-      inherit flavor;
-    })
+    (import ./theme.nix { inherit accent flavor pkgs; })
     ./transmission.nix
   ];
   nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;

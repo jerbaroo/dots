@@ -116,7 +116,8 @@ in
       # '';
       # Workspace rule maps
       # workspace_rule = [ { match.workspace = "1"; monitor = "HDMI-A-1"; default = true; } ];
-      package = ((if wrapGL then config.lib.nixGL.wrap else (x: x)) hyprland.packages.${system}.hyprland);
+      package = null; # ((if wrapGL then config.lib.nixGL.wrap else (x: x)) hyprland.packages.${system}.hyprland); TODO
+      portalPackage = null;
       settings = {
         animation =
           let
@@ -213,6 +214,16 @@ in
           };
           xwayland.force_zero_scaling = true;
         };
+        env =
+          let
+            f = tuple: { _args = tuple; };
+          in
+          map f [
+            [
+              "GDK_BACKEND"
+              "wayland"
+            ]
+          ]; # ["XDG_CURRENT_DESKTOP" "hyprland"] ];
         # Hyprland hooks.
         on =
           let
@@ -416,12 +427,6 @@ in
           ]
           ++ [ noBorderIfSoleTile ];
       };
-      systemd = {
-        enable = true;
-        enableXdgAutostart = false;
-      };
-      xwayland.enable = true;
     };
-    xdg.portal.enable = true;
   };
 }
