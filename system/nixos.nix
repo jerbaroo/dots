@@ -84,6 +84,7 @@
     (import ./boot.nix { inherit pkgs; })
     (import ./bluetooth.nix { inherit lib; })
     ./docker.nix
+    ./firmware.nix
     (import ./graphics.nix {
       inherit hyprland;
       inherit pkgs;
@@ -105,6 +106,7 @@
     })
     ./transmission.nix
   ];
+  nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
   nix.settings = {
     experimental-features = [
       "flakes"
@@ -113,7 +115,6 @@
     substituters = [ ];
     trusted-public-keys = [ ];
   };
-  nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
   system.stateVersion = stateVersion;
   users.users.${username} = {
     extraGroups = [

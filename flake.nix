@@ -33,16 +33,6 @@
     let
       accent = "pink";
       animationSpeed = 1.0;
-      allowUnfreePredicate =
-        let
-          whitelist = map pkgs.lib.getName [
-            pkgs.spotify
-            pkgs.steam
-            pkgs.steam-unwrapped
-            pkgs.symbola
-          ];
-        in
-        pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
       bitDepth = 10;
       blur = true;
       borderSize = 2;
@@ -85,7 +75,6 @@
           specialArgs = {
             inherit
               accent
-              allowUnfreePredicate
               animationSpeed
               bitDepth
               blur
@@ -107,6 +96,7 @@
               temperature
               wallpaperName
               ;
+            allowUnfreePredicate = _: true;
             catppuccin = inputs.catppuccin;
             color-schemes = inputs.color-schemes;
             genericLinux = true;
@@ -127,7 +117,6 @@
           extraSpecialArgs = {
             inherit
               accent
-              allowUnfreePredicate
               animationSpeed
               bitDepth
               blur
@@ -149,6 +138,17 @@
               temperature
               wallpaperName
               ;
+            allowUnfreePredicate =
+              let
+                whitelist = map pkgs.lib.getName [
+                  pkgs.google-chrome
+                  pkgs.spotify
+                  pkgs.steam
+                  pkgs.steam-unwrapped
+                  pkgs.symbola
+                ];
+              in
+              pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
             catppuccin = inputs.catppuccin;
             color-schemes = inputs.color-schemes;
             genericLinux = true;
