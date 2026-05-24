@@ -60,15 +60,7 @@ let
       esac
     done
   '';
-  startup = (
-    import ./startup.nix {
-      inherit
-        config
-        pkgs
-        username
-        ;
-    }
-  );
+  startup = (import ./startup.nix { inherit config lib pkgs; });
   zoomFactor = 0.2;
 in
 {
