@@ -44,7 +44,7 @@ class AppItem(widgets.Button):
 def app_launcher(ignis_app: IgnisApp) -> widgets.Window:
 
     def on_change(x, app_list):
-        apps = app_service.search(app_service.apps, x.text)
+        apps = app_service.search(app_service.apps, x.text)  # Optimize ?
         app_list.child = [AppItem(app, ignis_app) for app in apps[:6]]
 
     def on_accept(x, app_list):

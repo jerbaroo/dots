@@ -60,7 +60,7 @@
       systemFontSize = 12;
       temperature = 5500;
       usernameNixOS = "jer";
-      usernameUbuntu = "jer";
+      usernameUbuntu = "jeremy-barisch-rooney";
       wallpaperName = "jellyfish-purple.jpg";
     in
     {
@@ -145,6 +145,7 @@
                   pkgs.spotify
                   pkgs.steam
                   pkgs.steam-unwrapped
+                  pkgs.symbola
                 ];
               in
               pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;

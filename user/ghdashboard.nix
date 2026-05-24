@@ -5,16 +5,17 @@
   ...
 }:
 let
-  ghdashboard = ./ghdashboard/default.nix;
+  ghdashboard = pkgs.callPackage ./ghdashboard/default.nix { };
   ghdashboardWithToken = pkgs.writeShellScriptBin "ghdashboardwithtoken" "${ghdashboard}/bin/ghdashboard ${toString config.desktop.ghdashboard.port} /home/${config.desktop.username}/.config/read-gh-token.sh";
 in
 {
   config = {
+    home.packages = [ ghdashboardWithToken ];
     systemd.user.services.ghdashboard = {
       Unit = {
         After = [ "graphical-session.target" ];
-        Description = "GitHub Dashboard";
         BindsTo = [ "graphical-session.target" ];
+        Description = "GitHub Dashboard";
       };
       Service = {
         ExecStart = "${ghdashboardWithToken}/bin/ghdashboardwithtoken";

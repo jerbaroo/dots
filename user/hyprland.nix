@@ -53,7 +53,7 @@ in
       # '';
       # Workspace rule maps
       # workspace_rule = [ { match.workspace = "1"; monitor = "HDMI-A-1"; default = true; } ];
-      package = null; # ((if wrapGL then config.lib.nixGL.wrap else (x: x)) hyprland.packages.${system}.hyprland); TODO
+      package = config.desktop.hyprland.package;
       portalPackage = null;
       settings = {
         animation =
@@ -63,15 +63,16 @@ in
                 (lib.generators.mkLuaInline (
                   let
                     styleStr = if style == null then "" else ", style=\"${style}\"";
-                  in
-                  "{ leaf=\"${leaf}\", enabled=true, speed=${
-                    toString (
+                    # If "animationSpeed" is null we don't apply a modifier to
+                    # "speed".
+                    speedStr = toString (
                       if config.desktop.hyprland.animationSpeed == null then
                         speed
                       else
                         speed / config.desktop.hyprland.animationSpeed
-                    )
-                  }, bezier=\"${curve}\" ${styleStr} }"
+                    );
+                  in
+                  "{ leaf=\"${leaf}\", enabled=true, speed=${speedStr}, bezier=\"${curve}\" ${styleStr} }"
                 ))
               ];
             };

@@ -17,12 +17,13 @@
   - `git clone https://github.com/jerbaroo/nixos-config && cd nixos-config`
   - `home-manager --flake .#jer@nixos switch`
 - Add hyprland desktop entry: `/usr/share/wayland-sessions/hyprland.desktop`
+- Install NixGL: `nix profile install github:guibou/nixGL --impure`
 
 ``` yaml
 [Desktop Entry]
 Name=Hyprland
 Comment=An intelligent dynamic tiling Wayland compositor
-Exec=/home/jer/.nix-profile/bin/start-hyprland --no-nixgl
+Exec=/home/jer/.nix-profile/bin/start-hyprland
 Type=Application
 ```
 
