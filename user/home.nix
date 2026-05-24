@@ -70,6 +70,9 @@ in
     ignis.homeManagerModules.default
     spicetify.homeManagerModules.default
 
+    # Define common Home Manager options.
+    ./options.nix
+
     # Personal Home Manager modules.
     ./audio.nix
     ./bluetooth.nix
