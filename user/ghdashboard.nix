@@ -2,11 +2,10 @@
   config,
   lib,
   pkgs,
-  username,
 }:
 let
   ghdashboard = ./ghdashboard/default.nix;
-  ghdashboardWithToken = pkgs.writeShellScriptBin "ghdashboardwithtoken" "${ghdashboard}/bin/ghdashboard ${toString config.desktop.ghdashboard.port} /home/${username}/.config/read-gh-token.sh";
+  ghdashboardWithToken = pkgs.writeShellScriptBin "ghdashboardwithtoken" "${ghdashboard}/bin/ghdashboard ${toString config.desktop.ghdashboard.port} /home/${config.desktop.username}/.config/read-gh-token.sh";
 in
 {
   config = {

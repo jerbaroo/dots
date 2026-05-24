@@ -60,9 +60,9 @@ in
     hyprsunset.temperature = temperature;
   };
   home = {
-    homeDirectory = "/home/${username}";
+    homeDirectory = "/home/${config.desktop.username}";
     stateVersion = stateVersion;
-    username = "${username}";
+    username = "${config.desktop.username}";
   };
   imports = [
     # 3rd-party Home Manager modules.
@@ -98,7 +98,6 @@ in
       inherit lib;
       inherit palette;
       inherit pkgs;
-      inherit username;
     })
     ./fonts.nix
     (import ./ghostty.nix {
@@ -118,7 +117,6 @@ in
         config
         lib
         pkgs
-        username
         ;
     })
     ./git.nix
@@ -149,7 +147,6 @@ in
       inherit palette;
       inherit pkgs;
       inherit system;
-      inherit username;
       inherit wrapGL;
     })
     ./hyprsunset.nix
@@ -215,6 +212,6 @@ in
     };
   };
   xdg.configFile."environment.d/envvars.conf".text = ''
-    PATH="$HOME/.config/emacs/bin:$HOME/.nix-profile/bin:$HOME/.cargo/bin:$HOME/${username}/.ghcup/bin:$HOME/.cabal/bin:$PATH"
+    PATH="$HOME/.config/emacs/bin:$HOME/.nix-profile/bin:$HOME/.cargo/bin:$HOME/${config.desktop.username}/.ghcup/bin:$HOME/.cabal/bin:$PATH"
   '';
 }

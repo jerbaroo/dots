@@ -5,7 +5,6 @@
   hyprland,
   pkgs,
   system,
-  username,
   ...
 }:
 let
@@ -22,7 +21,7 @@ let
       export OS_HYPRCTL_PATH="${hyprland.packages.${system}.hyprland}/bin/hyprctl"
       export OS_IGNIS_PATH="${ignis.packages.${system}.ignis}/bin/ignis"
       export OS_KANATA_CMD="${kanata.cmd}"
-      export OS_USERNAME="${username}"
+      export OS_USERNAME="${config.desktop.username}"
       export OS_SLURP_PATH="${pkgs.slurp}/bin/slurp"
       export OS_SWAPPY_PATH="${pkgs.swappy}/bin/swappy"
       exec ${python}/bin/python3 ${./os_cli.py} "$@"

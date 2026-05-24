@@ -15,7 +15,6 @@
   pkgs,
   system,
   lockTimeout,
-  username,
   wrapGL,
   ...
 }:
@@ -47,7 +46,6 @@ let
       hyprland
       pkgs
       system
-      username
       ;
   };
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''

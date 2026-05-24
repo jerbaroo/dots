@@ -3,7 +3,6 @@
   lib,
   palette,
   pkgs,
-  username,
   ...
 }:
 let
