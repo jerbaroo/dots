@@ -18,6 +18,10 @@
       ];
       commandLineArgs = [
         "--disable-gpu" # FIXME
+        # Ensures that Chromium-internal pages like "This site can't be reached"
+        # are also in dark mode. In fact it applies dark mode to ALL Pages, so
+        # we have two layers of dark mode (also DarkReader).
+        "--enable-features=WebContentsForceDark"
         "http://localhost:${toString config.desktop.ghdashboard.port}"
       ];
     };
