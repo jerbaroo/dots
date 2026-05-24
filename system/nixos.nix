@@ -115,6 +115,8 @@
   system.stateVersion = stateVersion;
   users.users.${username} = {
     extraGroups = [
+      "audio"
+      "bluetooth"
       "docker"
       "networkmanager"
       "wheel"
