@@ -9,6 +9,7 @@
     ffmpeg # Video converter.
     footage # Video editor.
     gcc # GNU Compiler Collection.
+    google-chrome # Well-supported browser.
     idasen # Desk control.
     jq # JSON processor.
     mpv # Better HDR support.
@@ -23,6 +24,7 @@
     obs-studio # Video recorder.
     pandoc # Document converter.
     pre-commit # House cleaning.
+    pulseaudio # pactl.
     python3 # For quick scripts.
     python3Packages.black # Python formatter.
     shellcheck # Shell script analyser.

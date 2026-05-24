@@ -2,13 +2,13 @@
 {
   hardware.bluetooth = {
     enable = true;
-    # settings = {
-    #   General = {
-    #     Experimental = true;
-    #   };
-    # };
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+        Experimental = true;
+      };
+    };
   };
-  hardware.bluetooth.powerOnBoot = true;
-  # hardware.enableAllFirmware = true;
-  # services.blueman.enable = true;
+  services.blueman.enable = true;
 }
