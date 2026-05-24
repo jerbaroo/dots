@@ -99,7 +99,7 @@
             allowUnfreePredicate = _: true;
             catppuccin = inputs.catppuccin;
             colorSchemes = inputs.color-schemes;
-            genericLinux = true;
+            genericLinux = false;
             hyprland = inputs.hyprland;
             hostname = hostnameNixOS;
             ignis = inputs.ignis;

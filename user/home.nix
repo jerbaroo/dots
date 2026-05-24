@@ -56,6 +56,10 @@
         size = systemFontSize;
       };
     };
+    genericLinux = {
+      enable = genericLinux;
+      nixGL.packages = nixgl.packages;
+    };
     ghdashboard.port = ghdashboardPort;
     hyprland = {
       inherit
@@ -106,6 +110,7 @@
     ./eza.nix
     ./fish.nix
     ./fonts.nix
+    ./genericLinux.nix
     ./ghostty.nix
     ./ghdashboard.nix
     ./git.nix
@@ -132,18 +137,10 @@
     ./wallpaper-service.nix
     ./wlogout.nix
   ];
-  nixpkgs.config = {
+  # We use "mkIf" because setting this is not permitted on NixOS (instead this
+  # should be set in NixOS' configuration directly).
+  nixpkgs.config = lib.mkIf (allowUnfreePredicate != null) {
     inherit allowUnfreePredicate;
   };
   programs.home-manager.enable = true;
-  targets.genericLinux = {
-    enable = genericLinux;
-    nixGL = {
-      defaultWrapper = "mesa";
-      packages = nixgl.packages;
-    };
-  };
-  xdg.configFile."environment.d/envvars.conf".text = ''
-    PATH="$HOME/.config/emacs/bin:$HOME/.nix-profile/bin:$HOME/.cargo/bin:$HOME/${config.desktop.username}/.ghcup/bin:$HOME/.cabal/bin:$PATH"
-  '';
 }

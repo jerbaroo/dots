@@ -41,38 +41,40 @@
 {
   home-manager = {
     extraSpecialArgs = {
-      inherit accent;
-      inherit allowUnfreePredicate;
-      inherit animationSpeed;
-      inherit animations;
-      inherit bitDepth;
-      inherit blur;
-      inherit borderSize;
-      inherit codeBackgroundOpacity;
-      inherit codeFontName;
-      inherit codeFontSize;
-      inherit defaultFloatSize;
-      inherit flavor;
-      inherit gap;
-      inherit ghdashboardPort;
-      inherit hdr;
-      inherit hostname;
-      inherit hyprland;
-      inherit ignis;
-      inherit layout;
-      inherit lockTimeout;
-      inherit nixgl;
-      inherit quickshell;
-      inherit rounding;
-      inherit spicetify;
-      inherit stateVersion;
-      inherit system;
-      inherit systemFontSize;
-      inherit temperature;
-      inherit username;
-      inherit wallpaperName;
-      inherit catppuccin;
-      inherit colorSchemes;
+      inherit
+        accent
+        animationSpeed
+        animations
+        bitDepth
+        blur
+        borderSize
+        catppuccin
+        codeBackgroundOpacity
+        codeFontName
+        codeFontSize
+        colorSchemes
+        defaultFloatSize
+        flavor
+        gap
+        ghdashboardPort
+        hdr
+        hostname
+        hyprland
+        ignis
+        layout
+        lockTimeout
+        nixgl
+        quickshell
+        rounding
+        spicetify
+        stateVersion
+        system
+        systemFontSize
+        temperature
+        username
+        wallpaperName
+        ;
+      allowUnfreePredicate = null;
       genericLinux = true;
       wrapGL = true;
     };
