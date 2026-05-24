@@ -32,10 +32,11 @@
 
   # GTK Theme.
   # ls /etc/profiles/per-user/jer/share/themes
-  gtk.theme.name = "catppuccin-${flavor}-${accent}-standard";
+  gtk.theme.name = "catppuccin-${flavor}-${accent}-standard+rimless";
   gtk.theme.package = (
     pkgs.catppuccin-gtk.override {
       accents = [ "${accent}" ];
+      tweaks = [ "rimless" ];
       variant = "${flavor}";
     }
   );
