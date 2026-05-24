@@ -1,13 +1,11 @@
-{ pkgs, systemFontSize, ... }:
+{ config, pkgs, ... }:
 {
   fonts.fontconfig.enable = true;
-
   gtk.font = {
     name = "Atkinson Hyperlegible";
     package = pkgs.atkinson-hyperlegible;
-    size = systemFontSize;
+    size = config.desktop.systemFontSize;
   };
-
   home.packages = with pkgs; [
     cascadia-code
     nerd-fonts.iosevka

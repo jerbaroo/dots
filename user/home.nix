@@ -46,7 +46,7 @@ in
 {
   # Set custom Home Manager options.
   desktop = {
-    inherit username wallpaperName;
+    inherit systemFontSize username wallpaperName;
     ghdashboard.port = ghdashboardPort;
     hyprland = {
       inherit
@@ -97,10 +97,7 @@ in
       inherit pkgs;
       inherit username;
     })
-    (import ./fonts.nix {
-      inherit pkgs;
-      inherit systemFontSize;
-    })
+    ./fonts.nix
     (import ./ghostty.nix {
       inherit accent;
       inherit codeFontName;
