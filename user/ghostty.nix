@@ -1,14 +1,7 @@
 {
-  accent,
-  codeBackgroundOpacity,
-  codeFontName,
-  codeFontSize,
-  color-schemes,
   config,
-  flavor,
   pkgs,
   system,
-  wrapGL,
   ...
 }:
 let
@@ -20,16 +13,16 @@ in
 {
   programs.ghostty = {
     enable = true;
-    package = (if wrapGL then config.lib.nixGL.wrap else (x: x)) pkgs.ghostty;
+    package = config.desktop.wrapGL pkgs.ghostty;
     settings = {
-      background-opacity = codeBackgroundOpacity;
+      background-opacity = config.desktop.font.code.backgroundOpacity;
       command = "${start-tmux}/bin/start-tmux";
       config-file = [
-        "${color-schemes}/ghostty/Catppuccin ${pkgs.lib.strings.toSentenceCase flavor}"
+        "${config.desktop.theme.colorSchemes}/ghostty/Catppuccin ${pkgs.lib.strings.toSentenceCase config.desktop.theme.flavor}"
       ];
       confirm-close-surface = false;
-      font-family = codeFontName;
-      font-size = codeFontSize;
+      font-family = config.desktop.font.code.name;
+      font-size = config.desktop.font.code.size;
       scrollback-limit = 1000000000;
     };
   };

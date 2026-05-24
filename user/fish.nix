@@ -1,12 +1,11 @@
 {
-  accent,
+  config,
   lib,
-  palette,
   pkgs,
   ...
 }:
 let
-  neo-color = if accent == "blue" then "cyan" else accent;
+  neo-color = if config.desktop.theme.accent == "blue" then "cyan" else config.desktop.theme.accent;
   os-neo = pkgs.writeShellScriptBin "os-neo" "${pkgs.neo}/bin/neo -D -f 120 -F -c ${neo-color}";
   plugin = x: {
     name = x;
@@ -223,7 +222,7 @@ in
       set -g fish_key_bindings fish_vi_key_bindings
       set -g fish_color_comment ${
         let
-          str = palette.rosewater.hex;
+          str = config.desktop.theme.palette.rosewater.hex;
         in
         builtins.substring 1 (builtins.stringLength str) str
       } --italics

@@ -1,4 +1,4 @@
-{ lockTimeout, pkgs }:
+{ config, pkgs, ... }:
 let
   lockingCountdown =
     n: "fish -c 'notify_countdown -f ${lockingPath} -t ${toString n} -m \'Locking in {} seconds\''";
@@ -6,7 +6,6 @@ let
 in
 {
   services.hypridle = {
-    # TODO move to another module.
     enable = true;
     settings = {
       general = {
@@ -23,23 +22,23 @@ in
         {
           on-resume = "rm ${lockingPath}";
           on-timeout = "touch ${lockingPath}; " + lockingCountdown 10;
-          timeout = lockTimeout - 10;
+          timeout = config.desktop.lock.timeout - 10;
         }
         # Lock.
         {
           on-timeout = "loginctl lock-session";
-          timeout = lockTimeout;
+          timeout = config.desktop.lock.timeout;
         }
         # Screen off.
         {
           on-resume = "hyprctl dispatch dpms on";
           on-timeout = "hyprctl dispatch dpms off";
-          timeout = lockTimeout + 60;
+          timeout = config.desktop.lock.timeout + 60;
         }
         # Sleep.
         {
           on-timeout = "systemctl suspend";
-          timeout = lockTimeout + (60 * 5);
+          timeout = config.desktop.lock.timeout + (60 * 5);
         }
       ];
     };

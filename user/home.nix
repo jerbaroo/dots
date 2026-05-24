@@ -9,7 +9,7 @@
   codeBackgroundOpacity,
   codeFontName,
   codeFontSize,
-  color-schemes,
+  colorSchemes,
   config,
   defaultFloatSize,
   flavor,
@@ -37,16 +37,25 @@
   wrapGL,
   ...
 }:
-let
-  # Where we install ignis configuration. Relative to home directory.
-  ignisPath = ".config/ignis/";
-  palette =
-    (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
-in
 {
   # Set custom Home Manager options.
   desktop = {
-    inherit systemFontSize username wallpaperName;
+    inherit
+      hostname
+      system
+      username
+      wallpaperName
+      ;
+    font = {
+      code = {
+        name = codeFontName;
+        size = codeFontSize;
+        backgroundOpacity = codeBackgroundOpacity;
+      };
+      system = {
+        size = systemFontSize;
+      };
+    };
     ghdashboard.port = ghdashboardPort;
     hyprland = {
       inherit
@@ -56,8 +65,23 @@ in
         layout
         rounding
         ;
+      border.size = borderSize;
+      float.size.default = defaultFloatSize;
+      package = hyprland.packages.${system}.hyprland;
     };
     hyprsunset.temperature = temperature;
+    ignis = {
+      configDir.path = ".config/ignis/";
+      package = ignis.packages.${system}.ignis;
+    };
+    lock.timeout = lockTimeout;
+    spicetify.packages = spicetify.legacyPackages.${system};
+    theme = {
+      inherit accent colorSchemes flavor;
+      palette =
+        (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
+    };
+    wrapGL = if wrapGL then config.lib.nixGL.wrap else (x: x);
   };
   home = {
     homeDirectory = "/home/${config.desktop.username}";
@@ -76,120 +100,34 @@ in
     # Personal Home Manager modules.
     ./audio.nix
     ./bluetooth.nix
-    (import ./browser.nix {
-      inherit config;
-      inherit ghdashboardPort;
-      inherit lib;
-      inherit pkgs;
-    })
-    # ./os-cli.nix
+    ./browser.nix
     ./direnv.nix
-    (import ./emacs/emacs.nix {
-      inherit codeFontName;
-      inherit codeFontSize;
-      inherit codeBackgroundOpacity;
-      inherit flavor;
-      inherit palette;
-      inherit pkgs;
-    })
+    ./emacs/emacs.nix
     ./eza.nix
-    (import ./fish.nix {
-      inherit accent;
-      inherit lib;
-      inherit palette;
-      inherit pkgs;
-    })
+    ./fish.nix
     ./fonts.nix
-    (import ./ghostty.nix {
-      inherit accent;
-      inherit codeFontName;
-      inherit codeFontSize;
-      inherit codeBackgroundOpacity;
-      inherit color-schemes;
-      inherit config;
-      inherit flavor;
-      inherit pkgs;
-      inherit system;
-      inherit wrapGL;
-    })
-    (import ./ghdashboard.nix {
-      inherit
-        config
-        lib
-        pkgs
-        ;
-    })
+    ./ghostty.nix
+    ./ghdashboard.nix
     ./git.nix
-    (import ./hypridle.nix {
-      inherit lockTimeout;
-      inherit pkgs;
-    })
-    (import ./hyprland.nix {
-      inherit accent;
-      inherit bitDepth;
-      inherit borderSize;
-      inherit config;
-      inherit defaultFloatSize;
-      inherit flavor;
-      inherit hdr;
-      inherit hostname;
-      inherit hyprland;
-      inherit ignis;
-      inherit ignisPath;
-      inherit lib;
-      inherit lockTimeout;
-      inherit palette;
-      inherit pkgs;
-      inherit system;
-      inherit wrapGL;
-    })
+    ./hypridle.nix
+    ./hyprland.nix
     ./hyprsunset.nix
-    (import ./ignis.nix {
-      inherit accent;
-      inherit config;
-      inherit ignis;
-      inherit ignisPath;
-      inherit palette;
-      inherit pkgs;
-    }).hm
-    (import ./kanata/kanata.nix { inherit pkgs; }).hm
-    (import ./kitty.nix {
-      inherit codeBackgroundOpacity;
-      inherit codeFontName;
-      inherit codeFontSize;
-      inherit config;
-      inherit pkgs;
-      inherit wrapGL;
-    })
-    (import ./openrgb.nix { inherit pkgs; }).hm
+    ./ignis.nix
+    ./kanata/kanata.nix
+    ./kitty.nix
+    ./lock.nix
+    ./monitor.nix
+    ./openrgb.nix
+    ./os-cli.nix
     ./neovim.nix
     ./notifications.nix
     ./packages.nix
     ./qt.nix
-    (import ./quickshell.nix {
-      inherit lib;
-      inherit pkgs;
-      inherit quickshell;
-      inherit system;
-    })
-    (import ./spicetify.nix {
-      inherit accent;
-      inherit flavor;
-      inherit palette;
-      inherit pkgs;
-      inherit spicetify;
-    })
+    ./quickshell.nix
+    ./spicetify.nix
     ./starship.nix
-    (import ./theme.nix {
-      inherit accent;
-      inherit flavor;
-      inherit pkgs;
-    })
-    (import ./tmux.nix {
-      inherit accent;
-      inherit palette;
-      inherit pkgs;
-    })
+    ./theme.nix
+    ./tmux.nix
     ./wallpaper.nix
     ./wallpaper-service.nix
     ./wlogout.nix

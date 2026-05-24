@@ -1,9 +1,4 @@
-{
-  accent,
-  palette,
-  pkgs,
-  ...
-}:
+{ config, pkgs, ... }:
 let
   # Run git in the current directory with a tmux background.
   # The caller must ensure they are in the correct directory.
@@ -80,17 +75,21 @@ in
 
       # Theming.
       set -as terminal-features ",*:RGB" # True color.
-      set -g pane-active-border-style fg=${palette.${accent}.hex}
+      set -g pane-active-border-style fg=${
+        config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+      }
       set -g pane-border-lines heavy
-      set -g pane-border-style fg=${palette.base.hex}
-      set -g message-command-style bg=${palette.base.hex},fg=${palette.text.hex}
-      set -g message-style bg=${palette.base.hex},fg=${palette.text.hex}
-      set -g prompt-cursor-colour "${palette.${accent}.hex}"
-      set -g status-left-style fg=${palette.text.hex}
+      set -g pane-border-style fg=${config.desktop.theme.palette.base.hex}
+      set -g message-command-style bg=${config.desktop.theme.palette.base.hex},fg=${config.desktop.theme.palette.text.hex}
+      set -g message-style bg=${config.desktop.theme.palette.base.hex},fg=${config.desktop.theme.palette.text.hex}
+      set -g prompt-cursor-colour "${config.desktop.theme.palette.${config.desktop.theme.accent}.hex}"
+      set -g status-left-style fg=${config.desktop.theme.palette.text.hex}
       set -g status-style bg=default # Transparent status bar background.
       set -g window-status-separator " "
-      set -g window-status-style fg=${palette.text.hex}
-      set -g window-status-current-style bg=${palette.base.hex},fg="${palette.${accent}.hex} bold"
+      set -g window-status-style fg=${config.desktop.theme.palette.text.hex}
+      set -g window-status-current-style bg=${config.desktop.theme.palette.base.hex},fg="${
+        config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+      } bold"
 
       # Status bar format.
       set -g status-interval 1

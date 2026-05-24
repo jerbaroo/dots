@@ -5,8 +5,6 @@
 }:
 
 let
-  kanata = (import ./kanata/kanata.nix { inherit pkgs; });
-  openrgb = import ./openrgb.nix { inherit pkgs; };
   redirectLogs = name: cmd: "${cmd} >> /tmp/${name}.log 2>&1";
 in
 {
@@ -14,20 +12,20 @@ in
   # the order.
   commands = map (app: redirectLogs app.name app.cmd) [
     {
+      cmd = config.desktop.kanata.command;
       name = "kanata";
-      cmd = kanata.cmd;
     }
     {
-      name = "wallpaper";
       cmd = config.desktop.setWallpaperCmd;
+      name = "wallpaper";
     }
     {
+      cmd = config.desktop.openrgb.command;
       name = "openrgb";
-      cmd = openrgb.cmd;
     }
     {
-      name = "1password";
       cmd = "1password --silent";
+      name = "1password";
     }
   ];
 }

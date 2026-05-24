@@ -1,14 +1,12 @@
 {
-  ignisPath,
-  palette,
+  config,
+  lib,
   pkgs,
   ...
 }:
 let
-  c = colour: pkgs.lib.strings.removePrefix "#" palette.${colour}.hex;
-  # The lock screen program we currently use.
-  os-lock = pkgs.writeShellScriptBin "os-lock" "${swaylock_}/bin/swaylock_";
-  # We wrap the distro-specific swaylock package.
+  c = colour: pkgs.lib.strings.removePrefix "#" config.desktop.theme.palette.${colour}.hex;
+  # We wrap the distro-specific swaylock package with a custom theme.
   swaylock_ = pkgs.writeShellScriptBin "swaylock_" ''
     swaylock \
       --font 'Atkinson Hyperlegible' \
@@ -55,11 +53,17 @@ let
   '';
 in
 {
-  hm = {
+  options.desktop.lock = {
+    cmd = lib.mkOption { type = lib.types.str; };
+    timeout = lib.mkOption { type = lib.types.ints.unsigned; };
+  };
+  config = {
+    desktop.lock.cmd = "${swaylock_}/bin/swaylock_";
     home.packages = [
-      os-lock
+      # We make sure that, regardless of the locking program, it can be found
+      # at the same command. TODO use CLI for this.
+      (pkgs.writeShellScriptBin "os-lock" "${config.desktop.lock.cmd}")
       swaylock_
     ];
   };
-  inherit os-lock swaylock_;
 }

@@ -1,59 +1,20 @@
 {
-  accent,
-  bitDepth,
-  borderSize,
   config,
-  defaultFloatSize,
-  flavor,
-  hdr,
-  hostname,
-  hyprland,
-  ignis,
-  ignisPath,
   lib,
-  palette,
   pkgs,
   system,
-  lockTimeout,
-  wrapGL,
   ...
 }:
 let
-  bitDepthStr = ", bitdepth, ${toString bitDepth}";
-  browser = (import ./browser.nix { inherit config lib pkgs; });
-  floatCenter = _: "[float;center;${floatSize defaultFloatSize}]";
+  bitDepthStr = ", bitdepth, ${toString config.desktop.graphics.bitDepth}";
+  floatCenter = _: "[float;center;${floatSize config.desktop.hyprland.float.size.default}]";
   floatSize = fraction: "size (monitor_w*${toString fraction}) (monitor_h*${toString fraction})";
-  ignisModule = (
-    import ./ignis.nix {
-      inherit
-        accent
-        config
-        ignis
-        ignisPath
-        palette
-        pkgs
-        ;
-    }
-  );
-  kanata = (import ./kanata/kanata.nix { inherit pkgs; });
-  locks = import ./lock.nix { inherit ignisPath palette pkgs; };
-  monitor = import ./monitor.nix { inherit config os-cli pkgs; };
-  os-cli = import ./os-cli.nix {
-    inherit
-      config
-      ignis
-      hostname
-      hyprland
-      pkgs
-      system
-      ;
-  };
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
     ${pkgs.socat}/bin/socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
       case "$line" in
         "monitoradded>>"*|"monitorremoved>>"*)
           echo "$line" >> /tmp/monitor-change
-          ${monitor.onChange}
+          ${config.desktop.monitor.onChange}
           ;;
       esac
     done
@@ -66,7 +27,9 @@ in
     animationSpeed = lib.mkOption {
       type = lib.types.nullOr (lib.types.addCheck lib.types.float (x: x > 0));
     };
+    border.size = lib.mkOption { type = lib.types.ints.unsigned; };
     blur = lib.mkOption { type = lib.types.bool; };
+    float.size.default = lib.mkOption { type = lib.types.float; };
     gap = lib.mkOption { type = lib.types.ints.unsigned; };
     layout = lib.mkOption {
       type = lib.types.enum [
@@ -74,6 +37,7 @@ in
         "scrolling"
       ];
     };
+    package = lib.mkOption { type = lib.types.package; };
     rounding = lib.mkOption { type = lib.types.ints.unsigned; };
   };
   config = {
@@ -165,9 +129,12 @@ in
           };
           dwindle.preserve_split = true;
           general = {
-            border_size = borderSize;
-            "col.active_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.${accent}.hex})";
-            "col.inactive_border" = "rgb(${pkgs.lib.strings.removePrefix "#" palette.base.hex})";
+            border_size = config.desktop.hyprland.border.size;
+            "col.active_border" = "rgb(${
+              pkgs.lib.strings.removePrefix "#" config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+            })";
+            "col.inactive_border" =
+              "rgb(${pkgs.lib.strings.removePrefix "#" config.desktop.theme.palette.base.hex})";
             gaps_in = config.desktop.hyprland.gap;
             gaps_out = config.desktop.hyprland.gap * 2;
             layout = config.desktop.hyprland.layout;
@@ -244,7 +211,7 @@ in
 
             # Alphabet keys.
             (bind "${mod} + B" (execCmd "${floatCenter 0} ${config.desktop.bluetooth.guiCmd}"))
-            (bind "${mod} + SHIFT + B" (execCmd os-cli.ui-menu-bar-toggle))
+            (bind "${mod} + SHIFT + B" (execCmd config.desktop.cli.ui.menuBar.toggle))
             (bind "${mod} + D" (execCmd "${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"))
             (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
             (bind "${mod} + E" (execCmd "${pkgs.emacs-pgtk}/bin/emacs"))
@@ -259,19 +226,19 @@ in
             ))
             (bind "${mod} + P" (dispatch "layout" "\"promote\""))
             (bind "${mod} + Q" (dispatch "window.kill" ""))
-            (bind "${mod} + S" (execCmd os-cli.screenshot))
-            (bind "${mod} + SHIFT + S" (execCmd "ghostty -e ${os-cli.home-switch}"))
+            (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
+            (bind "${mod} + SHIFT + S" (execCmd "ghostty -e ${config.desktop.cli.home.switch}"))
             (bind "${mod} + T" (execCmd "${floatCenter 0} ghostty -e ${pkgs.btop}/bin/btop"))
             (bind "${mod} + V" (execCmd "${floatCenter 0} ${config.desktop.audio.guiCmd}"))
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
             (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))
 
             # Other keys
-            (bind "${mod} + BACKSPACE" (execCmd os-cli.ui-logout-menu-toggle))
+            (bind "${mod} + BACKSPACE" (execCmd config.desktop.cli.ui.logoutMenu.toggle))
             (bind "${mod} + DELETE" (execCmd "systemctl suspend"))
             (bind "${mod} + RETURN" (execCmd "ghostty"))
             (bind "${mod} + SHIFT + RETURN" (execCmd "konsole")) # Backup terminal.
-            (bind "${mod} + SLASH" (execCmd os-cli.ui-app-launcher-toggle))
+            (bind "${mod} + SLASH" (execCmd config.desktop.cli.ui.appLauncher.toggle))
             (bind "${mod} + SPACE" (
               if config.desktop.hyprland.layout == "dwindle" then
                 dispatch "togglesplit" ""
@@ -373,8 +340,8 @@ in
         # Blur the menu bar.
         layer_rule = [
           {
-            match.namespace = ignisModule.barRegex;
             blur = true;
+            match.namespace = config.desktop.ignis.bar.namespace.regex;
           }
         ];
         window_rule =
@@ -383,7 +350,7 @@ in
               center = true;
               float = true;
               match.title = "^(${title})$";
-              size = "(monitor_w*${toString defaultFloatSize}) (monitor_h*${toString defaultFloatSize})";
+              size = "(monitor_w*${toString config.desktop.hyprland.float.size.default}) (monitor_h*${toString config.desktop.hyprland.float.size.default})";
             };
             noBorderIfSoleTile = {
               border_size = 0;

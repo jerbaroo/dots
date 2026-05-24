@@ -1,14 +1,20 @@
 {
   config,
-  os-cli,
+  lib,
   pkgs,
+  ...
 }:
 let
   onChange = pkgs.writeShellScript "monitor-on-change" ''
     ${config.desktop.setWallpaperCmd}
-    ${os-cli.ui-reload}
+    ${config.desktop.cli.ui.reload}
   '';
 in
 {
-  inherit onChange;
+  options.desktop.monitor.onChange = lib.mkOption {
+    default = onChange;
+    description = "Command to run when connected monitors change.";
+    readOnly = true;
+    type = lib.types.package;
+  };
 }

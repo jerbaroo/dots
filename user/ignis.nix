@@ -1,34 +1,30 @@
 {
-  accent,
   config,
-  ignis,
-  ignisPath,
-  palette,
+  lib,
   pkgs,
   ...
 }:
 {
-  barRegex = "^(ignis-bar-.*)$";
-  hm = {
-    home.file.${ignisPath} = {
+  config = {
+    home.file.${config.desktop.ignis.configDir.path} = {
       recursive = true;
       source = ./ignis;
     };
     # Write command paths to a fixed location, to be picked up at run-time.
-    home.file."${ignisPath}/nix_paths.py".text = ''
+    home.file."${config.desktop.ignis.configDir.path}/nix_paths.py".text = ''
       AUDIO_GUI_CMD="${config.desktop.audio.guiCmd}"
       BLUETOOTH_GUI_CMD="${config.desktop.bluetooth.guiCmd}"
       DESK_CMD="${pkgs.idasen}/bin/idasen"
       POWER_PROFILES_CMD="${pkgs.power-profiles-daemon}/bin/powerprofilesctl"
     '';
     # Write theme colours to a fixed location, to be picked up at run-time.
-    home.file."${ignisPath}/colors.scss".text = ''
-      $accent: ${palette.${accent}.hex};
-      $base: ${palette.base.hex};
-      $crust: ${palette.crust.hex};
-      $mantle: ${palette.mantle.hex};
-      $red: ${palette.red.hex};
-      $yellow: ${palette.yellow.hex};
+    home.file."${config.desktop.ignis.configDir.path}/colors.scss".text = ''
+      $accent: ${config.desktop.theme.palette.${config.desktop.theme.accent}.hex};
+      $base: ${config.desktop.theme.palette.base.hex};
+      $crust: ${config.desktop.theme.palette.crust.hex};
+      $mantle: ${config.desktop.theme.palette.mantle.hex};
+      $red: ${config.desktop.theme.palette.red.hex};
+      $yellow: ${config.desktop.theme.palette.yellow.hex};
     '';
     programs.ignis = {
       enable = true;
@@ -66,6 +62,22 @@
       # Ready to run on graphical session start, but still needs to wait on
       # targets in "After".
       Install.WantedBy = [ "graphical-session.target" ];
+    };
+  };
+  options.desktop.ignis = {
+    bar.namespace.regex = lib.mkOption {
+      default = "^(ignis-bar-.*)$";
+      description = "Regex that will match the menu bar namespace.";
+      readOnly = true;
+      type = lib.types.str;
+    };
+    configDir.path = lib.mkOption {
+      description = "Path relative to $HOME to the ignis config directory.";
+      type = lib.types.str;
+    };
+    package = lib.mkOption {
+      description = "Package containing ignis";
+      type = lib.types.package;
     };
   };
 }

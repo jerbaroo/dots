@@ -1,25 +1,22 @@
 {
-  accent,
-  flavor,
-  palette,
+  config,
+  lib,
   pkgs,
-  spicetify,
+  ...
 }:
-let
-in
 {
-  programs.spicetify =
-    let
-      spicePkgs = spicetify.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-    in
-    {
-      colorScheme = flavor;
-      enable = true;
-      enabledExtensions = with spicePkgs.extensions; [
-        fullAppDisplay
-        keyboardShortcut
-      ];
-      theme = spicePkgs.themes.catppuccin;
-      wayland = true;
-    };
+  config.programs.spicetify = {
+    colorScheme = config.desktop.theme.flavor;
+    enable = true;
+    enabledExtensions = with config.desktop.spicetify.packages.extensions; [
+      fullAppDisplay
+      keyboardShortcut
+    ];
+    theme = config.desktop.spicetify.packages.themes.catppuccin;
+    wayland = true;
+  };
+  options.desktop.spicetify.packages = lib.mkOption {
+    description = "Spicetify packages";
+    type = lib.types.attrs;
+  };
 }

@@ -1,13 +1,13 @@
-{ pkgs }:
+{ lib, pkgs, ... }:
 let
   openrgb = pkgs.openrgb;
 in
 {
-  cmd = "${openrgb}/bin/openrgb -c ff1300";
-  hm = {
-    home.packages = [ openrgb ];
-  };
-  nixos = {
-    services.hardware.openrgb.enable = true;
+  config.home.packages = [ openrgb ];
+  options.desktop.openrgb.command = lib.mkOption {
+    default = "${openrgb}/bin/openrgb -c ff1300";
+    description = "Command to set RGB colours";
+    readOnly = true;
+    type = lib.types.str;
   };
 }

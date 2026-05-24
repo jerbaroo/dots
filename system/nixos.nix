@@ -10,7 +10,7 @@
   codeBackgroundOpacity,
   codeFontName,
   codeFontSize,
-  color-schemes,
+  colorSchemes,
   config,
   defaultFloatSize,
   flavor,
@@ -72,7 +72,7 @@
       inherit username;
       inherit wallpaperName;
       inherit catppuccin;
-      inherit color-schemes;
+      inherit colorSchemes;
       genericLinux = true;
       wrapGL = true;
     };
@@ -91,11 +91,11 @@
       inherit system;
     })
     ./hardware-configuration.nix
-    (import ../user/kanata/kanata.nix { inherit pkgs; }).nixos
+    ./kanata.nix
     ./keyboard.nix
     ./locale.nix
     (import ./network.nix { inherit hostname; })
-    (import ../user/openrgb.nix { inherit pkgs; }).nixos
+    ./openrgb.nix
     ./printing.nix
     (import ./sound.nix { inherit pkgs; })
     ./steam.nix

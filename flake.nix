@@ -98,7 +98,7 @@
               ;
             allowUnfreePredicate = _: true;
             catppuccin = inputs.catppuccin;
-            color-schemes = inputs.color-schemes;
+            colorSchemes = inputs.color-schemes;
             genericLinux = true;
             hyprland = inputs.hyprland;
             hostname = hostnameNixOS;
@@ -145,12 +145,11 @@
                   pkgs.spotify
                   pkgs.steam
                   pkgs.steam-unwrapped
-                  pkgs.symbola
                 ];
               in
               pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
             catppuccin = inputs.catppuccin;
-            color-schemes = inputs.color-schemes;
+            colorSchemes = inputs.color-schemes;
             genericLinux = true;
             hyprland = inputs.hyprland;
             hostname = hostnameUbuntu;
