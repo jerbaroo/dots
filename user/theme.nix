@@ -5,10 +5,13 @@
   ...
 }:
 let
-  themeName = "catppuccin-${flavor}-${accent}-standard+rimless";
+  themeName = "catppuccin-${flavor}-${accent}-standard+black,rimless";
   themePkg = pkgs.catppuccin-gtk.override {
     accents = [ "${accent}" ];
-    tweaks = [ "rimless" ];
+    tweaks = [
+      "black"
+      "rimless"
+    ];
     variant = "${flavor}";
   };
 in
