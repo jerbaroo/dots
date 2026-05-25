@@ -225,6 +225,7 @@ in
             ))
             (bind "${mod} + P" (dispatch "layout" "\"promote\""))
             (bind "${mod} + Q" (dispatch "window.kill" ""))
+            (bind "${mod} + SHIFT + Q" (execCmd "${pkgs.hyprshutdown}/bin/hyprshutdown"))
             (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
             (bind "${mod} + SHIFT + S" (execCmd "ghostty -e ${config.desktop.cli.home.switch}"))
             (bind "${mod} + T" (execCmd "${floatCenter 0} ghostty -e ${pkgs.btop}/bin/btop"))
