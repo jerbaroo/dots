@@ -18,7 +18,9 @@ let
       name = "wallpaper";
     }
   ];
-  redirectLogs = name: cmd: "${cmd config} >> /tmp/${name}.log 2>&1";
+  redirectLogs =
+    name: cmd:
+    "{ echo \"[$(date '+%Y-%m-%d %H:%M:%S')] Executing: ${name}\"; ${cmd config}; } >> /tmp/${name}.log 2>&1";
 in
 {
   options.desktop.startup.allCommands = lib.mkOption {

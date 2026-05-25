@@ -43,7 +43,7 @@ in
     rounding = lib.mkOption { type = lib.types.ints.unsigned; };
   };
   config = {
-    catppuccin.hyprland.enable = false;
+    catppuccin.hyprland.enable = false; # Broken since 0.55.
     wayland.windowManager.hyprland = {
       configType = "lua";
       enable = true;
@@ -122,6 +122,7 @@ in
             (bezier "stall" "1" "-0.1" "0.7" "0.85")
           ];
         config = {
+          cursor.no_hardware_cursors = true;
           debug.disable_logs = false;
           decoration = {
             active_opacity = 1;
@@ -168,7 +169,7 @@ in
             execOnStart = cmd: {
               _args = [
                 "hyprland.start"
-                (lib.generators.mkLuaInline ("function() hl.exec_cmd(\"" + cmd + "\") end"))
+                (lib.generators.mkLuaInline ("function() hl.exec_cmd([[" + cmd + "]]) end"))
               ];
             };
           in

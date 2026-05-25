@@ -4,20 +4,20 @@
   pkgs,
   ...
 }:
+let
+  themeName = "catppuccin-${flavor}-${accent}-standard+rimless";
+  themePkg = pkgs.catppuccin-gtk.override {
+    accents = [ "${accent}" ];
+    tweaks = [ "rimless" ];
+    variant = "${flavor}";
+  };
+in
 {
   catppuccin = {
     accent = "${accent}";
     enable = true;
     flavor = "${flavor}";
-  };
-  gtk.enable = true;
-
-  # Icons.
-  # ls /etc/profiles/per-user/jer/share/icons
-  catppuccin.gtk.icon.enable = false;
-  gtk.iconTheme = {
-    name = "Papirus";
-    package = pkgs.papirus-icon-theme;
+    gtk.icon.enable = false;
   };
 
   # Cursors.
@@ -30,14 +30,27 @@
     # x11.enable = true;
   };
 
-  # GTK Theme.
-  # ls /etc/profiles/per-user/jer/share/themes
-  gtk.theme.name = "catppuccin-${flavor}-${accent}-standard+rimless";
-  gtk.theme.package = (
-    pkgs.catppuccin-gtk.override {
-      accents = [ "${accent}" ];
-      tweaks = [ "rimless" ];
-      variant = "${flavor}";
-    }
-  );
+  # GTK.
+  gtk = {
+    enable = true;
+    # Icons.
+    # ls /etc/profiles/per-user/jer/share/icons
+    iconTheme = {
+      name = "Papirus";
+      package = pkgs.papirus-icon-theme;
+    };
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+    };
+    # GTK Theme.
+    # ls /etc/profiles/per-user/jer/share/themes
+    theme = {
+      name = themeName;
+      package = themePkg;
+    };
+  };
+  xdg.configFile = {
+    "gtk-4.0/assets".source = "${themePkg}/share/themes/${themeName}/gtk-4.0/assets";
+    "gtk-4.0/gtk.css".source = "${themePkg}/share/themes/${themeName}/gtk-4.0/gtk.css";
+  };
 }

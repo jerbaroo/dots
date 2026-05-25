@@ -13,18 +13,19 @@
   programs.dconf.enable = true;
   programs.hyprland.enable = true;
   xdg.portal = {
-    # For NixOS 24.05 and newer we must explicitly map portals. This tells the
-    # system to use the GTK portal for GTK-specific settings.
     enable = true;
-    extraPortals = [
-      # pkgs.xdg-desktop-portal
-      pkgs.xdg-desktop-portal-gtk
-      # pkgs.xdg-desktop-portal-hyprland
-    ];
-    config.common = {
-      default = [ "*" ];
-      # "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config = {
+      common.default = [ "gtk" ];
+      hyprland = {
+        default = [
+          "hyprland"
+          "gtk"
+        ];
+        # Explicitly tell Hyprland to handle what it's meant to handle.
+        "org.freedesktop.portal.ScreenCast" = [ "hyprland" ];
+        "org.freedesktop.portal.Screenshot" = [ "hyprland" ];
+      };
     };
-    # config.hyprland.default = [ "hyprland" "gtk" ];
   };
 }
