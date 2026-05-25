@@ -5,21 +5,23 @@
   ...
 }:
 let
-  themeName = "catppuccin-${flavor}-${accent}-standard+black,rimless";
-  themePkg = pkgs.catppuccin-gtk.override {
-    accents = [ "${accent}" ];
+  themeName = "Colloid-${pkgs.lib.strings.toSentenceCase accent}-Dark-Catppuccin";
+  themePkg = pkgs.colloid-gtk-theme.override {
     tweaks = [
       "black"
+      "catppuccin"
+      "normal"
+      "float"
       "rimless"
     ];
-    variant = "${flavor}";
+    themeVariants = [ accent ];
   };
 in
 {
+  # We use nix-catppuccin to style some apps. Notably not GTK.
   catppuccin = {
-    accent = "${accent}";
+    inherit accent flavor;
     enable = true;
-    flavor = "${flavor}";
     gtk.icon.enable = false;
   };
 
