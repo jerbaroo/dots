@@ -31,37 +31,47 @@
   outputs =
     inputs:
     let
-      accent = "pink";
-      animationSpeed = 1.0;
-      bitDepth = 10;
-      blur = true;
-      borderSize = 2;
-      codeBackgroundOpacity = 0.7;
-      codeFontName = "Iosevka Nerd Font Mono";
-      codeFontSize = 12;
-      defaultFloatSize = 0.8;
-      flavor = "mocha";
-      gap = 0;
-      ghdashboardPort = 1234;
-      hdr = true;
       hostnameNixOS = "nixos";
-      hostnameUbuntu = "ubuntu";
-      layout = "scrolling";
-      lockTimeout = 120;
+      hmConfigs = import ./hm-configs.nix;
+      usernameNixOS = "jer";
       pkgs = import inputs.nixpkgs {
         overlays = [
           inputs.nixgl.overlay
         ];
         inherit system;
       };
-      rounding = 1;
-      stateVersion = "26.05";
       system = "x86_64-linux";
-      systemFontSize = 12;
-      temperature = 5500;
-      usernameNixOS = "jer";
-      usernameUbuntu = "jeremy-barisch-rooney";
-      wallpaperName = "jellyfish-purple.jpg";
+
+      sharedArgs = {
+        inherit system;
+        accent = "pink";
+        animationSpeed = 1.0;
+        bitDepth = 10;
+        blur = true;
+        borderSize = 2;
+        catppuccin = inputs.catppuccin;
+        codeBackgroundOpacity = 0.7;
+        codeFontName = "Iosevka Nerd Font Mono";
+        codeFontSize = 12;
+        colorSchemes = inputs.color-schemes;
+        defaultFloatSize = 0.8;
+        flavor = "mocha";
+        gap = 0;
+        ghdashboardPort = 1234;
+        hdr = true;
+        hyprland = inputs.hyprland;
+        ignis = inputs.ignis;
+        layout = "scrolling";
+        lockTimeout = 120;
+        nixgl = inputs.nixgl;
+        quickshell = inputs.quickshell;
+        rounding = 1;
+        spicetify = inputs.spicetify;
+        stateVersion = "26.05";
+        systemFontSize = 12;
+        temperature = 5500;
+        wallpaperName = "jellyfish-purple.jpg";
+      };
     in
     {
       nixosConfigurations = {
@@ -72,97 +82,48 @@
             inputs.catppuccin.nixosModules.catppuccin
             inputs.home-manager.nixosModules.home-manager
           ];
-          specialArgs = {
-            inherit
-              accent
-              animationSpeed
-              bitDepth
-              blur
-              borderSize
-              codeBackgroundOpacity
-              codeFontName
-              codeFontSize
-              defaultFloatSize
-              flavor
-              gap
-              ghdashboardPort
-              hdr
-              layout
-              lockTimeout
-              rounding
-              stateVersion
-              system
-              systemFontSize
-              temperature
-              wallpaperName
-              ;
+          specialArgs = sharedArgs // {
             allowUnfreePredicate = _: true;
-            catppuccin = inputs.catppuccin;
-            colorSchemes = inputs.color-schemes;
             genericLinux = false;
-            hyprland = inputs.hyprland;
             hostname = hostnameNixOS;
-            ignis = inputs.ignis;
-            nixgl = inputs.nixgl;
-            quickshell = inputs.quickshell;
-            spicetify = inputs.spicetify;
+            startupExtraCommands = [
+              {
+                cmd = config: config.desktop.openrgb.command;
+                name = "openrgb";
+              }
+            ];
             username = usernameNixOS;
             wrapGL = false;
           };
         };
       };
-      homeConfigurations = {
-        "${usernameUbuntu}@${hostnameUbuntu}" = inputs.home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = {
-            inherit
-              accent
-              animationSpeed
-              bitDepth
-              blur
-              borderSize
-              codeBackgroundOpacity
-              codeFontName
-              codeFontSize
-              defaultFloatSize
-              flavor
-              hdr
-              gap
-              ghdashboardPort
-              layout
-              lockTimeout
-              rounding
-              stateVersion
-              system
-              systemFontSize
-              temperature
-              wallpaperName
-              ;
-            allowUnfreePredicate =
+      homeConfigurations = builtins.listToAttrs (
+        map (hmConfig: {
+          name = "${hmConfig.username}@${hmConfig.hostname}";
+          value = inputs.home-manager.lib.homeManagerConfiguration {
+            inherit pkgs;
+            extraSpecialArgs =
               let
-                whitelist = map pkgs.lib.getName [
-                  pkgs.google-chrome
-                  pkgs.spotify
-                  pkgs.steam
-                  pkgs.steam-unwrapped
-                  pkgs.symbola
-                ];
+                hmArgs = {
+                  allowUnfreePredicate =
+                    let
+                      whitelist = map pkgs.lib.getName [
+                        pkgs.google-chrome
+                        pkgs.spotify
+                        pkgs.steam
+                        pkgs.steam-unwrapped
+                        pkgs.symbola
+                      ];
+                    in
+                    pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
+                  genericLinux = true;
+                  wrapGL = true;
+                };
               in
-              pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
-            catppuccin = inputs.catppuccin;
-            colorSchemes = inputs.color-schemes;
-            genericLinux = true;
-            hyprland = inputs.hyprland;
-            hostname = hostnameUbuntu;
-            ignis = inputs.ignis;
-            nixgl = inputs.nixgl;
-            quickshell = inputs.quickshell;
-            spicetify = inputs.spicetify;
-            username = usernameUbuntu;
-            wrapGL = true;
+              sharedArgs // hmArgs // hmConfig;
+            modules = [ ./user/home.nix ];
           };
-          modules = [ ./user/home.nix ];
-        };
-      };
+        }) hmConfigs
+      );
     };
 }

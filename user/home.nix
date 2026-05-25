@@ -28,6 +28,7 @@
   quickshell,
   rounding,
   spicetify,
+  startupExtraCommands,
   stateVersion,
   system,
   systemFontSize,
@@ -75,11 +76,12 @@
     };
     hyprsunset.temperature = temperature;
     ignis = {
-      configDir.path = ".config/ignis/";
+      configDir.path = ".config/ignis";
       package = ignis.packages.${system}.ignis;
     };
     lock.timeout = lockTimeout;
     spicetify.packages = spicetify.legacyPackages.${system};
+    startup.extraCommands = startupExtraCommands;
     theme = {
       inherit accent colorSchemes flavor;
       palette =
@@ -131,6 +133,7 @@
     ./quickshell.nix
     ./spicetify.nix
     ./starship.nix
+    ./startup.nix
     ./theme.nix
     ./tmux.nix
     ./wallpaper.nix

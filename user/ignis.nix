@@ -4,11 +4,19 @@
   pkgs,
   ...
 }:
+let
+  # Replace placeholders in source code with nix configuration values.
+  patchedIgnis = pkgs.runCommand "ignis-patched" { } ''
+    cp -r ${./ignis} $out
+    substituteInPlace $out/app.scss \
+      --replace-fail "<<CONFIG>>" "${config.home.homeDirectory}/${config.desktop.ignis.configDir.path}"
+  '';
+in
 {
   config = {
     home.file.${config.desktop.ignis.configDir.path} = {
       recursive = true;
-      source = ./ignis;
+      source = patchedIgnis;
     };
     # Write command paths to a fixed location, to be picked up at run-time.
     home.file."${config.desktop.ignis.configDir.path}/nix_paths.py".text = ''

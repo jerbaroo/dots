@@ -19,7 +19,6 @@ let
       esac
     done
   '';
-  startup = (import ./startup.nix { inherit config lib pkgs; });
   zoomFactor = 0.2;
 in
 {
@@ -37,7 +36,10 @@ in
         "scrolling"
       ];
     };
-    package = lib.mkOption { type = lib.types.package; };
+    package = lib.mkOption {
+      description = "Hyprland package (set to null if using distro-installed hyprland)";
+      type = lib.types.nullOr lib.types.package;
+    };
     rounding = lib.mkOption { type = lib.types.ints.unsigned; };
   };
   config = {
@@ -54,7 +56,11 @@ in
       # Workspace rule maps
       # workspace_rule = [ { match.workspace = "1"; monitor = "HDMI-A-1"; default = true; } ];
       package = config.desktop.hyprland.package;
-      portalPackage = null;
+      portalPackage =
+        if config.desktop.hyprland.package == null then
+          null
+        else
+          config.lib.nixGL.wrap pkgs.xdg-desktop-portal-hyprland;
       settings = {
         animation =
           let
@@ -155,16 +161,7 @@ in
           };
           xwayland.force_zero_scaling = true;
         };
-        env =
-          let
-            f = tuple: { _args = tuple; };
-          in
-          map f [
-            [
-              "GDK_BACKEND"
-              "wayland"
-            ]
-          ]; # ["XDG_CURRENT_DESKTOP" "hyprland"] ];
+        env = map (tuple: { _args = tuple; }) [ ];
         # Hyprland hooks.
         on =
           let
@@ -175,7 +172,7 @@ in
               ];
             };
           in
-          map execOnStart (startup.commands ++ [ "${monitorListener}" ]);
+          map execOnStart (config.desktop.startup.allCommands ++ [ "${monitorListener}" ]);
         bind =
           let
             bind = keys: action: {

@@ -29,6 +29,7 @@
   quickshell,
   rounding,
   spicetify,
+  startupExtraCommands,
   stateVersion,
   system,
   systemFontSize,
@@ -67,6 +68,7 @@
         quickshell
         rounding
         spicetify
+        startupExtraCommands
         stateVersion
         system
         systemFontSize
@@ -85,6 +87,7 @@
   imports = [
     (import ./boot.nix { inherit pkgs; })
     (import ./bluetooth.nix { inherit lib; })
+    ./desktop.nix
     ./docker.nix
     ./firmware.nix
     (import ./graphics.nix {
