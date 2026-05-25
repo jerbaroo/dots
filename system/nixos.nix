@@ -26,7 +26,6 @@
   lockTimeout,
   nixgl,
   pkgs,
-  quickshell,
   rounding,
   spicetify,
   startupExtraCommands,
@@ -65,7 +64,6 @@
         layout
         lockTimeout
         nixgl
-        quickshell
         rounding
         spicetify
         startupExtraCommands

@@ -20,12 +20,6 @@
     };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    quickshell = {
-      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
-      # Prevents Nix from downloading and compiling a second, slightly different
-      # version of Qt6 and other heavy dependencies.
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     spicetify.url = "github:Gerg-L/spicetify-nix";
   };
   outputs =
@@ -64,7 +58,6 @@
         layout = "scrolling";
         lockTimeout = 120;
         nixgl = inputs.nixgl;
-        quickshell = inputs.quickshell;
         rounding = 1;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";

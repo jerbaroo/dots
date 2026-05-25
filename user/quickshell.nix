@@ -1,28 +1,45 @@
 {
+  config,
   lib,
   pkgs,
-  quickshell,
-  system,
   ...
 }:
 let
   # Packages and paths of dependencies.
-  qt-base-pkg = pkgs.kdePackages.qtdeclarative;
-  qt-base-path = "${qt-base-pkg}/lib/qt-6/qml";
-  quickshell-pkg = quickshell.packages.${system}.default;
-  quickshell-path = "${quickshell-pkg}/lib/qt-6/qml";
+  qtPkg = pkgs.kdePackages.qtdeclarative;
+  qtPath = "${qtPkg}/lib/qt-6/qml";
+  quickshellPkg = pkgs.quickshell;
+  quickshellPath = "${quickshellPkg}/lib/qt-6/qml";
   # Provide dependency paths to qmlls.
-  qmlls-wrapper = pkgs.writeShellScriptBin "qmlls" ''
-    exec ${qt-base-pkg}/bin/qmlls -I "${quickshell-path}" -I "${qt-base-path}" "$@"
+  qmllsWrapper = pkgs.writeShellScriptBin "qmlls" ''
+    exec ${qtPkg}/bin/qmlls -I "${quickshellPath}" -I "${qtPath}" "$@"
   '';
 in
 {
   home.packages = [
-    (lib.hiPrio qmlls-wrapper) # Prioritize qmlls with library paths.
-    qt-base-pkg # For qmlformat and other tools.
+    (lib.hiPrio qmllsWrapper) # Prioritize qmlls with library paths.
+    qtPkg # For qmlformat and other tools.
   ];
   programs.quickshell = {
     enable = true;
-    package = quickshell-pkg;
+    package = quickshellPkg;
   };
+  # Global theme file.
+  xdg.configFile."quickshell/Theme.sql".text = ''
+    pragma Singleton
+    import QtQuick
+
+    QtObject {
+      readonly property string accent: "${
+        config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+      }"
+      readonly property string base: "${config.desktop.theme.palette.base.hex}"
+      readonly property string crust: "${config.desktop.theme.palette.crust.hex}"
+      readonly property string mantle: "${config.desktop.theme.palette.mantle.hex}"
+      readonly property string red: "${config.desktop.theme.palette.red.hex}"
+      readonly property string yellow: "${config.desktop.theme.palette.yellow.hex}"
+    }
+  '';
+  # Tell quickshell about our global theme file.
+  xdg.configFile."quickshell/qmldir".text = "singleton Theme 1.0 Theme.qml";
 }

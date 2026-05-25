@@ -25,7 +25,6 @@
   lockTimeout,
   nixgl,
   pkgs,
-  quickshell,
   rounding,
   spicetify,
   startupExtraCommands,

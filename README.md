@@ -6,7 +6,7 @@
 - Install NixOS.
 - Install this NixOS config:
   - `sudo rm -rf /etc/nixos`
-  - `git clone https://github.com/jerbaroo/nixos-config && cd nixos-config`
+  - `git clone https://github.com/jerbaroo/dots && cd dots`
   - `sudo nixos-generate-config --show-hardware-config > system/hardware-configuration.nix`
   - `sudo nixos-rebuild switch --flake .#nixos`
 
@@ -14,7 +14,7 @@
 - Install Ubuntu.
 - Install home-manager.
 - Install this home-manager config:
-  - `git clone https://github.com/jerbaroo/nixos-config && cd nixos-config`
+  - `git clone https://github.com/jerbaroo/dots && cd dots`
   - `home-manager --flake .#jer@nixos switch`
 - Add hyprland desktop entry: `/usr/share/wayland-sessions/hyprland.desktop`
 - Install NixGL: `nix profile install github:guibou/nixGL --impure`
@@ -27,7 +27,7 @@ Exec=/home/jer/.nix-profile/bin/start-hyprland
 Type=Application
 ```
 
-You may need to run `start-hyprland --no-nixgl` from a TTY once.
+You may need to run `start-hyprland [--no-nixgl]` from a TTY once.
 
 ### Doom Emacs
 - `git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs`
@@ -41,7 +41,6 @@ ignis init -c ./user/ignis/config.py
 ```
 
 ## Pre-commit
-
 ``` bash
 pre-commit install # Only once.
 pre-commit run --all-files
