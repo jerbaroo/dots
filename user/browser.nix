@@ -11,6 +11,7 @@
       enable = true;
       extensions = [
         { id = "ebboehhiijjcihmopcggopfgchnfepkn"; } # CHROLED Theme
+        { id = "pflnpcinjbcfefgbejjfanemlgcfjbna"; } # Show Tab Numbers
         { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
         { id = "blaaajhemilngeeffpbfkdjjoefldkok"; } # LeechBlock NG
         { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
@@ -18,6 +19,10 @@
       ];
       commandLineArgs = [
         "--disable-gpu" # FIXME
+        # Disable the horizontal notification banners that drop downl.
+        "--disable-infobars"
+        # Disable the "Chrome didn't shut down correctly" popup.
+        "--disable-session-crashed-bubble"
         # Ensures that Chromium-internal pages like "This site can't be reached"
         # are also in dark mode. In fact it applies dark mode to ALL Pages, so
         # we have two layers of dark mode (also DarkReader).
