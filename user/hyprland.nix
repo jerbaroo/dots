@@ -228,7 +228,7 @@ in
             (bind "${mod} + SHIFT + Q" (execCmd "${pkgs.hyprshutdown}/bin/hyprshutdown"))
             (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
             (bind "${mod} + SHIFT + S" (execCmd "ghostty -e ${config.desktop.cli.home.switch}"))
-            (bind "${mod} + T" (execCmd "${floatCenter 0} ghostty -e ${pkgs.btop}/bin/btop"))
+            (bind "${mod} + T" (execCmd "${floatCenter 0} ghostty -e ${config.desktop.btop.package}/bin/btop"))
             (bind "${mod} + V" (execCmd "${floatCenter 0} ${config.desktop.audio.guiCmd}"))
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
             (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))

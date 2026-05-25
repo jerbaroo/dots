@@ -104,6 +104,7 @@
 
     # Personal Home Manager modules.
     ./audio.nix
+    ./btop.nix
     ./bluetooth.nix
     ./browser.nix
     ./direnv.nix

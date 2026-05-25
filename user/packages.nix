@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    btop # Resource monitor.
     cbonsai # Screensaver.
     fastfetch # System info fetch.
     fd # 'find' alternative, required by Doom Emacs.
