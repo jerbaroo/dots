@@ -1,14 +1,17 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
 {
-  programs.kitty = {
+  config.programs.kitty = {
     enable = true;
-    font.name = config.desktop.font.code.name;
-    font.size = config.desktop.font.code.size;
-    package = config.desktop.wrapGL pkgs.kitty;
+    font = {
+      name = config.desktop.font.code.name;
+      size = config.desktop.font.code.size;
+    };
+    package = config.desktop.kitty.package;
     settings = {
       background_opacity = config.desktop.font.code.backgroundOpacity;
       clipboard_control = "clipboard_control write-clipboard write-primary read-clipboard-ask read-primary-ask no_append";
@@ -18,5 +21,10 @@
       shell = "${pkgs.fish}/bin/fish";
       update_check_interval = 0;
     };
+  };
+  options.desktop.kitty.package = lib.mkOption {
+    default = config.desktop.wrapGL pkgs.kitty;
+    readOnly = true;
+    type = lib.types.package;
   };
 }

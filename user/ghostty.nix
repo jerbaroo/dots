@@ -1,22 +1,17 @@
 {
   config,
+  lib,
   pkgs,
   system,
   ...
 }:
-let
-  start-tmux = pkgs.writeScriptBin "start-tmux" ''
-    #!/usr/bin/env fish
-    ${pkgs.tmux}/bin/tmux new-session -A -s main
-  '';
-in
 {
-  programs.ghostty = {
+  config.programs.ghostty = {
     enable = true;
-    package = config.desktop.wrapGL pkgs.ghostty;
+    package = config.desktop.ghostty.package;
     settings = {
       background-opacity = config.desktop.font.code.backgroundOpacity;
-      command = "${start-tmux}/bin/start-tmux";
+      command = config.desktop.tmux.start.command;
       config-file = [
         "${config.desktop.theme.colorSchemes}/ghostty/Catppuccin ${pkgs.lib.strings.toSentenceCase config.desktop.theme.flavor}"
       ];
@@ -25,5 +20,10 @@ in
       font-size = config.desktop.font.code.size;
       scrollback-limit = 1000000000;
     };
+  };
+  options.desktop.ghostty.package = lib.mkOption {
+    default = config.desktop.wrapGL pkgs.ghostty;
+    readOnly = true;
+    type = lib.types.package;
   };
 }

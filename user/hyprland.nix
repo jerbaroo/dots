@@ -211,7 +211,7 @@ in
             # Alphabet keys.
             (bind "${mod} + B" (execCmd "${floatCenter 0} ${config.desktop.bluetooth.guiCmd}"))
             (bind "${mod} + SHIFT + B" (execCmd config.desktop.cli.ui.menuBar.toggle))
-            (bind "${mod} + D" (execCmd "${pkgs.ghostty}/bin/ghostty --command=${pkgs.yazi}/bin/yazi"))
+            (bind "${mod} + D" (execCmd "kitty ${pkgs.yazi}/bin/yazi"))
             (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
             (bind "${mod} + E" (execCmd "${pkgs.emacs-pgtk}/bin/emacs"))
             (bind "${mod} + F" (dispatch "window.fullscreen" "{ mode = \"fullscreen\" }"))
@@ -227,8 +227,8 @@ in
             (bind "${mod} + Q" (dispatch "window.kill" ""))
             (bind "${mod} + SHIFT + Q" (execCmd "${pkgs.hyprshutdown}/bin/hyprshutdown"))
             (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
-            (bind "${mod} + SHIFT + S" (execCmd "ghostty -e ${config.desktop.cli.home.switch}"))
-            (bind "${mod} + T" (execCmd "${floatCenter 0} ghostty -e ${config.desktop.btop.package}/bin/btop"))
+            (bind "${mod} + SHIFT + S" (execCmd "kitty ${config.desktop.cli.home.switch}"))
+            (bind "${mod} + T" (execCmd "${floatCenter 0} kitty ${config.desktop.btop.package}/bin/btop"))
             (bind "${mod} + V" (execCmd "${floatCenter 0} ${config.desktop.audio.guiCmd}"))
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
             (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))
@@ -236,7 +236,7 @@ in
             # Other keys
             (bind "${mod} + BACKSPACE" (execCmd config.desktop.cli.ui.logoutMenu.toggle))
             (bind "${mod} + DELETE" (execCmd "systemctl suspend"))
-            (bind "${mod} + RETURN" (execCmd "ghostty"))
+            (bind "${mod} + RETURN" (execCmd "kitty"))
             (bind "${mod} + SHIFT + RETURN" (execCmd "konsole")) # Backup terminal.
             (bind "${mod} + SLASH" (execCmd config.desktop.cli.ui.appLauncher.toggle))
             (bind "${mod} + SPACE" (

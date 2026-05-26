@@ -134,6 +134,7 @@
     ./spicetify.nix
     ./starship.nix
     ./startup.nix
+    ./terminal.nix
     ./theme.nix
     ./tmux.nix
     ./wallpaper.nix
