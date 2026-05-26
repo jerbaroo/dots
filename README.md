@@ -10,24 +10,24 @@
   - `sudo nixos-generate-config --show-hardware-config > system/hardware-configuration.nix`
   - `sudo nixos-rebuild switch --flake .#nixos`
 
-### Ubuntu
-- Install Ubuntu.
+### Other OSes 
 - Install home-manager.
 - Install this home-manager config:
   - `git clone https://github.com/jerbaroo/dots && cd dots`
   - `home-manager --flake .#jer@nixos switch`
 - Add hyprland desktop entry: `/usr/share/wayland-sessions/hyprland.desktop`
+    ``` yaml
+    [Desktop Entry]
+    Name=Hyprland
+    Comment=An intelligent dynamic tiling Wayland compositor
+    Exec=/home/jer/.nix-profile/bin/start-hyprland
+    Type=Application
+    ```
 - Install NixGL: `nix profile install github:guibou/nixGL --impure`
 
-``` yaml
-[Desktop Entry]
-Name=Hyprland
-Comment=An intelligent dynamic tiling Wayland compositor
-Exec=/home/jer/.nix-profile/bin/start-hyprland
-Type=Application
-```
+You may need to run `start-hyprland [--no-nixgl]` from a TTY once, or try
+a different display manager, or just start hyprland from the TTY.
 
-You may need to run `start-hyprland [--no-nixgl]` from a TTY once.
 
 ### Doom Emacs
 - `git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs`
