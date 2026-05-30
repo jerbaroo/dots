@@ -14,11 +14,13 @@ let
   qmllsWrapper = pkgs.writeShellScriptBin "qmlls" ''
     exec ${qtPkg}/bin/qmlls -I "${quickshellPath}" -I "${qtPath}" "$@"
   '';
+  shellServer = pkgs.callPackage ./quickshell/shell-server/shell-server.nix { };
 in
 {
   home.packages = [
     (lib.hiPrio qmllsWrapper) # Prioritize qmlls with library paths.
     qtPkg # For qmlformat and other tools.
+    shellServer
   ];
   programs.quickshell = {
     enable = true;
