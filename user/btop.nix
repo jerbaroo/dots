@@ -15,9 +15,19 @@
       };
     };
   };
+  options.desktop.btop.attach = lib.mkOption {
+    default = "${pkgs.tmux}/bin/tmux new-session -A -s btop ${config.desktop.btop.package}/bin/btop";
+    readOnly = true;
+    type = lib.types.str;
+  };
   options.desktop.btop.package = lib.mkOption {
     default = pkgs.btop;
     readOnly = true;
     type = lib.types.package;
+  };
+  options.desktop.btop.startDetached = lib.mkOption {
+    default = "${pkgs.tmux}/bin/tmux new-session -d -s btop ${config.desktop.btop.package}/bin/btop";
+    readOnly = true;
+    type = lib.types.str;
   };
 }

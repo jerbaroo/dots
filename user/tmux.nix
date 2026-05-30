@@ -5,10 +5,6 @@
   ...
 }:
 let
-  start-tmux = pkgs.writeScriptBin "start-tmux" ''
-    #!/usr/bin/env fish
-    ${pkgs.tmux}/bin/tmux new-session -A -s main
-  '';
   # Run git in the current directory with a tmux background.
   # The caller must ensure they are in the correct directory.
   tmux-git-open = pkgs.writeScriptBin "tmux-git-open" ''
@@ -146,7 +142,7 @@ in
     };
   };
   options.desktop.tmux.start.command = lib.mkOption {
-    default = "${start-tmux}/bin/start-tmux";
+    default = "${pkgs.tmux}/bin/tmux new-session -A -s main";
     readOnly = true;
     type = lib.types.str;
   };

@@ -18,7 +18,7 @@
       confirm_os_window_close = 0;
       enable_audio_bell = false;
       hide_window_decorations = false;
-      shell = "${pkgs.fish}/bin/fish";
+      shell = config.desktop.tmux.start.command;
       update_check_interval = 0;
     };
   };

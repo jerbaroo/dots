@@ -46,7 +46,7 @@
         catppuccin = inputs.catppuccin;
         codeBackgroundOpacity = 0.7;
         codeFontName = "Iosevka Nerd Font Mono";
-        codeFontSize = 12;
+        codeFontSize = 14;
         colorSchemes = inputs.color-schemes;
         defaultFloatSize = 0.8;
         flavor = "mocha";
@@ -61,7 +61,7 @@
         rounding = 1;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
-        systemFontSize = 12;
+        systemFontSize = 14;
         temperature = 5500;
         wallpaperName = "jellyfish-purple.jpg";
       };

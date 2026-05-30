@@ -17,6 +17,10 @@ let
       cmd = _: config.desktop.setWallpaperCmd;
       name = "wallpaper";
     }
+    {
+      cmd = _: config.desktop.btop.startDetached;
+      name = "btop";
+    }
   ];
   redirectLogs =
     name: cmd:
