@@ -122,7 +122,7 @@ in
             (bezier "stall" "1" "-0.1" "0.7" "0.85")
           ];
         config = {
-          cursor.no_hardware_cursors = true;
+          # cursor.no_hardware_cursors = true;
           debug.disable_logs = false;
           decoration = {
             active_opacity = 1;
