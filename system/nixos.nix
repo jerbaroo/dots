@@ -96,6 +96,7 @@
     ./hardware-configuration.nix
     ./kanata.nix
     ./keyboard.nix
+    ./lanzaboote.nix
     ./locale.nix
     (import ./network.nix { inherit hostname; })
     ./openrgb.nix
@@ -107,6 +108,7 @@
     ./transmission.nix
   ];
   nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
+  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.12" ];
   nix.settings = {
     experimental-features = [
       "flakes"

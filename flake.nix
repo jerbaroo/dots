@@ -18,6 +18,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:hyprwm/Hyprland";
     };
+    lanzaboote = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/lanzaboote/v1.0.0";
+    };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     spicetify.url = "github:Gerg-L/spicetify-nix";
@@ -74,8 +78,9 @@
             ./system/nixos.nix
             inputs.catppuccin.nixosModules.catppuccin
             inputs.home-manager.nixosModules.home-manager
+            inputs.lanzaboote.nixosModules.lanzaboote
           ];
-          specialArgs = sharedArgs // {
+          specialArgs = (sharedArgs // { lanzaboote = inputs.lanzaboot; }) // {
             allowUnfreePredicate = _: true;
             genericLinux = false;
             hostname = hostnameNixOS;
