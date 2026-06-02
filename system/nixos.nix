@@ -108,7 +108,6 @@
     ./transmission.nix
   ];
   nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
-  nixpkgs.config.permittedInsecurePackages = [ "ventoy-1.1.12" ];
   nix.settings = {
     experimental-features = [
       "flakes"

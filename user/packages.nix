@@ -30,7 +30,6 @@
     shfmt # Shell parser and formatter.
     texliveFull # LaTeX.
     unzip # Unzip zip files.
-    ventoy # Burn ISOs.
     vlc # Video player.
     wev # Wayland event viewer.
     wl-clipboard # Wayland command-line copy and paste.

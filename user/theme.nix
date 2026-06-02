@@ -21,8 +21,8 @@ in
   # We use nix-catppuccin to style some apps. Notably not GTK.
   catppuccin = {
     inherit accent flavor;
+    autoEnable = true;
     enable = true;
-    gtk.icon.enable = false;
   };
 
   # Cursors.
@@ -36,6 +36,7 @@ in
   };
 
   # GTK.
+  catppuccin.gtk.icon.enable = false;
   gtk = {
     enable = true;
     # Icons.

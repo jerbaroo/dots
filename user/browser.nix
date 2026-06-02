@@ -4,19 +4,13 @@
   pkgs,
   ...
 }:
+let
+  pkg = config.desktop.wrapGL pkgs.chromium;
+in
 {
   config = {
     desktop.browser.cmd = "chromium";
     programs.chromium = {
-      enable = true;
-      extensions = [
-        { id = "ebboehhiijjcihmopcggopfgchnfepkn"; } # CHROLED Theme
-        { id = "pflnpcinjbcfefgbejjfanemlgcfjbna"; } # Show Tab Numbers
-        { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
-        { id = "blaaajhemilngeeffpbfkdjjoefldkok"; } # LeechBlock NG
-        { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
-        { id = "ddkjiahejlhfcafbddmgiahcphecmpfh"; } # uBlock Origin Lite
-      ];
       commandLineArgs = [
         "--disable-gpu" # FIXME
         # Disable the horizontal notification banners that drop downl.
@@ -29,6 +23,16 @@
         "--enable-features=WebContentsForceDark"
         "http://localhost:${toString config.desktop.ghdashboard.port}"
       ];
+      enable = true;
+      extensions = [
+        { id = "ebboehhiijjcihmopcggopfgchnfepkn"; } # CHROLED Theme
+        { id = "pflnpcinjbcfefgbejjfanemlgcfjbna"; } # Show Tab Numbers
+        { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
+        { id = "blaaajhemilngeeffpbfkdjjoefldkok"; } # LeechBlock NG
+        { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
+        { id = "ddkjiahejlhfcafbddmgiahcphecmpfh"; } # uBlock Origin Lite
+      ];
+      package = pkg;
     };
   };
   options.desktop.browser.cmd = lib.mkOption {
