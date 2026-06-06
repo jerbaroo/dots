@@ -1,26 +1,17 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
-    cbonsai # Screensaver.
-    fastfetch # System info fetch.
     fd # 'find' alternative, required by Doom Emacs.
-    feh # Image viewer.
-    ffmpeg # Video converter.
-    footage # Video editor.
     gcc # GNU Compiler Collection.
-    google-chrome # Well-supported browser.
+    github-copilot-cli # AI Sparkles.
     idasen # Desk control.
     jq # JSON processor.
-    mpv # Better HDR support.
-    neo # The one screensaver.
     niv # Nix dependency manager.
-    nitch # System info fetch.
     nix # Nix package manager.
     nixfmt # Nix formatter.
     nix-output-monitor # Pretty nix command info.
     nix-tree # Nix dependency browser.
     nh # Nix helper.
-    obs-studio # Video recorder.
     pandoc # Document converter.
     pre-commit # House cleaning.
     pulseaudio # pactl.
@@ -28,9 +19,7 @@
     python3Packages.black # Python formatter.
     shellcheck # Shell script analyser.
     shfmt # Shell parser and formatter.
-    texliveFull # LaTeX.
     unzip # Unzip zip files.
-    vlc # Video player.
     wev # Wayland event viewer.
     wl-clipboard # Wayland command-line copy and paste.
   ];

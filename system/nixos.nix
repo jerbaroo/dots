@@ -17,6 +17,7 @@
   gap,
   ghdashboardPort,
   hdr,
+  home,
   hostname,
   hyprland,
   genericLinux,
@@ -28,7 +29,6 @@
   pkgs,
   rounding,
   spicetify,
-  startupExtraCommands,
   stateVersion,
   system,
   systemFontSize,
@@ -66,7 +66,6 @@
         nixgl
         rounding
         spicetify
-        startupExtraCommands
         stateVersion
         system
         systemFontSize
@@ -80,7 +79,12 @@
     };
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.${username} = import ../user/home.nix;
+    users.${username} = {
+      imports = [
+        ../user/home.nix
+        home
+      ];
+    };
   };
   imports = [
     (import ./boot.nix { inherit pkgs; })

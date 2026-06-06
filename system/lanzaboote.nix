@@ -11,11 +11,11 @@
   # So we force it to false for now.
   boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.lanzaboote = {
-    autoGenerateKeys.enable = true;
     autoEnrollKeys = {
       autoReboot = true;
       enable = true;
     };
+    autoGenerateKeys.enable = true;
     enable = true;
     pkiBundle = "/var/lib/sbctl";
   };

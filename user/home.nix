@@ -27,7 +27,6 @@
   pkgs,
   rounding,
   spicetify,
-  startupExtraCommands,
   stateVersion,
   system,
   systemFontSize,
@@ -80,7 +79,6 @@
     };
     lock.timeout = lockTimeout;
     spicetify.packages = spicetify.legacyPackages.${system};
-    startup.extraCommands = startupExtraCommands;
     theme = {
       inherit accent colorSchemes flavor;
       palette =

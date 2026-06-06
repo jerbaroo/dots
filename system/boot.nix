@@ -8,5 +8,6 @@
       systemd-boot.enable = true;
     };
     plymouth.enable = true;
+    supportedFilesystems = [ "ntfs" ];
   };
 }

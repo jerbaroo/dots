@@ -29,9 +29,8 @@
   outputs =
     inputs:
     let
-      hostnameNixOS = "nixos";
       hmConfigs = import ./hm-configs.nix;
-      usernameNixOS = "jer";
+      nixosConfigs = import ./nixos-configs.nix;
       pkgs = import inputs.nixpkgs {
         overlays = [
           inputs.nixgl.overlay
@@ -71,30 +70,27 @@
       };
     in
     {
-      nixosConfigurations = {
-        ${hostnameNixOS} = inputs.nixpkgs.lib.nixosSystem {
-          inherit system;
-          modules = [
-            ./system/nixos.nix
-            inputs.catppuccin.nixosModules.catppuccin
-            inputs.home-manager.nixosModules.home-manager
-            inputs.lanzaboote.nixosModules.lanzaboote
-          ];
-          specialArgs = (sharedArgs // { lanzaboote = inputs.lanzaboot; }) // {
-            allowUnfreePredicate = _: true;
-            genericLinux = false;
-            hostname = hostnameNixOS;
-            startupExtraCommands = [
-              {
-                cmd = config: config.desktop.openrgb.command;
-                name = "openrgb";
-              }
+      nixosConfigurations = builtins.listToAttrs (
+        map (nixosConfig: {
+          name = "${nixosConfig.hostname}";
+          value = inputs.nixpkgs.lib.nixosSystem {
+            inherit system;
+            modules = [
+              ./system/nixos.nix
+              inputs.catppuccin.nixosModules.catppuccin
+              inputs.home-manager.nixosModules.home-manager
+              inputs.lanzaboote.nixosModules.lanzaboote
             ];
-            username = usernameNixOS;
-            wrapGL = false;
+            specialArgs =
+              sharedArgs
+              // {
+                genericLinux = false;
+                wrapGL = false;
+              }
+              // nixosConfig;
           };
-        };
-      };
+        }) nixosConfigs
+      );
       homeConfigurations = builtins.listToAttrs (
         map (hmConfig: {
           name = "${hmConfig.username}@${hmConfig.hostname}";
@@ -106,6 +102,7 @@
                   allowUnfreePredicate =
                     let
                       whitelist = map pkgs.lib.getName [
+                        pkgs.github-copilot-cli
                         pkgs.google-chrome
                         pkgs.spotify
                         pkgs.steam
@@ -119,7 +116,10 @@
                 };
               in
               sharedArgs // hmArgs // hmConfig;
-            modules = [ ./user/home.nix ];
+            modules = [
+              hmConfig.config
+              ./user/home.nix
+            ];
           };
         }) hmConfigs
       );
