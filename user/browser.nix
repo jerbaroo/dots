@@ -21,6 +21,7 @@ in
         # are also in dark mode. In fact it applies dark mode to ALL Pages, so
         # we have two layers of dark mode (also DarkReader).
         "--enable-features=WebContentsForceDark"
+        "--new-window"
         "http://localhost:${toString config.desktop.ghdashboard.port}"
       ];
       enable = true;
