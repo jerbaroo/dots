@@ -7,6 +7,7 @@
 {
   catppuccin = {
     accent = accent;
+    autoEnable = true;
     enable = true;
     flavor = flavor;
   };

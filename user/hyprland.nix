@@ -23,7 +23,6 @@ let
 in
 {
   config = {
-    catppuccin.hyprland.enable = false; # Broken since 0.55.
     wayland.windowManager.hyprland = {
       configType = "lua";
       enable = true;

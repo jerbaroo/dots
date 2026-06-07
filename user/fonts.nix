@@ -29,6 +29,11 @@ in
   options.desktop = {
     font = {
       code = {
+        backgroundOpacity = lib.mkOption {
+          default = 0.7;
+          description = "Background opacity of coding environments.";
+          type = floatBetween0And1;
+        };
         name = lib.mkOption {
           default = "Iosevka Nerd Font Mono";
           description = "Name of font for coding environments.";
@@ -39,15 +44,10 @@ in
           description = "Size of font for coding environments.";
           type = lib.types.ints.unsigned;
         };
-        backgroundOpacity = lib.mkOption {
-          default = 0.7;
-          description = "Background opacity of coding environments.";
-          type = floatBetween0And1;
-        };
       };
       system = {
         size = lib.mkOption {
-          default = 18;
+          default = 16;
           description = "Size of system font.";
           type = lib.types.ints.unsigned;
         };
