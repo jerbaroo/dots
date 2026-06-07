@@ -86,8 +86,6 @@ def app_launcher(ignis_app: IgnisApp) -> widgets.Window:
     )
 
     def on_open(window):
-        # if not window.visible:
-        #     return
         entry.text = ""
         entry.grab_focus()
 

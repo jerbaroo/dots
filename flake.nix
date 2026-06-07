@@ -34,7 +34,6 @@
       pkgs = import inputs.nixpkgs;
       sharedArgs = {
         accent = "pink";
-        bitDepth = 10; # TODO
         catppuccin = inputs.catppuccin;
         colorSchemes = inputs.color-schemes;
         flavor = "mocha";

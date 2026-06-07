@@ -1,7 +1,6 @@
 {
   accent,
   allowUnfreePredicate,
-  bitDepth,
   catppuccin,
   colorSchemes,
   config,

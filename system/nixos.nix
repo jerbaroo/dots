@@ -1,7 +1,6 @@
 {
   accent,
   allowUnfreePredicate,
-  bitDepth,
   catppuccin,
   colorSchemes,
   config,
@@ -24,7 +23,6 @@
     extraSpecialArgs = {
       inherit
         accent
-        bitDepth
         catppuccin
         colorSchemes
         flavor

@@ -6,7 +6,6 @@
   ...
 }:
 let
-  bitDepthStr = ", bitdepth, ${toString config.desktop.graphics.bitDepth}";
   floatCenter = _: "[float;center;${floatSize config.desktop.hyprland.float.size.default}]";
   floatSize = fraction: "size (monitor_w*${toString fraction}) (monitor_h*${toString fraction})";
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
@@ -32,8 +31,6 @@ in
       #   bind = , code:255, exec, true
       #   submap = reset
       # '';
-      # Workspace rule maps
-      # workspace_rule = [ { match.workspace = "1"; monitor = "HDMI-A-1"; default = true; } ];
       package = config.desktop.hyprland.package;
       portalPackage =
         if config.desktop.hyprland.package == null then
