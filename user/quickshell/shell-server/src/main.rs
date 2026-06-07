@@ -10,7 +10,7 @@ use std::path::{PathBuf};
 use std::sync::{Arc, Mutex};
 use walkdir::WalkDir;
 
-#[derive(Serialize)]
+#[derive(Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct App {
     pub name: String,
     pub exec: String,
@@ -132,5 +132,7 @@ pub fn serialize_sections(sections: Vec<Desktop::Section>) -> Result<String, Str
         let comment = section.attr("Comment").get(0);
         apps.push(App { name: name.to_string(), exec: exec.to_string(), comment: comment.cloned() });
     }
+    apps.sort();
+    apps.dedup();
     serde_json::to_string(&apps).map_err(|err| err.to_string())
 }

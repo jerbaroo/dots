@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   home.packages = with pkgs; [
+    brightnessctl # 🔆🔆🔆
     fd # 'find' alternative, required by Doom Emacs.
     gcc # GNU Compiler Collection.
     github-copilot-cli # AI Sparkles.
