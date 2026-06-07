@@ -51,11 +51,7 @@
     ./desktop.nix
     ./docker.nix
     ./firmware.nix
-    (import ./graphics.nix {
-      inherit hyprland;
-      inherit pkgs;
-      inherit system;
-    })
+    ./graphics.nix
     ./hardware-configuration.nix
     ./kanata.nix
     ./keyboard.nix

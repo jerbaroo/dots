@@ -25,7 +25,7 @@
       system
       username
       ;
-    hyprland.package = hyprland.packages.${system}.hyprland;
+    hyprland.packages = hyprland.packages.${system};
     ignis = {
       configDir.path = ".config/ignis";
       package = ignis.packages.${system}.ignis;
@@ -65,6 +65,7 @@
     ./git.nix
     ./hypridle.nix
     ./hyprland.nix
+    ./hyprglass.nix
     ./hyprsunset.nix
     ./ignis.nix
     ./kanata/kanata.nix

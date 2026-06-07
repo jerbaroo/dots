@@ -13,7 +13,7 @@ in
     programs.chromium = {
       commandLineArgs = [
         "--disable-gpu" # FIXME
-        # Disable the horizontal notification banners that drop downl.
+        # Disable the horizontal notification banners that drop down.
         "--disable-infobars"
         # Disable the "Chrome didn't shut down correctly" popup.
         "--disable-session-crashed-bubble"

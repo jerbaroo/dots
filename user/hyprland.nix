@@ -31,12 +31,8 @@ in
       #   bind = , code:255, exec, true
       #   submap = reset
       # '';
-      package = config.desktop.hyprland.package;
-      portalPackage =
-        if config.desktop.hyprland.package == null then
-          null
-        else
-          config.lib.nixGL.wrap pkgs.xdg-desktop-portal-hyprland;
+      package = config.desktop.hyprland.packages.hyprland;
+      portalPackage = config.desktop.hyprland.packages.xdg-desktop-portal-hyprland;
       settings = {
         animation =
           let
@@ -335,13 +331,21 @@ in
                 workspace = "f[1]";
               };
             };
+            noBlur = {
+              # Blur disabled on windows to allow hyprglass to take over.
+              no_blur = true;
+              match.title = "^(.*)$";
+            };
           in
           map floatRule [
             config.desktop.audio.guiTitle
             config.desktop.bluetooth.guiTitle
             "wdisplays"
           ]
-          ++ [ noBorderIfSoleTile ];
+          ++ [
+            noBorderIfSoleTile
+            noBlur
+          ];
       };
     };
   };
@@ -379,9 +383,9 @@ in
         "scrolling"
       ];
     };
-    package = lib.mkOption {
-      description = "Hyprland package (set to null if using distro-installed hyprland)";
-      type = lib.types.nullOr lib.types.package;
+    packages = lib.mkOption {
+      description = "Hyprland packages.";
+      type = lib.types.attrs;
     };
     rounding = lib.mkOption {
       default = 1;

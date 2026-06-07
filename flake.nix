@@ -16,7 +16,9 @@
     };
     hyprland = {
       inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:hyprwm/Hyprland";
+      # Required for hyprglasss:
+      # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
+      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.55.2";
     };
     lanzaboote = {
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,7 +33,7 @@
     let
       hmConfigs = import ./hm-configs.nix;
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
-      pkgs = import inputs.nixpkgs;
+      pkgs = import inputs.nixpkgs { overlays = [ inputs.hyprland.overlays.hyprland-packages ]; };
       sharedArgs = {
         accent = "pink";
         catppuccin = inputs.catppuccin;

@@ -16,7 +16,7 @@ let
       export OS_GRIM_PATH="${pkgs.grim}/bin/grim"
       export OS_NH_PATH="${pkgs.nh}/bin/nh"
       export OS_HOSTNAME="${config.desktop.hostname}"
-      export OS_HYPRCTL_PATH="${config.desktop.hyprland.package}/bin/hyprctl"
+      export OS_HYPRCTL_PATH="${config.desktop.hyprland.packages.hyprland}/bin/hyprctl"
       export OS_IGNIS_PATH="${config.desktop.ignis.package}/bin/ignis"
       export OS_KANATA_CMD="${config.desktop.kanata.command}"
       export OS_USERNAME="${config.desktop.username}"
