@@ -31,9 +31,12 @@
   outputs =
     inputs:
     let
-      hmConfigs = import ./hm-configs.nix;
+      hmConfigs = import ./hm-configs.nix { inherit inputs pkgs; };
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
-      pkgs = import inputs.nixpkgs { overlays = [ inputs.hyprland.overlays.hyprland-packages ]; };
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        overlays = [ inputs.hyprland.overlays.hyprland-packages ];
+      };
       sharedArgs = {
         accent = "pink";
         catppuccin = inputs.catppuccin;
@@ -68,28 +71,9 @@
           name = "${hmConfig.username}@${hmConfig.hostname}";
           value = inputs.home-manager.lib.homeManagerConfiguration {
             inherit pkgs;
-            extraSpecialArgs =
-              let
-                hmArgs = {
-                  allowUnfreePredicate =
-                    let
-                      whitelist = map pkgs.lib.getName [
-                        pkgs.github-copilot-cli
-                        pkgs.google-chrome
-                        pkgs.spotify
-                        pkgs.steam
-                        pkgs.steam-unwrapped
-                        pkgs.symbola
-                      ];
-                    in
-                    pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
-                  genericLinux = true;
-                  nixgl = inputs.nixgl;
-                };
-              in
-              sharedArgs // hmArgs // hmConfig;
+            extraSpecialArgs = sharedArgs // hmConfig;
             modules = [
-              hmConfig.config
+              hmConfig.homeConfig
               ./user/home.nix
             ];
           };

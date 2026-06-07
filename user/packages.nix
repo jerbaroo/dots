@@ -2,7 +2,8 @@
 {
   home.packages = with pkgs; [
     brightnessctl # 🔆🔆🔆
-    fd # 'find' alternative, required by Doom Emacs.
+    ghc # Glorious Haskell Compiler.
+    ghcid # Ol' reliable.
     gcc # GNU Compiler Collection.
     github-copilot-cli # AI Sparkles.
     idasen # Desk control.
@@ -14,8 +15,9 @@
     nix-tree # Nix dependency browser.
     nh # Nix helper.
     pandoc # Document converter.
+    pgcli # PG CLI.
     pre-commit # House cleaning.
-    pulseaudio # pactl.
+    pulseaudio # pavucontrol.
     python3 # For quick scripts.
     python3Packages.black # Python formatter.
     shellcheck # Shell script analyser.

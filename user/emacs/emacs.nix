@@ -13,6 +13,7 @@
   };
   home.file.".config/doom/init.el".source = ./init.el;
   home.file.".config/doom/packages.el".source = ./packages.el;
+  home.packages = [ pkgs.fd ];
   programs.emacs = {
     enable = true;
     package = pkgs.emacs-pgtk;

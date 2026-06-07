@@ -18,7 +18,7 @@
   ...
 }:
 {
-  # Set custom Home Manager options.
+  # Set Home Manager options using module parameters.
   desktop = {
     inherit
       hostname

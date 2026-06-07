@@ -366,7 +366,7 @@ in
       type = lib.types.bool;
     };
     float.size.default = lib.mkOption {
-      default = 0.8;
+      default = 0.85;
       description = "Height and width of floating windows (0 1].";
       type = lib.types.float;
     };

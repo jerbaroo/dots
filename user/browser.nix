@@ -9,7 +9,6 @@ let
 in
 {
   config = {
-    desktop.browser.cmd = "chromium";
     programs.chromium = {
       commandLineArgs = [
         "--disable-gpu" # FIXME
@@ -37,8 +36,8 @@ in
     };
   };
   options.desktop.browser.cmd = lib.mkOption {
+    default = "chromium";
     description = "Command to open a browser";
-    readOnly = true;
     type = lib.types.str;
   };
 }

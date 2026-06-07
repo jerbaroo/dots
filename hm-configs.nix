@@ -1,10 +1,28 @@
+{ inputs, pkgs }:
 [
   {
-    config = {
-      desktop.browser.command = "firefox";
-    };
+    allowUnfreePredicate =
+      let
+        whitelist = map pkgs.lib.getName [
+          pkgs.github-copilot-cli
+          pkgs.spotify
+          pkgs.symbola
+        ];
+      in
+      pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
+    homeConfig =
+      { pkgs, ... }:
+      {
+        desktop = {
+          browser.cmd = "firefox";
+          genericLinux = {
+            enable = true;
+            nixGL.packages = inputs.nixgl.packages;
+          };
+        };
+        desktop.hyprland.gap = 0;
+      };
     hostname = "ubuntu";
-    startupExtraCommands = [ ]; # TODO 1 password
     username = "jeremy-barisch-rooney";
   }
 ]
