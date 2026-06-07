@@ -16,7 +16,7 @@
     };
   };
   options.desktop.btop.attach = lib.mkOption {
-    default = "${pkgs.tmux}/bin/tmux new-session -A -s btop ${config.desktop.btop.package}/bin/btop";
+    default = "${pkgs.tmux}/bin/tmux new-session -A -s btop ${config.desktop.btop.package}/bin/btop -u 500";
     readOnly = true;
     type = lib.types.str;
   };
@@ -26,7 +26,7 @@
     type = lib.types.package;
   };
   options.desktop.btop.startDetached = lib.mkOption {
-    default = "${pkgs.tmux}/bin/tmux new-session -d -s btop ${config.desktop.btop.package}/bin/btop";
+    default = "${pkgs.tmux}/bin/tmux new-session -d -s btop ${config.desktop.btop.package}/bin/btop -u 500";
     readOnly = true;
     type = lib.types.str;
   };
