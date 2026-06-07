@@ -8,8 +8,8 @@
 {
   config = {
     desktop.audio = {
-      guiCmd = "ghostty --title=${config.desktop.audio.guiTitle} -e ${pkgs.wiremix}/bin/wiremix --tab output";
-      guiTitle = "wiremix";
+      guiCmd = "${pkgs.pavucontrol}/bin/pavucontrol";
+      guiTitle = "Volume Control";
     };
     home.packages = [
       pkgs.dbus # TODO

@@ -7,12 +7,10 @@
 {
   config = {
     desktop.bluetooth = {
-      guiCmd = "ghostty --title=${config.desktop.bluetooth.guiTitle} -e ${pkgs.bluetui}/bin/bluetui";
-      guiTitle = "bluetui";
+      guiCmd = "${pkgs.blueman}/bin/blueman-manager";
+      guiTitle = "Bluetooth Manager";
     };
-    # Blueman is a reliable fallback.
     home.packages = with pkgs; [ blueman ];
-    # Daemon required for blueman.
     services.blueman-applet.enable = true;
   };
   options.desktop.bluetooth = {
