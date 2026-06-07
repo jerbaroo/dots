@@ -204,7 +204,7 @@ in
               execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
             ))
             (bind "${mod} + P" (dispatch "layout" "\"promote\""))
-            (bind "${mod} + Q" (dispatch "window.kill" ""))
+            (bind "${mod} + Q" (dispatch "window.close" ""))
             (bind "${mod} + SHIFT + Q" (execCmd "${pkgs.hyprshutdown}/bin/hyprshutdown"))
             (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
             (bind "${mod} + SHIFT + S" (execCmd "kitty ${config.desktop.cli.home.switch}"))
