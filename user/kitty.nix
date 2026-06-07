@@ -23,7 +23,7 @@
     };
   };
   options.desktop.kitty.package = lib.mkOption {
-    default = config.desktop.wrapGL pkgs.kitty;
+    default = config.lib.nixGL.wrap pkgs.kitty;
     readOnly = true;
     type = lib.types.package;
   };

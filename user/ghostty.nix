@@ -22,7 +22,7 @@
     };
   };
   options.desktop.ghostty.package = lib.mkOption {
-    default = config.desktop.wrapGL pkgs.ghostty;
+    default = config.lib.nixGL.wrap pkgs.ghostty;
     readOnly = true;
     type = lib.types.package;
   };

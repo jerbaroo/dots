@@ -5,7 +5,7 @@
   ...
 }:
 let
-  pkg = config.desktop.wrapGL pkgs.chromium;
+  pkg = config.lib.nixGL.wrap pkgs.chromium;
 in
 {
   config = {

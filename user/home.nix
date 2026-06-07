@@ -1,39 +1,20 @@
 {
   accent,
   allowUnfreePredicate,
-  animationSpeed,
   bitDepth,
-  blur,
-  borderSize,
   catppuccin,
-  codeBackgroundOpacity,
-  codeFontName,
-  codeFontSize,
-  colorSchemes,
   config,
-  defaultFloatSize,
   flavor,
-  gap,
-  ghdashboardPort,
-  hdr,
   hostname,
   hyprland,
-  genericLinux,
   ignis,
-  layout,
   lib,
-  lockTimeout,
   nixgl,
   pkgs,
-  rounding,
   spicetify,
   stateVersion,
   system,
-  systemFontSize,
-  temperature,
   username,
-  wallpaperName,
-  wrapGL,
   ...
 }:
 {
@@ -43,48 +24,15 @@
       hostname
       system
       username
-      wallpaperName
       ;
-    font = {
-      code = {
-        name = codeFontName;
-        size = codeFontSize;
-        backgroundOpacity = codeBackgroundOpacity;
-      };
-      system = {
-        size = systemFontSize;
-      };
-    };
-    genericLinux = {
-      enable = genericLinux;
-      nixGL.packages = nixgl.packages;
-    };
-    ghdashboard.port = ghdashboardPort;
-    hyprland = {
-      inherit
-        animationSpeed
-        blur
-        gap
-        layout
-        rounding
-        ;
-      border.size = borderSize;
-      float.size.default = defaultFloatSize;
-      package = hyprland.packages.${system}.hyprland;
-    };
-    hyprsunset.temperature = temperature;
+    hyprland.package = hyprland.packages.${system}.hyprland;
     ignis = {
       configDir.path = ".config/ignis";
       package = ignis.packages.${system}.ignis;
     };
-    lock.timeout = lockTimeout;
     spicetify.packages = spicetify.legacyPackages.${system};
-    theme = {
-      inherit accent colorSchemes flavor;
-      palette =
-        (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json")).${flavor}.colors;
-    };
-    wrapGL = if wrapGL then config.lib.nixGL.wrap else (x: x);
+    # Theme options taken as parameters because they are shared with NixOS.
+    theme = { inherit accent flavor; };
   };
   home = {
     homeDirectory = "/home/${config.desktop.username}";

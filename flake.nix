@@ -29,50 +29,37 @@
   outputs =
     inputs:
     let
+      accent = "pink";
+      flavor = "mocha";
       hmConfigs = import ./hm-configs.nix;
-      nixosConfigs = import ./nixos-configs.nix;
-      pkgs = import inputs.nixpkgs {
-        overlays = [
-          inputs.nixgl.overlay
-        ];
-        inherit system;
-      };
+      nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
+      pkgs = import inputs.nixpkgs;
       system = "x86_64-linux";
 
       sharedArgs = {
-        inherit system;
-        accent = "pink";
-        animationSpeed = 1.0;
-        bitDepth = 10;
-        blur = true;
-        borderSize = 2;
+        inherit accent flavor system;
+        bitDepth = 10; # TODO
         catppuccin = inputs.catppuccin;
-        codeBackgroundOpacity = 0.7;
-        codeFontName = "Iosevka Nerd Font Mono";
-        codeFontSize = 14;
-        colorSchemes = inputs.color-schemes;
-        defaultFloatSize = 0.8;
-        flavor = "mocha";
-        gap = 0;
-        ghdashboardPort = 1234;
-        hdr = true;
         hyprland = inputs.hyprland;
         ignis = inputs.ignis;
-        layout = "scrolling";
-        lockTimeout = 120;
-        nixgl = inputs.nixgl;
-        rounding = 1;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
-        systemFontSize = 14;
-        temperature = 5500;
-        wallpaperName = "jellyfish-purple.jpg";
+        homeBase =
+          { ... }:
+          {
+            desktop = {
+              theme = {
+                colorSchemes = inputs.color-schemes;
+              };
+            };
+          };
       };
     in
     {
       nixosConfigurations = builtins.listToAttrs (
         map (nixosConfig: {
           name = "${nixosConfig.hostname}";
+
           value = inputs.nixpkgs.lib.nixosSystem {
             inherit system;
             modules = [
@@ -85,7 +72,6 @@
               sharedArgs
               // {
                 genericLinux = false;
-                wrapGL = false;
               }
               // nixosConfig;
           };
@@ -112,7 +98,7 @@
                     in
                     pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
                   genericLinux = true;
-                  wrapGL = true;
+                  nixgl = inputs.nixgl;
                 };
               in
               sharedArgs // hmArgs // hmConfig;

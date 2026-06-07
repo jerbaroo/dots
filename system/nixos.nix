@@ -1,41 +1,25 @@
 {
   accent,
   allowUnfreePredicate,
-  animationSpeed,
   animations,
   bitDepth,
-  blur,
-  borderSize,
   catppuccin,
-  codeBackgroundOpacity,
-  codeFontName,
-  codeFontSize,
-  colorSchemes,
   config,
-  defaultFloatSize,
   flavor,
-  gap,
-  ghdashboardPort,
-  hdr,
-  home,
+  homeBase,
+  homeConfig,
   hostname,
   hyprland,
   genericLinux,
   ignis,
   layout,
   lib,
-  lockTimeout,
   nixgl,
   pkgs,
-  rounding,
   spicetify,
   stateVersion,
   system,
-  systemFontSize,
-  temperature,
   username,
-  wallpaperName,
-  wrapGL,
   ...
 }:
 {
@@ -43,46 +27,30 @@
     extraSpecialArgs = {
       inherit
         accent
-        animationSpeed
         animations
         bitDepth
-        blur
-        borderSize
         catppuccin
-        codeBackgroundOpacity
-        codeFontName
-        codeFontSize
-        colorSchemes
-        defaultFloatSize
         flavor
-        gap
-        ghdashboardPort
-        hdr
         hostname
         hyprland
         ignis
         layout
-        lockTimeout
         nixgl
-        rounding
         spicetify
         stateVersion
         system
-        systemFontSize
-        temperature
         username
-        wallpaperName
         ;
       allowUnfreePredicate = null;
       genericLinux = true;
-      wrapGL = true;
     };
     useGlobalPkgs = true;
     useUserPackages = true;
     users.${username} = {
       imports = [
         ../user/home.nix
-        home
+        homeBase
+        homeConfig
       ];
     };
   };

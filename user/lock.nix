@@ -55,7 +55,11 @@ in
 {
   options.desktop.lock = {
     cmd = lib.mkOption { type = lib.types.str; };
-    timeout = lib.mkOption { type = lib.types.ints.unsigned; };
+    timeout = lib.mkOption {
+      default = 180;
+      description = "Time until system locks.";
+      type = lib.types.ints.unsigned;
+    };
   };
   config = {
     desktop.lock.cmd = "${swaylock_}/bin/swaylock_";

@@ -22,26 +22,6 @@ let
   zoomFactor = 0.2;
 in
 {
-  options.desktop.hyprland = {
-    animationSpeed = lib.mkOption {
-      type = lib.types.nullOr (lib.types.addCheck lib.types.float (x: x > 0));
-    };
-    border.size = lib.mkOption { type = lib.types.ints.unsigned; };
-    blur = lib.mkOption { type = lib.types.bool; };
-    float.size.default = lib.mkOption { type = lib.types.float; };
-    gap = lib.mkOption { type = lib.types.ints.unsigned; };
-    layout = lib.mkOption {
-      type = lib.types.enum [
-        "dwindle"
-        "scrolling"
-      ];
-    };
-    package = lib.mkOption {
-      description = "Hyprland package (set to null if using distro-installed hyprland)";
-      type = lib.types.nullOr lib.types.package;
-    };
-    rounding = lib.mkOption { type = lib.types.ints.unsigned; };
-  };
   config = {
     catppuccin.hyprland.enable = false; # Broken since 0.55.
     wayland.windowManager.hyprland = {
@@ -153,7 +133,7 @@ in
             disable_hyprland_logo = true;
             vrr = 1;
           };
-          render.cm_auto_hdr = 1;
+          render.cm_auto_hdr = config.desktop.monitor.hdr.auto;
           scrolling = {
             column_width = 0.333333;
             direction = "right";
@@ -367,6 +347,50 @@ in
           ]
           ++ [ noBorderIfSoleTile ];
       };
+    };
+  };
+  options.desktop.hyprland = {
+    animationSpeed = lib.mkOption {
+      default = 1.0;
+      description = "Multiplication factor of base animation speed.";
+      type = lib.types.nullOr (lib.types.addCheck lib.types.float (x: x > 0));
+    };
+    border.size = lib.mkOption {
+      default = 2;
+      description = "Size of window borders.";
+      type = lib.types.ints.unsigned;
+    };
+    blur = lib.mkOption {
+      default = true;
+      description = "Enable background blur for transparent windows.";
+      type = lib.types.bool;
+    };
+    float.size.default = lib.mkOption {
+      default = 0.8;
+      description = "Height and width of floating windows (0 1].";
+      type = lib.types.float;
+    };
+    gap = lib.mkOption {
+      default = 8;
+      description = "Gap between windows.";
+      type = lib.types.ints.unsigned;
+    };
+    layout = lib.mkOption {
+      default = "scrolling";
+      description = "Hyprland layout type.";
+      type = lib.types.enum [
+        "dwindle"
+        "scrolling"
+      ];
+    };
+    package = lib.mkOption {
+      description = "Hyprland package (set to null if using distro-installed hyprland)";
+      type = lib.types.nullOr lib.types.package;
+    };
+    rounding = lib.mkOption {
+      default = 1;
+      description = "Rounding of borders.";
+      type = lib.types.ints.unsigned;
     };
   };
 }

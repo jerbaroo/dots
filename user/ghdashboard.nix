@@ -6,19 +6,19 @@
 }:
 let
   ghdashboard = pkgs.callPackage ./ghdashboard/default.nix { };
-  ghdashboardWithToken = pkgs.writeShellScriptBin "ghdashboardwithtoken" "${ghdashboard}/bin/ghdashboard ${toString config.desktop.ghdashboard.port} /home/${config.desktop.username}/.config/read-gh-token.sh";
+  ghdashboardWithParams = pkgs.writeShellScriptBin "ghdashboardwithparams" "${ghdashboard}/bin/ghdashboard ${toString config.desktop.ghdashboard.port} ${config.desktop.ghdashboard.readToken} $@";
 in
 {
-  config = {
-    home.packages = [ ghdashboardWithToken ];
-    systemd.user.services.ghdashboard = {
+  config = lib.mkIf config.desktop.ghdashboard.enable {
+    home.packages = [ ghdashboardWithParams ];
+    systemd.user.services.ghdashboard = lib.mkIf (config.desktop.ghdashboard.port != null) {
       Unit = {
         After = [ "graphical-session.target" ];
         BindsTo = [ "graphical-session.target" ];
         Description = "GitHub Dashboard";
       };
       Service = {
-        ExecStart = "${ghdashboardWithToken}/bin/ghdashboardwithtoken";
+        ExecStart = "${ghdashboardWithParams}/bin/ghdashboardwithparams";
         Restart = "on-failure";
       };
       # Ready to run on graphical session start, but still needs to wait on
@@ -26,10 +26,21 @@ in
       Install.WantedBy = [ "graphical-session.target" ];
     };
   };
-  options = {
-    desktop.ghdashboard.port = lib.mkOption {
+  options.desktop.ghdashboard = {
+    enable = lib.mkOption {
+      default = true;
+      description = "Port to serve the GitHub Dashboard on.";
+      type = lib.types.bool;
+    };
+    port = lib.mkOption {
+      default = 1234;
       description = "Port to serve the GitHub Dashboard on.";
       type = lib.types.port;
+    };
+    readToken = lib.mkOption {
+      default = "/home/${config.desktop.username}/.config/read-ghdashboard-token.sh";
+      description = "Path to script that returns a GitHub token.";
+      type = lib.types.str;
     };
   };
 }
