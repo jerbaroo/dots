@@ -3,6 +3,7 @@
   allowUnfreePredicate,
   bitDepth,
   catppuccin,
+  colorSchemes,
   config,
   flavor,
   hostname,
@@ -31,8 +32,9 @@
       package = ignis.packages.${system}.ignis;
     };
     spicetify.packages = spicetify.legacyPackages.${system};
-    # Theme options taken as parameters because they are shared with NixOS.
-    theme = { inherit accent flavor; };
+    # Theme options taken as parameters because, either they are shared with
+    # NixOS, or they come from "inputs".
+    theme = { inherit accent colorSchemes flavor; };
   };
   home = {
     homeDirectory = "/home/${config.desktop.username}";

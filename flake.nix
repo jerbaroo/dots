@@ -29,37 +29,27 @@
   outputs =
     inputs:
     let
-      accent = "pink";
-      flavor = "mocha";
       hmConfigs = import ./hm-configs.nix;
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
       pkgs = import inputs.nixpkgs;
-      system = "x86_64-linux";
-
       sharedArgs = {
-        inherit accent flavor system;
+        accent = "pink";
         bitDepth = 10; # TODO
         catppuccin = inputs.catppuccin;
+        colorSchemes = inputs.color-schemes;
+        flavor = "mocha";
         hyprland = inputs.hyprland;
         ignis = inputs.ignis;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
-        homeBase =
-          { ... }:
-          {
-            desktop = {
-              theme = {
-                colorSchemes = inputs.color-schemes;
-              };
-            };
-          };
+        inherit system;
       };
+      system = "x86_64-linux";
     in
     {
       nixosConfigurations = builtins.listToAttrs (
         map (nixosConfig: {
           name = "${nixosConfig.hostname}";
-
           value = inputs.nixpkgs.lib.nixosSystem {
             inherit system;
             modules = [
@@ -68,12 +58,7 @@
               inputs.home-manager.nixosModules.home-manager
               inputs.lanzaboote.nixosModules.lanzaboote
             ];
-            specialArgs =
-              sharedArgs
-              // {
-                genericLinux = false;
-              }
-              // nixosConfig;
+            specialArgs = sharedArgs // nixosConfig;
           };
         }) nixosConfigs
       );

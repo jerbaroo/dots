@@ -1,20 +1,17 @@
 {
   accent,
   allowUnfreePredicate,
-  animations,
   bitDepth,
   catppuccin,
+  colorSchemes,
   config,
   flavor,
   homeBase,
   homeConfig,
   hostname,
   hyprland,
-  genericLinux,
   ignis,
-  layout,
   lib,
-  nixgl,
   pkgs,
   spicetify,
   stateVersion,
@@ -27,29 +24,25 @@
     extraSpecialArgs = {
       inherit
         accent
-        animations
         bitDepth
         catppuccin
+        colorSchemes
         flavor
         hostname
         hyprland
         ignis
-        layout
-        nixgl
         spicetify
         stateVersion
         system
         username
         ;
       allowUnfreePredicate = null;
-      genericLinux = true;
     };
     useGlobalPkgs = true;
     useUserPackages = true;
     users.${username} = {
       imports = [
         ../user/home.nix
-        homeBase
         homeConfig
       ];
     };

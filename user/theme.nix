@@ -68,6 +68,7 @@ in
       type = lib.types.str;
     };
     colorSchemes = lib.mkOption {
+      description = "iTerm color schemes, for terminal themeing.";
       type = lib.types.attrs;
     };
     flavor = lib.mkOption {
