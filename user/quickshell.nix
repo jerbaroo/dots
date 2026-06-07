@@ -26,6 +26,18 @@ in
     enable = true;
     package = quickshellPkg;
   };
+  systemd.user.services.shell-server = {
+    Install.WantedBy = [ "graphical-session.target" ];
+    Service = {
+      ExecStart = "${shellServer}/bin/shell-server";
+      Restart = "on-failure";
+    };
+    Unit = {
+      After = [ "graphical-session.target" ];
+      Description = "Shell server";
+      BindsTo = [ "graphical-session.target" ];
+    };
+  };
   # Global theme file.
   xdg.configFile."quickshell/Theme.sql".text = ''
     pragma Singleton

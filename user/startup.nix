@@ -21,15 +21,10 @@ let
       cmd = _: config.desktop.btop.startDetached;
       name = "btop";
     }
-    {
-      cmd = _: "${shellServer}/bin/shell-server";
-      name = "shell-server";
-    }
   ];
   redirectLogs =
     name: cmd:
     "{ echo \"[$(date '+%Y-%m-%d %H:%M:%S')] Executing: ${name}\"; ${cmd config}; } >> /tmp/${name}.log 2>&1";
-  shellServer = pkgs.callPackage ./quickshell/shell-server/shell-server.nix { };
 in
 {
   options.desktop.startup.allCommands = lib.mkOption {
