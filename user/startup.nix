@@ -10,21 +10,21 @@ let
   # the order.
   commands = [
     {
-      cmd = _: config.desktop.kanata.command;
+      cmd = config.desktop.kanata.command;
       name = "kanata";
     }
     {
-      cmd = _: config.desktop.setWallpaperCmd;
+      cmd = config.desktop.setWallpaperCmd;
       name = "wallpaper";
     }
     {
-      cmd = _: config.desktop.btop.startDetached;
+      cmd = config.desktop.btop.startDetached;
       name = "btop";
     }
   ];
   redirectLogs =
     name: cmd:
-    "{ echo \"[$(date '+%Y-%m-%d %H:%M:%S')] Executing: ${name}\"; ${cmd config}; } >> /tmp/${name}.log 2>&1";
+    "{ echo \"[$(date '+%Y-%m-%d %H:%M:%S')] Executing: ${name}\"; ${cmd}; } >> /tmp/${name}.log 2>&1";
 in
 {
   options.desktop.startup.allCommands = lib.mkOption {

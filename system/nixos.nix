@@ -5,7 +5,6 @@
   colorSchemes,
   config,
   flavor,
-  homeBase,
   homeConfig,
   hostname,
   hyprland,
@@ -46,8 +45,8 @@
     };
   };
   imports = [
-    (import ./boot.nix { inherit pkgs; })
-    (import ./bluetooth.nix { inherit lib; })
+    ./boot.nix
+    ./bluetooth.nix
     ./desktop.nix
     ./docker.nix
     ./firmware.nix
@@ -57,13 +56,13 @@
     ./keyboard.nix
     ./lanzaboote.nix
     ./locale.nix
-    (import ./network.nix { inherit hostname; })
+    ./network.nix
     ./openrgb.nix
     ./printing.nix
-    (import ./sound.nix { inherit pkgs; })
+    ./sound.nix
     ./steam.nix
     ./store.nix
-    (import ./theme.nix { inherit accent flavor pkgs; })
+    ./theme.nix
     ./transmission.nix
   ];
   nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;

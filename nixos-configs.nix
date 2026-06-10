@@ -13,7 +13,7 @@
           };
           startup.extraCommands = [
             {
-              cmd = config: config.desktop.openrgb.command;
+              cmd = config.desktop.openrgb.command;
               name = "openrgb";
             }
           ];
@@ -27,7 +27,6 @@
           google-chrome # Well-supported browser.
           mpv # Better HDR support.
           neo # The one screensaver.
-          nitch # System info fetch.
           obs-studio # Video recorder.
           texliveFull # LaTeX.
           vlc # Video player.

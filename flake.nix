@@ -31,10 +31,9 @@
   outputs =
     inputs:
     let
-      hmConfigs = import ./hm-configs.nix { inherit inputs pkgs; };
+      hmConfigs = import ./hm-configs.nix { inherit inputs; };
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
       pkgs = import inputs.nixpkgs {
-        inherit system;
         overlays = [ inputs.hyprland.overlays.hyprland-packages ];
       };
       sharedArgs = {
@@ -46,16 +45,14 @@
         ignis = inputs.ignis;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
-        inherit system;
+        system = "x86_64-linux";
       };
-      system = "x86_64-linux";
     in
     {
       nixosConfigurations = builtins.listToAttrs (
         map (nixosConfig: {
           name = "${nixosConfig.hostname}";
           value = inputs.nixpkgs.lib.nixosSystem {
-            inherit system;
             modules = [
               ./system/nixos.nix
               inputs.catppuccin.nixosModules.catppuccin
@@ -68,10 +65,9 @@
       );
       homeConfigurations = builtins.listToAttrs (
         map (hmConfig: {
-          name = "${hmConfig.username}@${hmConfig.hostname}";
+          name = "${hmConfig.extraSpecialArgs.username}@${hmConfig.extraSpecialArgs.hostname}";
           value = inputs.home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            extraSpecialArgs = sharedArgs // hmConfig;
+            extraSpecialArgs = sharedArgs // hmConfig.extraSpecialArgs;
             modules = [
               hmConfig.homeConfig
               ./user/home.nix
