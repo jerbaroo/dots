@@ -11,10 +11,13 @@
       in
       pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
     homeConfig =
-      { pkgs, ... }:
+      { config, pkgs, ... }:
       {
         desktop = {
-          browser.cmd = "firefox";
+          browser = {
+            cmd = "firefox";
+            homepage = "http://localhost:${toString config.desktop.ghdashboard.port}";
+          };
           genericLinux = {
             enable = true;
             nixGL.packages = inputs.nixgl.packages;

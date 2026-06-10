@@ -4,19 +4,19 @@
     allowUnfreePredicate = _: true;
     hostname = "nixos";
     homeConfig =
-      { pkgs, ... }:
+      { config, pkgs, ... }:
       {
         desktop = {
+          genericLinux = {
+            enable = false;
+            nixGL.packages = inputs.nixgl.packages;
+          };
           startup.extraCommands = [
             {
               cmd = config: config.desktop.openrgb.command;
               name = "openrgb";
             }
           ];
-          genericLinux = {
-            enable = false;
-            nixGL.packages = inputs.nixgl.packages;
-          };
         };
         home.packages = with pkgs; [
           cbonsai # Screensaver.

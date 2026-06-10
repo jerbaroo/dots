@@ -21,7 +21,7 @@ in
         # we have two layers of dark mode (also DarkReader).
         "--enable-features=WebContentsForceDark"
         "--new-window"
-        "http://localhost:${toString config.desktop.ghdashboard.port}"
+        config.desktop.browser.homepage
       ];
       enable = true;
       extensions = [
@@ -35,9 +35,16 @@ in
       package = pkg;
     };
   };
-  options.desktop.browser.cmd = lib.mkOption {
-    default = "chromium";
-    description = "Command to open a browser";
-    type = lib.types.str;
+  options.desktop.browser = {
+    cmd = lib.mkOption {
+      default = "chromium";
+      description = "Command to open a browser";
+      type = lib.types.str;
+    };
+    homepage = lib.mkOption {
+      default = "https://google.com";
+      description = "Homepage";
+      type = lib.types.str;
+    };
   };
 }
