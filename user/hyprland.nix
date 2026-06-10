@@ -351,7 +351,7 @@ in
   };
   options.desktop.hyprland = {
     animationSpeed = lib.mkOption {
-      default = 1.0;
+      default = 0.5;
       description = "Multiplication factor of base animation speed.";
       type = lib.types.nullOr (lib.types.addCheck lib.types.float (x: x > 0));
     };
