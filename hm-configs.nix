@@ -1,6 +1,6 @@
 { inputs }:
 [
-  {
+  rec {
     hostname = "ubuntu";
     username = "jeremy-barisch-rooney";
 
@@ -8,6 +8,7 @@
       { config, pkgs, ... }:
       {
         desktop = {
+          inherit hostname username;
           allowUnfreePredicate =
             let
               whitelist = map pkgs.lib.getName [

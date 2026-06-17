@@ -13,6 +13,7 @@
     };
     package = config.desktop.kitty.package;
     settings = {
+      auto_reload_config = -1; # https://github.com/kovidgoyal/kitty/issues/10102
       background_opacity = config.desktop.font.code.backgroundOpacity;
       clipboard_control = "clipboard_control write-clipboard write-primary read-clipboard-ask read-primary-ask no_append";
       confirm_os_window_close = 0;

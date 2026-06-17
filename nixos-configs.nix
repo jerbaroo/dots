@@ -1,12 +1,13 @@
 { inputs }:
 [
-  {
+  rec {
     allowUnfreePredicate = _: true;
     hostname = "nixos";
     homeConfig =
       { config, pkgs, ... }:
       {
         desktop = {
+          inherit hostname username;
           genericLinux = {
             enable = false;
             nixGL.packages = inputs.nixgl.packages;

@@ -1,29 +1,23 @@
 {
   accent,
-  allowUnfreePredicate,
   catppuccin,
   colorSchemes,
   config,
   flavor,
-  hostname,
   hyprland,
   ignis,
   lib,
-  nixgl,
   pkgs,
   spicetify,
   stateVersion,
   system,
-  username,
   ...
 }:
 {
   # Set Home Manager options using module parameters.
   desktop = {
     inherit
-      hostname
       system
-      username
       ;
     hyprland.packages = hyprland.packages.${system};
     ignis = {
@@ -91,7 +85,7 @@
   ];
   # We use "mkIf" because setting this is not permitted on NixOS (instead this
   # should be set in NixOS' configuration directly).
-  nixpkgs.config = lib.mkIf (allowUnfreePredicate != null) {
+  nixpkgs.config = lib.mkIf (config.desktop.allowUnfreePredicate != null) {
     allowUnfreePredicate = config.desktop.allowUnfreePredicate;
   };
   programs.home-manager.enable = true;

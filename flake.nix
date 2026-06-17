@@ -34,6 +34,7 @@
       hmConfigs = import ./hm-configs.nix { inherit inputs; };
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
       pkgs = import inputs.nixpkgs {
+        system = "x86_64-linux";
         overlays = [ inputs.hyprland.overlays.hyprland-packages ];
       };
       sharedArgs = {
@@ -65,9 +66,10 @@
       );
       homeConfigurations = builtins.listToAttrs (
         map (hmConfig: {
-          name = "${hmConfig.extraSpecialArgs.username}@${hmConfig.extraSpecialArgs.hostname}";
+          name = "${hmConfig.username}@${hmConfig.hostname}";
           value = inputs.home-manager.lib.homeManagerConfiguration {
-            extraSpecialArgs = sharedArgs // hmConfig.extraSpecialArgs;
+            inherit pkgs;
+            extraSpecialArgs = sharedArgs;
             modules = [
               hmConfig.homeConfig
               ./user/home.nix
