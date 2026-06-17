@@ -18,7 +18,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       # Required for hyprglasss:
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.55.2";
+      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.55.4";
     };
     lanzaboote = {
       inputs.nixpkgs.follows = "nixpkgs";

@@ -203,7 +203,7 @@ in
             (bind "${mod} + T" (execCmd "${floatCenter 0} kitty ${config.desktop.btop.attach}"))
             (bind "${mod} + V" (execCmd "${floatCenter 0} ${config.desktop.audio.guiCmd}"))
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
-            (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))
+            # (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))
 
             # Other keys
             (bind "${mod} + BACKSPACE" (execCmd config.desktop.cli.ui.logoutMenu.toggle))

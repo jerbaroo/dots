@@ -1,9 +1,14 @@
 { pkgs, ... }:
+let
+  ghcidPoll = pkgs.writeShellScriptBin "ghcid" ''
+    ${pkgs.ghcid}/bin/ghcid --poll "$@"
+  '';
+in
 {
   home.packages = with pkgs; [
     brightnessctl # 🔆🔆🔆
     ghc # Glorious Haskell Compiler.
-    ghcid # Ol' reliable.
+    ghcidPoll # Ol' reliable.
     gcc # GNU Compiler Collection.
     github-copilot-cli # AI Sparkles.
     idasen # Desk control.
