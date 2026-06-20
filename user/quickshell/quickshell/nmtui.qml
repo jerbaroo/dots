@@ -51,7 +51,7 @@ FloatingWindow {
     property real charW: fm.advanceWidth("A")
 
     function toggleWifi() {
-        Networking.wifiEnabled = !Networking.wifiEnabled
+        Networking.wifiEnabled = !Networking.wifiEnabled;
         if (Networking.wifiEnabled) {
             root.wifiStartMs = Date.now();
         } else {
@@ -81,9 +81,7 @@ FloatingWindow {
                             "bssid": parts.slice(5).join(":")
                         });
                         root.errorText = "";
-                    } else if (Networking.wifiEnabled
-                               && root.wifiStartMs > 0
-                               && (Date.now() - root.wifiStartMs > 4000)) {
+                    } else if (Networking.wifiEnabled && root.wifiStartMs > 0 && (Date.now() - root.wifiStartMs > 4000)) {
                         root.errorText = `Unexpected response from nmcli: ${parts}`;
                     }
                 }
@@ -95,7 +93,8 @@ FloatingWindow {
     // Ask NetworkManager for wifi networks every second.
     Timer {
         interval: 500
-        onTriggered: if (!nmcliTask.running) nmcliTask.running = true
+        onTriggered: if (!nmcliTask.running)
+            nmcliTask.running = true
         running: true
         repeat: true
         triggeredOnStart: true
@@ -103,18 +102,19 @@ FloatingWindow {
 
     // Record the output of "nmcli monitor".
     Process {
-        command: ["nmcli", "monitor"]
         id: monitorProcess
+        command: ["nmcli", "monitor"]
         running: true // Run immediately and forever.
         stdout: SplitParser {
-            onRead: (data) => {
+            onRead: data => {
                 const line = data.trim();
                 if (line !== "") {
                     // .slice() copies the array so QML knows it needs to update the UI
                     let logs = root.monitorLogs.slice();
                     logs.push(line);
                     // Prevent memory leak.
-                    if (logs.length > 1000) logs.shift();
+                    if (logs.length > 1000)
+                        logs.shift();
                     root.monitorLogs = logs;
                 }
             }
@@ -143,15 +143,30 @@ FloatingWindow {
                 Row {
                     spacing: 24
                     width: parent.width
-                    component ColumnHeader: MonoText {
-                        font.bold: true
+                    ColumnHeader {
+                        text: "  Active"
+                        width: root.charW * 10
                     }
-                    ColumnHeader { text: "  Active"; width: root.charW * 10; }
-                    ColumnHeader { text: "BSSID";  width: root.charW * 19; }
-                    ColumnHeader { text: "SSID";   width: root.charW * 25; }
-                    ColumnHeader { text: "Speed";  width: root.charW * 12; }
-                    ColumnHeader { text: "Signal"; width: root.charW * 5; }
-                    ColumnHeader { text: "Bars";   width: root.charW * 6; }
+                    ColumnHeader {
+                        text: "BSSID"
+                        width: root.charW * 19
+                    }
+                    ColumnHeader {
+                        text: "SSID"
+                        width: root.charW * 25
+                    }
+                    ColumnHeader {
+                        text: "Speed"
+                        width: root.charW * 12
+                    }
+                    ColumnHeader {
+                        text: "Signal"
+                        width: root.charW * 5
+                    }
+                    ColumnHeader {
+                        text: "Bars"
+                        width: root.charW * 6
+                    }
                 }
 
                 // Separator Line
@@ -161,15 +176,15 @@ FloatingWindow {
                 }
 
                 ListView {
+                    id: apList
                     clip: true
                     focus: true // Required for key binds.
-                    id: apList
                     height: parent.height - 40 // Avoid overflowing.
                     model: root.wifiModel
                     width: parent.width
 
                     // Up and down navigation.
-                    Keys.onPressed: (event) => {
+                    Keys.onPressed: event => {
                         if (event.key === Qt.Key_J) {
                             apList.incrementCurrentIndex();
                         } else if (event.key === Qt.Key_K) {
@@ -179,9 +194,9 @@ FloatingWindow {
                         } else if (event.text === "g") {
                             apList.currentIndex = 0;
                         } else if (event.text === "q" || event.key === Qt.Key_Escape) {
-                            Qt.quit()
+                            Qt.quit();
                         } else if (event.key === Qt.Key_W) {
-                            root.toggleWifi()
+                            root.toggleWifi();
                         }
                     }
 
@@ -194,28 +209,45 @@ FloatingWindow {
                     highlightFollowsCurrentItem: true
 
                     delegate: Row {
-                        height: 24
                         id: apRow
+                        height: 24
                         spacing: 24
                         width: apList.width
 
                         property color rowColour: {
                             let sig = parseInt(modelData.signal);
-                            if (sig < 30) return "red";
-                            if (sig < 55) return "orange";
-                            if (sig < 80) return "yellow";
+                            if (sig < 30)
+                                return "red";
+                            if (sig < 55)
+                                return "orange";
+                            if (sig < 80)
+                                return "yellow";
                             return "green";
                         }
-
-                        component Cell: MonoText {
-                            color: rowColour;
+                        Cell {
+                            text: modelData.active ? "  Active" : ""
+                            width: root.charW * 10
                         }
-                        Cell { text: modelData.active ? "  Active" : ""; width: root.charW * 10; }
-                        Cell { text: modelData.bssid;                  width: root.charW * 19; }
-                        Cell { text: modelData.ssid;                   width: root.charW * 25; }
-                        Cell { text: modelData.rate;                   width: root.charW * 12; }
-                        Cell { text: modelData.signal + "%";           width: root.charW * 5; }
-                        Cell { text: modelData.bars;                   width: root.charW * 6; }
+                        Cell {
+                            text: modelData.bssid
+                            width: root.charW * 19
+                        }
+                        Cell {
+                            text: modelData.ssid
+                            width: root.charW * 25
+                        }
+                        Cell {
+                            text: modelData.rate
+                            width: root.charW * 12
+                        }
+                        Cell {
+                            text: modelData.signal + "%"
+                            width: root.charW * 5
+                        }
+                        Cell {
+                            text: modelData.bars
+                            width: root.charW * 6
+                        }
                     }
                 }
             }
@@ -228,33 +260,69 @@ FloatingWindow {
 
             Row {
                 spacing: 8
-                MonoText { color: "blue"; font.bold: true; text: "j"; }
-                MonoText { text: "up"; }
+                MonoText {
+                    color: "blue"
+                    font.bold: true
+                    text: "j"
+                }
+                MonoText {
+                    text: "up"
+                }
             }
             Row {
                 spacing: 8
-                MonoText { color: "blue"; font.bold: true; text: "k"; }
-                MonoText { text: "down"; }
+                MonoText {
+                    color: "blue"
+                    font.bold: true
+                    text: "k"
+                }
+                MonoText {
+                    text: "down"
+                }
             }
             Row {
                 spacing: 8
-                MonoText { color: "blue"; font.bold: true; text: "g"; }
-                MonoText { text: "top"; }
+                MonoText {
+                    color: "blue"
+                    font.bold: true
+                    text: "g"
+                }
+                MonoText {
+                    text: "top"
+                }
             }
             Row {
                 spacing: 8
-                MonoText { color: "blue"; font.bold: true; text: "G"; }
-                MonoText { text: "bottom"; }
+                MonoText {
+                    color: "blue"
+                    font.bold: true
+                    text: "G"
+                }
+                MonoText {
+                    text: "bottom"
+                }
             }
             Row {
                 spacing: 8
-                MonoText { color: "blue"; font.bold: true; text: "w"; }
-                MonoText { text: "toggle wifi"; }
+                MonoText {
+                    color: "blue"
+                    font.bold: true
+                    text: "w"
+                }
+                MonoText {
+                    text: "toggle wifi"
+                }
             }
             Row {
                 spacing: 8
-                MonoText { color: "blue"; font.bold: true; text: "q/ESC"; }
-                MonoText { text: "quit"; }
+                MonoText {
+                    color: "blue"
+                    font.bold: true
+                    text: "q/ESC"
+                }
+                MonoText {
+                    text: "quit"
+                }
             }
         }
 
@@ -282,8 +350,8 @@ FloatingWindow {
             }
 
             ListView {
-                clip: true
                 id: monitorList
+                clip: true
                 anchors.fill: parent
                 anchors.margins: 24
                 anchors.topMargin: monitorTitle.height + 4 // Push text below the title.
@@ -310,7 +378,7 @@ FloatingWindow {
                             "unmanaged": "grey",
                             "connected": "green",
                             "full": "green",
-                            "running": "green",
+                            "running": "green"
                         };
                         let lowerLine = modelData.toLowerCase();
                         for (let word in colorMap) {
@@ -323,5 +391,12 @@ FloatingWindow {
                 }
             }
         }
+    }
+    component ColumnHeader: MonoText {
+        font.bold: true
+    }
+
+    component Cell: MonoText {
+        color: rowColour
     }
 }

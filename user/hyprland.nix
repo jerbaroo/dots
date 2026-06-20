@@ -190,7 +190,11 @@ in
             # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
             (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))
             (bind "${mod} + M" (execCmd "spotify"))
-            (bind "${mod} + N" (execCmd "${pkgs.swaynotificationcenter}/bin/swaync-client -t"))
+            # (bind "${mod} + N" (execCmd "${pkgs.swaynotificationcenter}/bin/swaync-client -t"))
+            # TODO read command from quickshell.nix
+            (bind "${mod} + N" (
+              execCmd "${config.programs.quickshell.package}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/notifications.qml ipc call notifications toggleNotificationCenter"
+            ))
             (bind "${mod} + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy"))
             (bind "${mod} + SHIFT + R" (
               execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"

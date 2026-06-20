@@ -3,6 +3,7 @@
 import asyncio
 import datetime
 import json
+import os
 import re
 from collections import defaultdict
 from gi.repository import Gdk
@@ -351,18 +352,38 @@ notification_status.connect(
 )
 
 
-async def _watch_notification_status():
-    proc = await asyncio.create_subprocess_shell(
-        "swaync-client -s",
-        stdout=asyncio.subprocess.PIPE,
-    )
+async def _poll_notification_status():
+    notificationsPath = os.path.expanduser("~/.config/quickshell/notifications.qml")
+
+    async def readX(x):
+        proc = await asyncio.create_subprocess_exec(
+            # TODO this should come from some environment variable.
+            "qs",
+            "-p",
+            notificationsPath,
+            "ipc",
+            "call",
+            "notifications",
+            x,
+            stdout=asyncio.subprocess.PIPE,
+        )
+        stdout, _ = await proc.communicate()
+        return json.loads(stdout.decode("utf-8").strip())
+
     while True:
-        line = await proc.stdout.readline()
-        data = json.loads(line.decode("utf-8").strip())
-        notification_status.value = {"count": data["count"], "dnd": data["dnd"]}
+        count = await readX("getCount")
+        print(f"Polled notification count: {count}")
+        dndStatus = await readX("getDoNotDisturb")
+        print(f"Polled do not disturb: {dndStatus}")
+        if (
+            notification_status.value["count"] != count
+            or notification_status.value["dnd"] != dndStatus
+        ):
+            notification_status.value = {"count": count, "dnd": dndStatus}
+        await asyncio.sleep(1)
 
 
-asyncio.create_task(_watch_notification_status())
+asyncio.create_task(_poll_notification_status())
 
 
 def do_not_disturb() -> widgets.Button:

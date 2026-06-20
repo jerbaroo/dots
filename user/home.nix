@@ -69,13 +69,13 @@
     ./openrgb.nix
     ./os-cli.nix
     ./neovim.nix
-    ./notifications.nix
     ./packages.nix
     ./qt.nix
     ./quickshell.nix
     ./spicetify.nix
     ./starship.nix
     ./startup.nix
+    ./swaync.nix
     ./terminal.nix
     ./theme.nix
     ./tmux.nix

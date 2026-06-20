@@ -1,6 +1,6 @@
 {
   services.swaync = {
-    enable = true;
+    enable = false;
     settings = {
       timeout-critical = 10;
       widgets = [
