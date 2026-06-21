@@ -3,6 +3,7 @@
 const font = {
     family: "Atkinson Hyperlegible",
     pixelSize: {
+        xlarge: 22,
         large: 20,
         medium: 18,
         small: 16,

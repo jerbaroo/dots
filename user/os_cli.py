@@ -162,6 +162,7 @@ def app_launcher():
 
 @app_launcher.command()
 def toggle():
+    # TODO fix, and should be passed in.
     subprocess.run([IGNIS, "toggle-window", "ignis-app-launcher"])
 
 

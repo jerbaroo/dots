@@ -50,7 +50,7 @@ Scope {
             id: mainLayout
             anchors.fill: parent
             anchors.margins: 16
-            spacing: 12
+            spacing: 16
 
             // Notification header.
             RowLayout {
@@ -169,10 +169,10 @@ Scope {
     IpcHandler {
         target: "notifications"
         function getCount(): int {
-            return history.count
+            return history.count;
         }
         function getDoNotDisturb(): bool {
-            return root.doNotDisturb
+            return root.doNotDisturb;
         }
         function setDoNotDisturbDisabled(): void {
             root.doNotDisturb = false;
@@ -285,6 +285,7 @@ Scope {
             implicitWidth: 512
             radius: 10
 
+            // Trap mouse clicks, to avoid bubbling up to the dismiss layer.
             MouseArea {
                 anchors.fill: parent
             }

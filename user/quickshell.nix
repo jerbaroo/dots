@@ -14,6 +14,25 @@ let
   qmllsWrapper = pkgs.writeShellScriptBin "qmlls" ''
     exec ${qtPkg}/bin/qmlls -I "${quickshellPath}" -I "${qtPath}" "$@"
   '';
+  makeService = humanName: fileName: {
+    Install.WantedBy = [ "graphical-session.target" ];
+    Service = {
+      Environment = [
+        "QML_IMPORT_PATH=${config.xdg.configHome}/quickshell"
+        "QS_ICON_THEME=${config.gtk.iconTheme.name}"
+      ];
+      ExecStart = "${quickshellPkg}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/${fileName}.qml";
+      Restart = "on-failure";
+    };
+    Unit = {
+      After = [
+        "graphical-session.target"
+        "ignis.target"
+      ];
+      Description = humanName;
+      BindsTo = [ "graphical-session.target" ];
+    };
+  };
   shellServer = pkgs.callPackage ./quickshell/shell-server/shell-server.nix { };
 in
 {
@@ -22,31 +41,18 @@ in
     qtPkg # For qmlformat and other tools.
     shellServer
   ];
-  # Make the generated Theme module importable from any config, including
-  # when launching a single file with `quickshell -p <file>` (whose config
-  # root is the file's own directory rather than ~/.config/quickshell).
+  # Make the Theme module and icon theme available from any config, including
+  # when launching a single file with `quickshell -p <file>` (whose config root
+  # is the file's own directory rather than ~/.config/quickshell).
   home.sessionVariables.QML_IMPORT_PATH = "${config.xdg.configHome}/quickshell";
+  home.sessionVariables.QS_ICON_THEME = config.gtk.iconTheme.name;
   qt.enable = true;
   programs.quickshell = {
     enable = true;
     package = quickshellPkg;
   };
-  systemd.user.services.notification-center = {
-    Install.WantedBy = [ "graphical-session.target" ];
-    Service = {
-      Environment = "QML_IMPORT_PATH=${config.xdg.configHome}/quickshell";
-      ExecStart = "${quickshellPkg}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/notifications.qml";
-      Restart = "on-failure";
-    };
-    Unit = {
-      After = [
-        "graphical-session.target"
-        "ignis.target"
-      ];
-      Description = "Notification center";
-      BindsTo = [ "graphical-session.target" ];
-    };
-  };
+  systemd.user.services.app-launcher = makeService "App Launcher" "app_launcher";
+  systemd.user.services.notification-center = makeService "Notification Center" "notifications";
   systemd.user.services.shell-server = {
     Install.WantedBy = [ "graphical-session.target" ];
     Service = {
@@ -96,7 +102,7 @@ in
   # are linked (rather than symlinking the whole directory into the read-only
   # store), allowing the generated Theme/ files above to live alongside them.
   xdg.configFile."quickshell" = {
-    source = ./quickshell/quickshell;
     recursive = true;
+    source = ./quickshell/quickshell;
   };
 }

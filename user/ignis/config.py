@@ -1,4 +1,3 @@
-import app_launcher
 import bar
 import lock_screen
 import logout_menu
@@ -24,7 +23,6 @@ css_manager.apply_css(
     )
 )
 
-app_launcher.app_launcher(app)
 lock_screen.register_lock_screen(app)
 for monitor in range(utils.get_n_monitors()):
     bar.bar(monitor)

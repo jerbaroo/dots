@@ -45,7 +45,7 @@ in
       # Icons.
       # ls /etc/profiles/per-user/jer/share/icons
       iconTheme = {
-        name = "Papirus";
+        name = "Papirus-Dark";
         package = pkgs.papirus-icon-theme;
       };
       gtk4.extraConfig = {

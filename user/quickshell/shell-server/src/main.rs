@@ -15,6 +15,7 @@ pub struct App {
     pub name: String,
     pub exec: String,
     pub comment: Option<String>,
+    pub icon: Option<String>,
 }
 
 enum Level {
@@ -127,10 +128,11 @@ async fn main() {
 pub fn serialize_sections(sections: Vec<Desktop::Section>) -> Result<String, String> {
     let mut apps = Vec::new();
     for section in sections {
-        let name = section.attr("Name").get(0).ok_or("No name")?;
-        let exec = section.attr("Exec").get(0).ok_or("No exec")?;
+        let name = section.attr("Name").get(0).ok_or("No app name found")?;
+        let exec = section.attr("Exec").get(0).ok_or("No app exec found")?;
         let comment = section.attr("Comment").get(0);
-        apps.push(App { name: name.to_string(), exec: exec.to_string(), comment: comment.cloned() });
+        let icon = section.attr("Icon").get(0);
+        apps.push(App { name: name.to_string(), exec: exec.to_string(), comment: comment.cloned(), icon: icon.cloned() });
     }
     apps.sort();
     apps.dedup();

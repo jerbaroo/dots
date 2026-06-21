@@ -190,7 +190,6 @@ in
             # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
             (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))
             (bind "${mod} + M" (execCmd "spotify"))
-            # (bind "${mod} + N" (execCmd "${pkgs.swaynotificationcenter}/bin/swaync-client -t"))
             # TODO read command from quickshell.nix
             (bind "${mod} + N" (
               execCmd "${config.programs.quickshell.package}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/notifications.qml ipc call notifications toggleNotificationCenter"
@@ -207,14 +206,16 @@ in
             (bind "${mod} + T" (execCmd "${floatCenter 0} kitty ${config.desktop.btop.attach}"))
             (bind "${mod} + V" (execCmd "${floatCenter 0} ${config.desktop.audio.guiCmd}"))
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
-            # (bind "${mod} + SHIFT + W" (execCmd "${pkgs.librewolf}/bin/librewolf"))
 
             # Other keys
             (bind "${mod} + BACKSPACE" (execCmd config.desktop.cli.ui.logoutMenu.toggle))
             (bind "${mod} + DELETE" (execCmd "systemctl suspend"))
             (bind "${mod} + RETURN" (execCmd "kitty"))
             (bind "${mod} + SHIFT + RETURN" (execCmd "konsole")) # Backup terminal.
-            (bind "${mod} + SLASH" (execCmd config.desktop.cli.ui.appLauncher.toggle))
+            # TODO read command from quickshell.nix
+            (bind "${mod} + SLASH" (
+              execCmd "${config.programs.quickshell.package}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/app_launcher.qml ipc call app-launcher toggle"
+            ))
             (bind "${mod} + SPACE" (
               if config.desktop.hyprland.layout == "dwindle" then
                 dispatch "togglesplit" ""
