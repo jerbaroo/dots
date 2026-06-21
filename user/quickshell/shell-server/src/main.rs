@@ -6,6 +6,7 @@ use fuzzy_matcher::skim::SkimMatcherV2;
 use serde::Serialize;
 use serde_json;
 use std::env;
+use std::collections::HashSet;
 use std::path::{PathBuf};
 use std::sync::{Arc, Mutex};
 use walkdir::WalkDir;
@@ -40,13 +41,27 @@ fn background_refresh(cache: Arc<Mutex<Option<Vec<Desktop::Section>>>>) {
 }
 
 pub fn filter_sections(sections: Vec<Desktop::Section>, query: String) -> Vec<Desktop::Section> {
+    if query.is_empty() {
+        return sections;
+    }
+    let mut seen_names = HashSet::new();
     let matcher = SkimMatcherV2::default();
+    let query_lower = query.to_lowercase();
+    let boundary_query = format!(" {}", query_lower);
     let mut scored_matches: Vec<(i64, Desktop::Section)> = Vec::new();
     for section in sections {
         if let Some(app_name) = section.attr("Name").get(0) {
-            if query.is_empty() {
-                scored_matches.push((0, section));
-            } else if let Some(score) = matcher.fuzzy_match(app_name, &query) {
+            let app_name_lower = app_name.to_lowercase();
+            if seen_names.insert(app_name_lower.clone()) && let Some(mut score) = matcher.fuzzy_match(&app_name_lower, &query_lower) {
+                if app_name_lower == query_lower { // Tier 1: Exact matches are king.
+                    score += 2000;
+                } else if app_name_lower.starts_with(&query_lower) { // Tier 2: Prefix matches.
+                    score += 1000;
+                } else if app_name_lower.contains(&boundary_query) { // Tier 3: Word-boundary matches.
+                    score += 500;
+                }
+                // Tie-breaker: subtract length so shorter names win.
+                score -= app_name.len() as i64;
                 scored_matches.push((score, section));
             }
         }
@@ -134,7 +149,5 @@ pub fn serialize_sections(sections: Vec<Desktop::Section>) -> Result<String, Str
         let icon = section.attr("Icon").get(0);
         apps.push(App { name: name.to_string(), exec: exec.to_string(), comment: comment.cloned(), icon: icon.cloned() });
     }
-    apps.sort();
-    apps.dedup();
     serde_json::to_string(&apps).map_err(|err| err.to_string())
 }
