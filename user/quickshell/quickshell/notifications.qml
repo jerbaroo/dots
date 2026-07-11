@@ -30,6 +30,9 @@ Scope {
         required property string time
         required property int urgency
         property var dismissAction: function () {}
+        // NotificationActions to show as buttons. Clicking a button invokes
+        // the action and then dismisses the card.
+        property var actions: []
 
         Layout.fillWidth: true
         implicitHeight: mainLayout.implicitHeight + 32
@@ -142,6 +145,48 @@ Scope {
                     }
                 }
             }
+
+            // Notification actions.
+            Flow {
+                Layout.fillWidth: true
+                spacing: 8
+                visible: card.actions.length > 0
+
+                Repeater {
+                    model: card.actions
+
+                    delegate: Rectangle {
+                        id: actionButton
+
+                        required property var modelData
+
+                        color: actionMouseArea.containsMouse ? Theme.accent : Theme.surface0
+                        implicitHeight: actionText.implicitHeight + 12
+                        implicitWidth: actionText.implicitWidth + 24
+                        radius: 8
+
+                        Text {
+                            id: actionText
+                            anchors.centerIn: parent
+                            color: actionMouseArea.containsMouse ? Theme.crust : Theme.text
+                            font.family: Config.font.family
+                            font.pixelSize: Config.font.pixelSize.small
+                            text: actionButton.modelData.text
+                        }
+
+                        MouseArea {
+                            id: actionMouseArea
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onClicked: {
+                                actionButton.modelData.invoke();
+                                card.dismissAction();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -235,6 +280,8 @@ Scope {
                     dismissAction: () => {
                         modelData.dismiss();
                     }
+
+                    actions: Notifications.buttonActions(modelData)
 
                     Timer {
                         running: urgency !== NotificationUrgency.Critical
@@ -378,18 +425,30 @@ Scope {
                     model: history
 
                     delegate: NotificationCard {
+                        id: historyCard
+
                         required property int index
                         required property int notificationId
 
-                        borderEnabled: false
-                        dismissAction: () => {
-                            for (let i = 0; i < server.trackedNotifications.values.length; i++) {
-                                let trackedItem = server.trackedNotifications.values[i];
-                                if (trackedItem.id === notificationId) {
-                                    trackedItem.dismiss();
-                                    break;
+                        // The still-alive notification behind this history entry,
+                        // or null once the server has closed it. Kept alive via
+                        // 'n.tracked = true' so its actions remain invokable.
+                        readonly property var trackedNotification: {
+                            let values = server.trackedNotifications.values;
+                            for (let i = 0; i < values.length; i++) {
+                                if (values[i].id === notificationId) {
+                                    return values[i];
                                 }
                             }
+                            return null;
+                        }
+
+                        borderEnabled: false
+                        // Actions are only available while the notification is
+                        // still tracked by the server.
+                        actions: Notifications.buttonActions(historyCard.trackedNotification)
+                        dismissAction: () => {
+                            historyCard.trackedNotification?.dismiss();
                             // Update the state before the delegate is destroyed.
                             if (history.count <= 1) {
                                 root.centerOpen = false;
