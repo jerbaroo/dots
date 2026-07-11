@@ -6,7 +6,8 @@
 }:
 let
   c = colour: pkgs.lib.strings.removePrefix "#" config.desktop.theme.palette.${colour}.hex;
-  # We wrap the distro-specific swaylock package with a custom theme.
+  # We wrap the distro-packaged swaylock package with a custom theme.
+  # We don't use the swaylock from Nix packages due to PAM issues.
   swaylock_ = pkgs.writeShellScriptBin "swaylock_" ''
     swaylock \
       --font 'Atkinson Hyperlegible' \

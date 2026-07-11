@@ -15,6 +15,7 @@
   stateVersion,
   system,
   username,
+  zen,
   ...
 }:
 {
@@ -32,6 +33,7 @@
         stateVersion
         system
         username
+        zen
         ;
       allowUnfreePredicate = null;
     };

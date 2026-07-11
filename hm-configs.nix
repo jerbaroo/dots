@@ -14,12 +14,11 @@
               whitelist = map pkgs.lib.getName [
                 pkgs.github-copilot-cli
                 pkgs.spotify
-                pkgs.symbola
               ];
             in
             pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
           browser = {
-            cmd = "firefox";
+            cmd = "google-chrome";
             homepage = "http://localhost:${toString config.desktop.ghdashboard.port}";
           };
           genericLinux = {

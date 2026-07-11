@@ -27,6 +27,10 @@
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     spicetify.url = "github:Gerg-L/spicetify-nix";
+    zen-browser = {
+      url = "github:youwen5/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     inputs:
@@ -47,6 +51,7 @@
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
         system = "x86_64-linux";
+        zen = inputs.zen-browser;
       };
     in
     {

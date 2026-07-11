@@ -2,13 +2,61 @@
   config,
   lib,
   pkgs,
+  zen,
   ...
 }:
 let
-  pkg = config.lib.nixGL.wrap pkgs.chromium;
+  chromiumPkg = config.lib.nixGL.wrap pkgs.chromium;
+  firefoxExtension = shortId: guid: {
+    name = guid;
+    value = {
+      install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${shortId}/latest.xpi";
+      installation_mode = "normal_installed";
+    };
+  };
+  zenPkg = config.lib.nixGL.wrap (
+    pkgs.wrapFirefox zen.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped {
+      extraPolicies = {
+        DisableTelemetry = true;
+        ExtensionSettings = builtins.listToAttrs [
+          (firefoxExtension "darkreader" "addon@darkreader.org")
+          (firefoxExtension "leechblock-ng" "leechblockng@proginosko.com")
+          (firefoxExtension "vimium-ff" "{d7742d87-e61d-4b78-b8a1-b469842139fa}")
+          (firefoxExtension "ublock-origin" "uBlock0@raymondhill.net")
+        ];
+        SearchEngines = {
+          Default = "google";
+          Add = [
+            {
+              Alias = "@np";
+              IconURL = "https://wiki.nixos.org/favicon.ico";
+              Name = "nixpkgs packages";
+              URLTemplate = "https://search.nixos.org/packages?query={searchTerms}";
+            }
+            {
+              Alias = "@no";
+              IconURL = "https://noogle.dev/favicon.ico";
+              Name = "noogle";
+              URLTemplate = "https://noogle.dev/q?term={searchTerms}";
+            }
+          ];
+        };
+      };
+      extraPrefs = lib.concatLines (
+        lib.mapAttrsToList
+          (name: value: "lockPref(${lib.strings.toJSON name}, ${lib.strings.toJSON value});")
+          {
+            # See about:config
+            "extensions.autoDisableScopes" = 0;
+            "extensions.pocket.enabled" = false;
+          }
+      );
+    }
+  );
 in
 {
   config = {
+    home.packages = [ zenPkg ];
     programs.chromium = {
       commandLineArgs = [
         "--disable-gpu" # FIXME
@@ -26,19 +74,23 @@ in
       enable = true;
       extensions = [
         { id = "ebboehhiijjcihmopcggopfgchnfepkn"; } # CHROLED Theme
-        { id = "pflnpcinjbcfefgbejjfanemlgcfjbna"; } # Show Tab Numbers
         { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
         { id = "blaaajhemilngeeffpbfkdjjoefldkok"; } # LeechBlock NG
         { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
         { id = "ddkjiahejlhfcafbddmgiahcphecmpfh"; } # uBlock Origin Lite
       ];
-      package = pkg;
+      package = chromiumPkg;
     };
   };
   options.desktop.browser = {
     cmd = lib.mkOption {
-      default = "chromium";
+      default = "${zenPkg}/bin/zen";
       description = "Command to open a browser";
+      type = lib.types.str;
+    };
+    cmd2 = lib.mkOption {
+      default = "chromium";
+      description = "Command to open another browser";
       type = lib.types.str;
     };
     homepage = lib.mkOption {

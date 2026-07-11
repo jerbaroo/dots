@@ -10,7 +10,6 @@ in
     ghc # Glorious Haskell Compiler.
     ghcidPoll # Ol' reliable.
     gcc # GNU Compiler Collection.
-    github-copilot-cli # AI Sparkles.
     idasen # Desk control.
     jq # JSON processor.
     niv # Nix dependency manager.

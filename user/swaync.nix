@@ -1,4 +1,5 @@
 {
+  # TODO remove this module.
   services.swaync = {
     enable = false;
     settings = {
