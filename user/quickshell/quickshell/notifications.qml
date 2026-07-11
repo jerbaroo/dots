@@ -198,7 +198,7 @@ Scope {
         bodySupported: true
         imageSupported: true
         onNotification: n => {
-            history.insert(0, {
+            const historyEntry = () => ({
                 appName: n.appName || "Unknown",
                 body: n.body || "",
                 imageSource: n.image || n.appIcon || "",
@@ -207,6 +207,34 @@ Scope {
                 time: Qt.formatDateTime(new Date(), "HH:mm"),
                 urgency: n.urgency !== undefined ? n.urgency : 1
             });
+            const historyIndex = () => {
+                for (let i = 0; i < history.count; i++) {
+                    if (history.get(i).notificationId === n.id) {
+                        return i;
+                    }
+                }
+                return -1;
+            };
+            const existing = historyIndex();
+            if (existing >= 0) {
+                history.set(existing, historyEntry());
+            } else {
+                history.insert(0, historyEntry());
+            }
+            // Notifications may be replaced in-place (same id, new content),
+            // in which case the server updates 'n' rather than re-emitting.
+            const updateHistory = () => {
+                const i = historyIndex();
+                if (i >= 0) {
+                    history.set(i, historyEntry());
+                }
+            };
+            n.appNameChanged.connect(updateHistory);
+            n.summaryChanged.connect(updateHistory);
+            n.bodyChanged.connect(updateHistory);
+            n.imageChanged.connect(updateHistory);
+            n.appIconChanged.connect(updateHistory);
+            n.urgencyChanged.connect(updateHistory);
             n.tracked = true;
         }
     }
@@ -266,6 +294,8 @@ Scope {
                 model: server.trackedNotifications
 
                 delegate: NotificationCard {
+                    id: popupCard
+
                     required property var modelData
 
                     appName: modelData.appName || "Unknown"
@@ -284,9 +314,26 @@ Scope {
                     actions: Notifications.buttonActions(modelData)
 
                     Timer {
+                        id: dismissTimer
                         running: urgency !== NotificationUrgency.Critical
                         interval: Notifications.timeout
                         onTriggered: dismissAction()
+                    }
+
+                    // Keep the popup around when it is replaced in-place.
+                    Connections {
+                        target: popupCard.modelData
+                        function onSummaryChanged() {
+                            popupCard.refresh();
+                        }
+                        function onBodyChanged() {
+                            popupCard.refresh();
+                        }
+                    }
+
+                    function refresh() {
+                        time = Qt.formatDateTime(new Date(), "HH:mm");
+                        dismissTimer.restart();
                     }
                 }
             }
