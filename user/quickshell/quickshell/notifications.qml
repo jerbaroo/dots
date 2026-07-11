@@ -133,15 +133,23 @@ Scope {
                         wrapMode: Text.Wrap
                     }
 
-                    // Notification body.
+                    // Notification body. May contain markup such as
+                    // hyperlinks, per the freedesktop notification spec.
                     Text {
                         Layout.fillWidth: true
                         color: Theme.text
                         font.family: Config.font.family
                         font.pixelSize: Config.font.pixelSize.small
+                        linkColor: Theme.accent
                         text: card.body
+                        textFormat: Text.StyledText
                         visible: text !== ""
                         wrapMode: Text.Wrap
+                        onLinkActivated: link => Qt.openUrlExternally(link)
+
+                        HoverHandler {
+                            cursorShape: parent.hoveredLink !== "" ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        }
                     }
                 }
             }
