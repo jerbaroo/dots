@@ -1,74 +1,52 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; https://github.com/doomemacs/doomemacs/blob/master/static/config.example.el
+;; Place your private configuration here! Remember, you do not need to run 'doom
+;; sync' after modifying this file!
 
-;; Prevent "void-variable haskell-indent-offset" errors from legacy project configs
-(defvar haskell-indent-offset 2
-  "Dummy variable to prevent void-variable errors in older Haskell projects.")
+;; Some functionality uses this to identify you, e.g. GPG configuration, email
+;; clients, file templates and snippets. It is optional.
+;; (setq user-full-name "John Doe"
+;;       user-mail-address "john@doe.com")
 
+;; Doom exposes five (optional) variables for controlling fonts in Doom:
+;;
+;; - `doom-font' -- the primary font to use
+;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
+;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
+;;   presentations or streaming.
+;; - `doom-symbol-font' -- for symbols
+;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
+;;
+;; See 'C-h v doom-font' for documentation and more examples of what they
+;; accept. For example:
+;;
+;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+;;
+;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
+;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
+;; refresh your font settings. If Emacs still can't find your font, it likely
+;; wasn't installed correctly. Font issues are rarely Doom issues!
+
+;; There are two ways to load a theme. Both assume the theme is installed and
+;; available. You can either set `doom-theme' or manually load a theme with the
+;; `load-theme' function.
+
+;; Theme and font.
 (setq
   catppuccin-flavor '@flavor@
-  display-line-numbers-type 'relative
   doom-font (font-spec :family "@codeFontName@" :size @codeFontSize@)
   doom-theme 'catppuccin
-  flycheck-checker-error-threshold 1000
-  ;; doom-themes-treemacs-theme "doom-colors"
   ;; doom-variable-pitch-font (font-spec :family "@codeFontName@" :size @codeFontSize@)
-  ;; lsp-disabled-clients '(pylsp)
-  ;; lsp-enable-file-watchers nil
-  ;; lsp-eldoc-enable-hover t
-  ;; lsp-haskell-formatting-provider "fourmolu"
-  ;; lsp-haskell-plugin-fourmolu-config-external t
-  lsp-haskell-plugin-hlint-code-actions-on nil
-  lsp-haskell-plugin-hlint-diagnostics-on nil
-  ;; lsp-haskell-plugin-rename-config-cross-module t
-  ;; lsp-haskell-plugin-semantic-tokens-global-on t
-  ;; lsp-haskell-session-loading "multipleComponents"
-  ;; lsp-haskell-server-path "haskell-language-server"
-  lsp-haskell-server-args '("-d" "-l" "/tmp/hls.log")
-  lsp-lens-enable nil
-  ;; lsp-ui-peek-enable t
-  ;; lsp-ui-sideline-enable t
-  org-directory "~/org/"
-  org-latex-pdf-process
-    '("xelatex -shell-escape -interaction nonstopmode %f"
-      "bibtex %b"
-      "xelatex -shell-escape -interaction nonstopmode %f")
-  user-full-name "jerbaroo"
-  user-mail-address "jerbaroo.work@pm.me"
-  which-key-idle-delay 0.0
-  zoom-size '(0.60 . 0.60)
   )
 
+;; Theme background opacity.
 (add-to-list
   'default-frame-alist
   '(alpha-background . @codeBackgroundOpacity@)
   )
 
-(after! lsp-ui
-  (setq
-    ;; lsp-ui-doc-delay 0.2
-    ;; lsp-ui-doc-enable t
-    ;; lsp-ui-doc-show-with-cursor t
-    ;; lsp-ui-doc-side 'right
-    ;; lsp-ui-doc-position 'top
-    )
-  (add-to-list 'lsp-ui-doc-frame-parameters '(alpha-background . 100))
-  )
-
-(global-display-fill-column-indicator-mode)
-
-(map!
-  "C-h" #'evil-window-left
-  "C-j" #'evil-window-down
-  "C-k" #'evil-window-up
-  "C-l" #'evil-window-right
-  )
-
-(map! :leader
-  :desc "Show LSP UI Doc"
-  "c c" #'lsp-ui-doc-show)
-
+;; Override parts of the theme.
 (custom-set-faces!
   ;; Using a different font messes with fill-column-indicator alignment.
   '(font-lock-comment-face :family "@codeFontName@" :foreground "@colourComment@" :size @codeFontSize@ :slant italic)
@@ -76,7 +54,57 @@
   '(line-number-current-line :foreground "@colourLineNumberCurrent@")
   )
 
-;; Automatically load qml-mode for .qml files
-(add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
-;; Optional: If you use LSP and want to use the Qt Language Server (qmlls)
-(add-hook 'qml-mode-hook #'lsp!)
+;; This determines the style of line numbers in effect. If set to `nil', line
+;; numbers are disabled. For relative line numbers, set this to `relative'.
+(setq display-line-numbers-type 'relative)
+
+;; If you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. It must be set before org loads!
+(setq org-directory "~/org/")
+
+;; vi keys for pane navigation.
+(map!
+  "C-h" #'evil-window-left
+  "C-j" #'evil-window-down
+  "C-k" #'evil-window-up
+  "C-l" #'evil-window-right
+  )
+
+;; No delay for shortcut popup.
+(setq which-key-idle-delay 0.0)
+
+;; Whenever you reconfigure a package, make sure to wrap your config in an
+;; `with-eval-after-load' block, otherwise Doom's defaults may override your
+;; settings. E.g.
+;;
+;;   (with-eval-after-load 'PACKAGE
+;;     (setq x y))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((haskell-mode) . ("haskell-language-server" "--lsp"))))
+
+;;
+;; The exceptions to this rule:
+;;
+;;   - Setting file/directory variables (like `org-directory')
+;;   - Setting variables which explicitly tell you to set them before their
+;;     package is loaded (see 'C-h v VARIABLE' to look them up).
+;;   - Setting doom variables (which start with 'doom-' or '+').
+;;
+;; Here are some additional functions/macros that will help you configure Doom.
+;;
+;; - `load!' for loading external *.el files relative to this one
+;; - `add-load-path!' for adding directories to the `load-path', relative to
+;;   this file. Emacs searches the `load-path' when you load packages with
+;;   `require' or `use-package'.
+;; - `map!' for binding new keys
+;;
+;; To get information about any of these functions/macros, move the cursor over
+;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
+;; This will open documentation for it, including demos of how they are used.
+;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+;; etc).
+;;
+;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
+;; they are implemented.

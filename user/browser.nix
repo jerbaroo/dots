@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  system,
   zen,
   ...
 }:
@@ -15,7 +16,7 @@ let
     };
   };
   zenPkg = config.lib.nixGL.wrap (
-    pkgs.wrapFirefox zen.packages.${pkgs.stdenv.hostPlatform.system}.zen-browser-unwrapped {
+    pkgs.wrapFirefox zen.packages.${system}.zen-browser-unwrapped {
       extraPolicies = {
         DisableTelemetry = true;
         ExtensionSettings = builtins.listToAttrs [
@@ -27,6 +28,12 @@ let
         SearchEngines = {
           Default = "google";
           Add = [
+            {
+              Alias = "@h";
+              IconURL = "https://hoogle.haskell.org/favicon.ico";
+              Name = "hoogle";
+              URLTemplate = "https://hoogle.haskell.org/?hoogle={searchTerms}";
+            }
             {
               Alias = "@np";
               IconURL = "https://wiki.nixos.org/favicon.ico";

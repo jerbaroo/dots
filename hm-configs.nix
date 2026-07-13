@@ -25,7 +25,10 @@
             enable = true;
             nixGL.packages = inputs.nixgl.packages;
           };
-          hyprland.gap = 0;
+          hyprland = {
+            defaultColumnWidth = 0.333333;
+            gap = 0;
+          };
         };
       };
   }

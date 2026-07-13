@@ -127,7 +127,7 @@ in
           };
           render.cm_auto_hdr = config.desktop.monitor.hdr.auto;
           scrolling = {
-            column_width = 0.333333;
+            column_width = config.desktop.hyprland.defaultColumnWidth;
             direction = "right";
             focus_fit_method = 1;
             fullscreen_on_one_column = false;
@@ -369,6 +369,11 @@ in
       default = true;
       description = "Enable background blur for transparent windows.";
       type = lib.types.bool;
+    };
+    defaultColumnWidth = lib.mkOption {
+      default = 0.25;
+      description = "Default size of hyprland scrolling layout columns.";
+      type = lib.types.float;
     };
     float.size.default = lib.mkOption {
       default = 0.85;
