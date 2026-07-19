@@ -5,7 +5,6 @@
   config,
   flavor,
   hyprland,
-  ignis,
   lib,
   pkgs,
   spicetify,
@@ -21,10 +20,6 @@
       system
       ;
     hyprland.packages = hyprland.packages.${system};
-    ignis = {
-      configDir.path = ".config/ignis";
-      package = ignis.packages.${system}.ignis;
-    };
     spicetify.packages = spicetify.legacyPackages.${system};
     # Theme options taken as parameters because, either they are shared with
     # NixOS, or they come from "inputs".
@@ -38,7 +33,6 @@
   imports = [
     # 3rd-party Home Manager modules.
     catppuccin.homeModules.catppuccin
-    ignis.homeManagerModules.default
     spicetify.homeManagerModules.default
 
     # Define common Home Manager options.
@@ -62,7 +56,6 @@
     ./hyprland.nix
     ./hyprglass.nix
     ./hyprsunset.nix
-    ./ignis.nix
     ./kanata/kanata.nix
     ./kitty.nix
     ./lock.nix

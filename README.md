@@ -34,12 +34,6 @@ a different display manager, or just start hyprland from the TTY.
 - `~/.config/emacs/bin/doom install` (no envvar file)
 - If necessary: `rm -rf ~/.emacs.d`
 
-## Develop ignis components
-``` bash
-ignis quit
-ignis init -c ./user/ignis/config.py
-```
-
 ## Pre-commit
 ``` bash
 pre-commit install # Only once.

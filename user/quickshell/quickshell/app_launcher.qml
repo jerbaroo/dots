@@ -12,6 +12,12 @@ Scope {
 
     property bool appLauncherOpen: false
 
+    // Start each launcher session with a fresh query.
+    onAppLauncherOpenChanged: {
+        if (appLauncherOpen)
+            searchInput.text = "";
+    }
+
     ListModel {
         id: resultsModel
     }
@@ -86,9 +92,10 @@ Scope {
         Rectangle {
             anchors.centerIn: parent
             color: Theme.crust
-            implicitHeight: 960
-            implicitWidth: 640
-            radius: 8
+            // Responsive: a fraction of the screen, capped on large monitors.
+            implicitHeight: Math.min(Config.launcher.maxHeight, window.height * Config.launcher.heightFraction)
+            implicitWidth: Math.min(Config.launcher.maxWidth, window.width * Config.launcher.widthFraction)
+            radius: Config.launcher.radius
 
             // Trap mouse clicks, to avoid bubbling up to the dismiss layer.
             MouseArea {
@@ -101,22 +108,22 @@ Scope {
                 // Search bar container.
                 Item {
                     width: parent.width
-                    height: 128
+                    height: Config.launcher.searchHeight
 
                     // The Visual Search Box Layout
                     Rectangle {
                         id: searchBoxContainer
 
                         anchors.fill: parent
-                        anchors.margins: 16 // Padding around the search box
+                        anchors.margins: Config.launcher.padding // Padding around the search box
                         color: Theme.base
-                        radius: 8
+                        radius: Config.launcher.radius
 
                         Row {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            spacing: 16 // Between search icon and input.
+                            anchors.leftMargin: Config.launcher.padding
+                            anchors.rightMargin: Config.launcher.padding
+                            spacing: Config.launcher.padding // Between search icon and input.
 
                             // Search Glass System Icon
                             IconImage {
@@ -124,7 +131,7 @@ Scope {
 
                                 anchors.verticalCenter: parent.verticalCenter
                                 asynchronous: true
-                                implicitSize: 64
+                                implicitSize: Config.launcher.iconSize
                                 source: "image://icon/edit-find"
                             }
 
@@ -175,12 +182,12 @@ Scope {
                     id: resultsList
 
                     clip: true
-                    leftMargin: 16
+                    leftMargin: Config.launcher.padding
                     model: resultsModel
-                    rightMargin: 16
-                    height: parent.height - 128 // TODO
+                    rightMargin: Config.launcher.padding
+                    height: parent.height - Config.launcher.searchHeight
                     width: parent.width
-                    spacing: 16 // Vertical height between results.
+                    spacing: Config.launcher.padding // Vertical height between results.
 
                     // Explicitly transparent canvas for empty list areas
                     Rectangle {
@@ -193,7 +200,7 @@ Scope {
                         required property int index
                         required property var modelData
 
-                        height: 96
+                        height: Config.launcher.rowHeight
                         width: resultsList.width - resultsList.leftMargin - resultsList.rightMargin
 
                         background: Rectangle {
@@ -201,28 +208,28 @@ Scope {
                             color: delegateItem.hovered ? Theme.base : "transparent"
                             border.color: isCurrent ? Theme.accent : "transparent"
                             border.width: isCurrent ? 1 : 0
-                            radius: 8
+                            radius: Config.launcher.radius
                         }
 
                         contentItem: Row {
                             anchors.fill: parent
-                            anchors.leftMargin: 16
-                            anchors.rightMargin: 16
-                            spacing: 16
+                            anchors.leftMargin: Config.launcher.padding
+                            anchors.rightMargin: Config.launcher.padding
+                            spacing: Config.launcher.padding
 
                             IconImage {
                                 id: appIcon
 
                                 anchors.verticalCenter: parent.verticalCenter
                                 asynchronous: true
-                                implicitSize: 64
+                                implicitSize: Config.launcher.iconSize
                                 source: Quickshell.iconPath(modelData.icon)
                                 visible: modelData.icon !== ""
                             }
 
                             Column {
                                 anchors.verticalCenter: parent.verticalCenter
-                                spacing: 8
+                                spacing: Config.launcher.textSpacing
 
                                 Text {
                                     color: Theme.text

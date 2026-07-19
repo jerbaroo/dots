@@ -25,10 +25,7 @@ let
       Restart = "on-failure";
     };
     Unit = {
-      After = [
-        "graphical-session.target"
-        "ignis.target"
-      ];
+      After = [ "graphical-session.target" ];
       Description = humanName;
       BindsTo = [ "graphical-session.target" ];
     };
@@ -52,7 +49,8 @@ in
     package = quickshellPkg;
   };
   systemd.user.services.app-launcher = makeService "App Launcher" "app_launcher";
-  systemd.user.services.notification-center = makeService "Notification Center" "notifications";
+  # Bar and notification server share one instance (see quickshell/BAR.md).
+  systemd.user.services.menu-bar = makeService "Menu Bar" "bar";
   systemd.user.services.shell-server = {
     Install.WantedBy = [ "graphical-session.target" ];
     Service = {
@@ -97,6 +95,34 @@ in
   xdg.configFile."quickshell/Theme/qmldir".text = ''
     module Theme
     singleton Theme 0.1 Theme.qml
+  '';
+  # Commands from the Nix config for use in QML. Launched through hyprland's
+  # exec dispatcher, so rule prefixes like [float;center] apply — the same
+  # mechanism the keybinds in hyprland.nix use.
+  xdg.configFile."quickshell/Cmds/Cmds.qml".text =
+    let
+      floatCenter =
+        let
+          fraction = toString config.desktop.hyprland.float.size.default;
+        in
+        "[float;center;size (monitor_w*${fraction}) (monitor_h*${fraction})]";
+    in
+    ''
+      pragma Singleton
+      import QtQuick
+      import Quickshell
+
+      QtObject {
+        readonly property string audioGui: "${floatCenter} ${config.desktop.audio.guiCmd}"
+        readonly property string bluetoothGui: "${floatCenter} ${config.desktop.bluetooth.guiCmd}"
+        readonly property string btop: "${floatCenter} kitty ${config.desktop.btop.attach}"
+        readonly property string lockScreen: "${config.desktop.cli.ui.lockScreen.toggle}"
+        readonly property string logoutMenu: "${config.desktop.cli.ui.logoutMenu.toggle}"
+      }
+    '';
+  xdg.configFile."quickshell/Cmds/qmldir".text = ''
+    module Cmds
+    singleton Cmds 0.1 Cmds.qml
   '';
   # Copy our entire quickshell configuration. Use recursive so individual files
   # are linked (rather than symlinking the whole directory into the read-only

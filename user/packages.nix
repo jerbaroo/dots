@@ -7,6 +7,7 @@ in
 {
   home.packages = with pkgs; [
     brightnessctl # 🔆🔆🔆
+    ddcutil # Monitor brightness over DDC (menu bar).
     ghc # Glorious Haskell Compiler.
     ghcidPoll # Ol' reliable.
     gcc # GNU Compiler Collection.

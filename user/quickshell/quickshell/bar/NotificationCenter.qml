@@ -1,10 +1,12 @@
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications
+import Quickshell.Widgets
 
-import "config.js" as Config
+import "../config.js" as Config
 import "notifications.js" as Notifications
 import Theme 0.1
 
@@ -13,6 +15,7 @@ Scope {
 
     property bool centerOpen: false
     property bool doNotDisturb: false
+    readonly property int unreadCount: history.count
 
     ListModel {
         id: history
@@ -207,14 +210,14 @@ Scope {
         imageSupported: true
         onNotification: n => {
             const historyEntry = () => ({
-                appName: n.appName || "Unknown",
-                body: n.body || "",
-                imageSource: n.image || n.appIcon || "",
-                notificationId: n.id,
-                summary: n.summary || "",
-                time: Qt.formatDateTime(new Date(), "HH:mm"),
-                urgency: n.urgency !== undefined ? n.urgency : 1
-            });
+                        appName: n.appName || "Unknown",
+                        body: n.body || "",
+                        imageSource: n.image || n.appIcon || "",
+                        notificationId: n.id,
+                        summary: n.summary || "",
+                        time: Qt.formatDateTime(new Date(), "HH:mm"),
+                        urgency: n.urgency !== undefined ? n.urgency : 1
+                    });
             const historyIndex = () => {
                 for (let i = 0; i < history.count; i++) {
                     if (history.get(i).notificationId === n.id) {
@@ -411,20 +414,26 @@ Scope {
                         text: "Notifications"
                     }
 
-                    // Do not disturb toggle.
+                    // Do not disturb toggle. Same icon as the bar's
+                    // notifications module.
                     Rectangle {
                         color: dndToggleMouseArea.containsMouse ? Theme.surface0 : "transparent"
                         implicitHeight: dndToggle.implicitHeight + 16
                         implicitWidth: dndToggle.implicitWidth + 16
                         radius: 8
 
-                        Text {
+                        IconImage {
                             id: dndToggle
 
                             anchors.centerIn: parent
-                            font.family: Config.font.family
-                            font.pixelSize: Config.font.pixelSize.medium
-                            text: root.doNotDisturb ? "🔕" : "🔔"
+                            implicitSize: Config.font.pixelSize.medium
+                            layer.enabled: true
+                            layer.effect: MultiEffect {
+                                brightness: 1
+                                colorization: 1
+                                colorizationColor: Theme.text
+                            }
+                            source: Quickshell.iconPath(root.doNotDisturb ? "notifications-disabled-symbolic" : "notifications-symbolic")
                         }
 
                         MouseArea {

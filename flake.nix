@@ -10,10 +10,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/home-manager/master";
     };
-    ignis = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:linkfrg/ignis";
-    };
     hyprland = {
       inputs.nixpkgs.follows = "nixpkgs";
       # Required for hyprglasss:
@@ -47,7 +43,6 @@
         colorSchemes = inputs.color-schemes;
         flavor = "mocha";
         hyprland = inputs.hyprland;
-        ignis = inputs.ignis;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
         system = "x86_64-linux";

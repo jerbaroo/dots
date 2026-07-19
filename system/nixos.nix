@@ -8,7 +8,6 @@
   homeConfig,
   hostname,
   hyprland,
-  ignis,
   lib,
   pkgs,
   spicetify,
@@ -28,7 +27,6 @@
         flavor
         hostname
         hyprland
-        ignis
         spicetify
         stateVersion
         system
@@ -82,6 +80,7 @@
       "audio"
       "bluetooth"
       "docker"
+      "i2c" # Monitor brightness over DDC.
       "networkmanager"
       "wheel"
     ];

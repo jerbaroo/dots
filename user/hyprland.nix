@@ -192,7 +192,7 @@ in
             (bind "${mod} + M" (execCmd "spotify"))
             # TODO read command from quickshell.nix
             (bind "${mod} + N" (
-              execCmd "${config.programs.quickshell.package}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/notifications.qml ipc call notifications toggleNotificationCenter"
+              execCmd "${config.programs.quickshell.package}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/bar.qml ipc call notifications toggleNotificationCenter"
             ))
             (bind "${mod} + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy"))
             (bind "${mod} + SHIFT + R" (
@@ -314,11 +314,11 @@ in
               ];
             }
           ];
-        # Blur the menu bar.
+        # Blur the menu bar (liquid glass).
         layer_rule = [
           {
             blur = true;
-            match.namespace = config.desktop.ignis.bar.namespace.regex;
+            match.namespace = "^(quickshell-bar)$";
           }
         ];
         window_rule =
