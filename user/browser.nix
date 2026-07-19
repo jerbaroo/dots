@@ -56,6 +56,8 @@ let
             # See about:config
             "extensions.autoDisableScopes" = 0;
             "extensions.pocket.enabled" = false;
+            # Disable syncing tabs across windows.
+            "zen.window-sync.sync-only-pinned-tabs" = true;
           }
       );
     }
