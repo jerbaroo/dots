@@ -8,10 +8,34 @@
 }:
 let
   chromiumPkg = config.lib.nixGL.wrap pkgs.chromium;
-  firefoxExtension = shortId: guid: {
-    name = guid;
+  # Name is used by Firefox in the install URL.
+  commonExtensions = [
+    {
+      name = "darkreader";
+      firefoxId = "addon@darkreader.org";
+      chromiumId = "eimadpbcbfnmbkopoojfekhnkhdbieeh";
+    }
+    {
+      name = "leechblock-ng";
+      firefoxId = "leechblockng@proginosko.com";
+      chromiumId = "blaaajhemilngeeffpbfkdjjoefldkok";
+    }
+    {
+      name = "vimium-ff";
+      firefoxId = "{d7742d87-e61d-4b78-b8a1-b469842139fa}";
+      chromiumId = "dbepggeogbaibhgnhhndojpepiihcmeb";
+    }
+    {
+      name = "ublock-origin";
+      firefoxId = "uBlock0@raymondhill.net";
+      chromiumId = "ddkjiahejlhfcafbddmgiahcphecmpfh";
+    }
+  ];
+  # A Firefox extension from the common format above.
+  firefoxExtension = { name, firefoxId, ... }: {
+    name = name;
     value = {
-      install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${shortId}/latest.xpi";
+      install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${firefoxId}/latest.xpi";
       installation_mode = "normal_installed";
     };
   };
@@ -19,12 +43,7 @@ let
     pkgs.wrapFirefox zen.packages.${system}.zen-browser-unwrapped {
       extraPolicies = {
         DisableTelemetry = true;
-        ExtensionSettings = builtins.listToAttrs [
-          (firefoxExtension "darkreader" "addon@darkreader.org")
-          (firefoxExtension "leechblock-ng" "leechblockng@proginosko.com")
-          (firefoxExtension "vimium-ff" "{d7742d87-e61d-4b78-b8a1-b469842139fa}")
-          (firefoxExtension "ublock-origin" "uBlock0@raymondhill.net")
-        ];
+        ExtensionSettings = builtins.listToAttrs (map firefoxExtension commonExtensions);
         SearchEngines = {
           Default = "google";
           Add = [
@@ -82,12 +101,9 @@ in
       ];
       enable = true;
       extensions = [
-        { id = "ebboehhiijjcihmopcggopfgchnfepkn"; } # CHROLED Theme
-        { id = "eimadpbcbfnmbkopoojfekhnkhdbieeh"; } # Dark Reader
-        { id = "blaaajhemilngeeffpbfkdjjoefldkok"; } # LeechBlock NG
-        { id = "dbepggeogbaibhgnhhndojpepiihcmeb"; } # Vimium
-        { id = "ddkjiahejlhfcafbddmgiahcphecmpfh"; } # uBlock Origin Lite
-      ];
+        { id = "ebboehhiijjcihmopcggopfgchnfepkn"; }
+      ] # CHROLED Theme
+      ++ map ({ chromiumId, ... }: { id = chromiumId; }) commonExtensions;
       package = chromiumPkg;
     };
   };
