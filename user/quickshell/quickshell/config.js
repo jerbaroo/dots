@@ -46,7 +46,7 @@ const bar = {
         gap: 3,
     },
     panel: {
-        width: 200,
+        width: 260,
         gap: 6,
         padding: 12,
         radius: 8,
