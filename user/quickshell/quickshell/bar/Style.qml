@@ -22,8 +22,8 @@ Singleton {
     readonly property var trayExclude: Config.bar.tray.exclude
     readonly property int dotSize: Config.bar.dot.size
     readonly property int dotGap: Config.bar.dot.gap
-    readonly property color chipColor: Qt.alpha(Theme.crust, 0.45)
-    readonly property color chipColorDim: Qt.alpha(Theme.crust, 0.3)
+    readonly property color chipColor: Qt.alpha(Theme.crust, 0.36)
+    readonly property color chipColorDim: Qt.alpha(Theme.crust, 0.24)
     readonly property color chipBorder: Qt.alpha(Theme.text, 0.28)
     readonly property color chipBorderDim: Qt.alpha(Theme.text, 0.15)
     readonly property color accent: Theme.accent

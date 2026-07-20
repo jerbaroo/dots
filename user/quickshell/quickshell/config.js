@@ -19,7 +19,9 @@ const spacing = {
 // Menu bar. Colors are not configured here: they all derive from the Theme
 // module (see bar/Style.qml).
 const bar = {
-    height: 30,
+    // chip.height (26) + 2 × chip.gap (8): the gap above/below each chip
+    // equals the gap between chips.
+    height: 42,
     padding: 10,
     iconSize: 16,
     chip: {
