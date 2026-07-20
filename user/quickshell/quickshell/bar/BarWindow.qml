@@ -161,6 +161,34 @@ PanelWindow {
         }
 
         ModuleChip {
+            icon: "cpu-symbolic"
+            panelControls: Component {
+                Controls.InfoLines {
+                    lines: [Sys.loadInfo, Sys.tempInfo, Sys.topCpu].filter(l => l !== "")
+                }
+            }
+            panelState: value
+            panelTitle: "CPU"
+            rightClickApp: Cmds.btop
+            value: bar.pad3(Math.round(Sys.cpuPercent)) + "%"
+            onClicked: Launcher.app(Cmds.btop)
+        }
+
+        ModuleChip {
+            icon: "memory-symbolic"
+            panelControls: Component {
+                Controls.InfoLines {
+                    lines: [Sys.memInfo, Sys.topMem].filter(l => l !== "")
+                }
+            }
+            panelState: value
+            panelTitle: "Memory"
+            rightClickApp: Cmds.btop
+            value: bar.pad3(Math.round(Sys.memPercent)) + "%"
+            onClicked: Launcher.app(Cmds.btop)
+        }
+
+        ModuleChip {
             dotIndex: bar.perfIndex
             icon: bar.perfModes[bar.perfIndex]?.icon ?? "power-profile-balanced-symbolic"
             panelControls: Component {
@@ -238,35 +266,6 @@ PanelWindow {
         }
 
         ModuleChip {
-            dim: !Wifi.enabled
-            icon: "network-wireless-symbolic"
-            panelControls: Component {
-                ColumnLayout {
-                    spacing: Style.panelSpacing
-
-                    Controls.ToggleRow {
-                        checked: Wifi.enabled
-                        label: "WiFi"
-                        onToggled: checked => Wifi.setEnabled(checked)
-                    }
-
-                    Controls.Dropdown {
-                        current: Wifi.ssid || "not connected"
-                        options: Wifi.networks
-                        onSelected: value => Wifi.connectTo(value)
-                    }
-                }
-            }
-            panelState: Wifi.enabled ? "on" : "off"
-            panelStateGood: Wifi.enabled
-            panelTitle: "WiFi"
-            rightClickApp: `quickshell -p ${Quickshell.shellDir}/nmtui.qml`
-            visible: Wifi.hasDevice
-            onClicked: Wifi.setEnabled(!Wifi.enabled)
-            onPanelOpening: Wifi.refresh()
-        }
-
-        ModuleChip {
             readonly property bool btOn: bar.btAdapter?.enabled ?? false
             dim: !btOn
             icon: btOn ? "bluetooth-active-symbolic" : "bluetooth-disabled-symbolic"
@@ -312,31 +311,32 @@ PanelWindow {
         }
 
         ModuleChip {
-            icon: "cpu-symbolic"
+            dim: !Wifi.enabled
+            icon: "network-wireless-symbolic"
             panelControls: Component {
-                Controls.InfoLines {
-                    lines: [Sys.loadInfo, Sys.tempInfo, Sys.topCpu].filter(l => l !== "")
-                }
-            }
-            panelState: value
-            panelTitle: "CPU"
-            rightClickApp: Cmds.btop
-            value: bar.pad3(Math.round(Sys.cpuPercent)) + "%"
-            onClicked: Launcher.app(Cmds.btop)
-        }
+                ColumnLayout {
+                    spacing: Style.panelSpacing
 
-        ModuleChip {
-            icon: "memory-symbolic"
-            panelControls: Component {
-                Controls.InfoLines {
-                    lines: [Sys.memInfo, Sys.topMem].filter(l => l !== "")
+                    Controls.ToggleRow {
+                        checked: Wifi.enabled
+                        label: "WiFi"
+                        onToggled: checked => Wifi.setEnabled(checked)
+                    }
+
+                    Controls.Dropdown {
+                        current: Wifi.ssid || "not connected"
+                        options: Wifi.networks
+                        onSelected: value => Wifi.connectTo(value)
+                    }
                 }
             }
-            panelState: value
-            panelTitle: "Memory"
-            rightClickApp: Cmds.btop
-            value: bar.pad3(Math.round(Sys.memPercent)) + "%"
-            onClicked: Launcher.app(Cmds.btop)
+            panelState: Wifi.enabled ? "on" : "off"
+            panelStateGood: Wifi.enabled
+            panelTitle: "WiFi"
+            rightClickApp: `quickshell -p ${Quickshell.shellDir}/nmtui.qml`
+            visible: Wifi.hasDevice
+            onClicked: Wifi.setEnabled(!Wifi.enabled)
+            onPanelOpening: Wifi.refresh()
         }
 
         ModuleChip {

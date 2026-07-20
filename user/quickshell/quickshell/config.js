@@ -18,17 +18,24 @@ const spacing = {
 
 // Menu bar. Colors are not configured here: they all derive from the Theme
 // module (see bar/Style.qml).
+//
+// Geometry invariant: chips are centred vertically, so the margin above/below
+// a chip is (barHeight − chipHeight) / 2. We keep the gap between chips equal
+// to that margin by deriving chipGap from it. Increasing chipHeight pads the
+// buttons more (bar height fixed) and shrinks both margins in step.
+const barHeight = 42;
+const chipHeight = 30;
+const chipGap = (barHeight - chipHeight) / 2;
+
 const bar = {
-    // chip.height (26) + 2 × chip.gap (8): the gap above/below each chip
-    // equals the gap between chips.
-    height: 42,
+    height: barHeight,
     padding: 10,
     iconSize: 16,
     chip: {
-        height: 26,
-        paddingH: 12,
+        height: chipHeight,
+        paddingH: 14,
         radius: 5,
-        gap: 8,
+        gap: chipGap,
         contentGap: 5,
     },
     workspace: {
