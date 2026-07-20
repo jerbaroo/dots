@@ -16,6 +16,13 @@ PopupWindow {
     property Component controls: null
     readonly property bool hovered: hoverHandler.hovered
 
+    // Title-case the state text so every popup's top-right reads consistently
+    // (e.g. "on" -> "On", "3 unread" -> "3 Unread"); numbers and times are
+    // left untouched.
+    function titleCase(s) {
+        return s.replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     anchor.adjustment: PopupAdjustment.SlideX
     anchor.item: chipItem
     anchor.rect.x: chipItem.width / 2 - Style.panelWidth / 2
@@ -61,7 +68,7 @@ PopupWindow {
                     color: panel.stateGood ? Style.good : Style.panelText
                     font.family: Style.fontFamily
                     font.pixelSize: Style.panelFontSize
-                    text: panel.stateText
+                    text: panel.titleCase(panel.stateText)
                 }
             }
 

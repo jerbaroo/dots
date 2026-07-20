@@ -24,17 +24,17 @@ PanelWindow {
     readonly property var btAdapter: Bluetooth.defaultAdapter
     readonly property var perfModes: [
         {
-            label: "save",
+            label: "Save",
             value: PowerProfile.PowerSaver,
             icon: "power-profile-power-saver-symbolic"
         },
         {
-            label: "balanced",
+            label: "Balanced",
             value: PowerProfile.Balanced,
             icon: "power-profile-balanced-symbolic"
         },
         {
-            label: "performance",
+            label: "Performance",
             value: PowerProfile.Performance,
             icon: "power-profile-performance-symbolic"
         }
@@ -390,20 +390,24 @@ PanelWindow {
                 Controls.ModeList {
                     options: [
                         {
-                            label: "lock",
-                            value: Cmds.lockScreen
+                            label: "Lock",
+                            value: Cmds.lockScreen,
+                            icon: "system-lock-screen-symbolic"
                         },
                         {
-                            label: "suspend",
-                            value: "systemctl suspend"
+                            label: "Suspend",
+                            value: "systemctl suspend",
+                            icon: "system-suspend-symbolic"
                         },
                         {
-                            label: "reboot",
-                            value: "systemctl reboot"
+                            label: "Reboot",
+                            value: "systemctl reboot",
+                            icon: "system-reboot-symbolic"
                         },
                         {
-                            label: "shut down",
-                            value: "systemctl poweroff"
+                            label: "Power off",
+                            value: "systemctl poweroff",
+                            icon: "system-shutdown-symbolic"
                         }
                     ]
                     onSelected: value => Launcher.app(value)

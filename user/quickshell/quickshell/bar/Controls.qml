@@ -1,5 +1,8 @@
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Widgets
 import qs.bar
 
 // The shared control library (BAR.md): each control is implemented once and
@@ -132,7 +135,7 @@ Item {
     }
 
     // Vertical exclusive options, current highlighted. Options are
-    // { label, value }. Used by: perf mode.
+    // { label, value } with an optional icon name. Used by: perf mode, power.
     component ModeList: ColumnLayout {
         id: modeList
 
@@ -155,11 +158,30 @@ Item {
                 border.width: 1
                 onClicked: modeList.selected(mode.modelData.value)
 
-                PanelText {
+                Row {
                     anchors.left: parent.left
                     anchors.leftMargin: Style.controlPadding
                     anchors.verticalCenter: parent.verticalCenter
-                    text: mode.modelData.label
+                    spacing: Style.controlSpacing
+
+                    IconImage {
+                        anchors.verticalCenter: parent.verticalCenter
+                        implicitSize: Style.iconSize
+                        visible: (mode.modelData.icon ?? "") !== ""
+                        source: visible ? Quickshell.iconPath(mode.modelData.icon) : ""
+                        // Tint the symbolic glyph white, as elsewhere.
+                        layer.enabled: true
+                        layer.effect: MultiEffect {
+                            brightness: 1
+                            colorization: 1
+                            colorizationColor: Style.panelText
+                        }
+                    }
+
+                    PanelText {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: mode.modelData.label
+                    }
                 }
             }
         }
