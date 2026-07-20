@@ -120,7 +120,9 @@ PanelWindow {
         spacing: Style.chipGap
 
         // System tray: app icons shown as-is, left-click activates,
-        // right-click opens the app's own menu.
+				// right-click opens the app's own menu. Icons whose id match
+				// Style.trayExclude are hidden (Row skips invisible children), e.g.
+        // blueman's duplicate bluetooth icon.
         Repeater {
             model: SystemTray.items
 
@@ -128,6 +130,10 @@ PanelWindow {
                 id: trayChip
 
                 required property var modelData
+
+                visible: !Style.trayExclude.some(function (needle) {
+                    return modelData.id && modelData.id.toLowerCase().indexOf(needle.toLowerCase()) >= 0;
+                })
 
                 iconSource: modelData.icon
                 onClicked: modelData.activate()

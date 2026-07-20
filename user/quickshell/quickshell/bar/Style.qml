@@ -19,6 +19,7 @@ Singleton {
     readonly property int chipContentGap: Config.bar.chip.contentGap
     readonly property int workspaceGap: Config.bar.workspace.gap
     readonly property int workspaceMinWidth: Config.bar.workspace.minWidth
+    readonly property var trayExclude: Config.bar.tray.exclude
     readonly property int dotSize: Config.bar.dot.size
     readonly property int dotGap: Config.bar.dot.gap
     readonly property color chipColor: Qt.alpha(Theme.crust, 0.45)

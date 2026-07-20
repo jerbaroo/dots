@@ -33,6 +33,12 @@ const bar = {
         gap: 5,
         minWidth: 40,
     },
+    tray: {
+        // System tray icons to hide, matched case-insensitively as a
+        // substring of the item's tray id. Used to drop duplicates of modules
+        // the bar already provides (e.g. blueman's bluetooth icon).
+        exclude: ["blueman"],
+    },
     dot: {
         size: 4,
         gap: 3,
