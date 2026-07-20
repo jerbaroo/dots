@@ -17,6 +17,19 @@ Singleton {
     property string topMem: ""
     property var _prevStat: null
 
+    // "Key: value" with the key padded so the values line up across the lines
+    // of a popup (the panel font is monospaced).
+    function _kv(key, value) {
+        var k = key + ":";
+        while (k.length < 5)
+            k += " ";
+        return k + " " + value;
+    }
+
+    function _cap(s) {
+        return s.length > 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+    }
+
     function _parse(out) {
         for (const line of out.trim().split("\n")) {
             const parts = line.trim().split(/\s+/);
@@ -39,7 +52,7 @@ Singleton {
                     break;
                 }
             case "l":
-                loadInfo = `load ${fields[0]} · ${fields[1]} cores`;
+                loadInfo = _kv("Load", `${fields[0]} · ${fields[1]} cores`);
                 break;
             case "m":
                 {
@@ -47,17 +60,17 @@ Singleton {
                     const availKib = Number(fields[1]);
                     const usedGib = (totalKib - availKib) / 1024 / 1024;
                     memPercent = 100 * (totalKib - availKib) / totalKib;
-                    memInfo = `${usedGib.toFixed(1)} / ${(totalKib / 1024 / 1024).toFixed(0)} GiB used`;
+                    memInfo = _kv("Used", `${usedGib.toFixed(0)} / ${(totalKib / 1024 / 1024).toFixed(0)} GiB`);
                     break;
                 }
             case "t":
-                tempInfo = fields[0] ? `temp ${Math.round(Number(fields[0]) / 1000)}°C` : "";
+                tempInfo = fields[0] ? _kv("Temp", `${Math.round(Number(fields[0]) / 1000)}°C`) : "";
                 break;
             case "c":
-                topCpu = `top: ${fields[0]} ${Math.round(Number(fields[1]))}%`;
+                topCpu = _kv("Top", `${_cap(fields[0])} ${Math.round(Number(fields[1]))}%`);
                 break;
             case "M":
-                topMem = `top: ${fields[0]} ${Math.round(Number(fields[1]))}%`;
+                topMem = _kv("Top", `${_cap(fields[0])} ${Math.round(Number(fields[1]))}%`);
                 break;
             }
         }

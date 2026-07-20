@@ -53,6 +53,10 @@ PanelWindow {
         return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
     }
 
+    function dayOfYear(date) {
+        return Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+    }
+
     function pct(x) {
         return Math.round(100 * x);
     }
@@ -376,12 +380,13 @@ PanelWindow {
             bold: true
             panelControls: Component {
                 Controls.InfoLines {
-                    lines: [`${Qt.formatDate(clock.date, "ddd d MMMM yyyy")} · week ${bar.isoWeek(clock.date)}`]
+                    // Date and time are on the bar chip; show extra info here.
+                    lines: [`Day ${bar.dayOfYear(clock.date)} of ${clock.date.getFullYear()}`]
                 }
             }
-            panelState: value
+            panelState: "Week " + bar.isoWeek(clock.date)
             panelTitle: "Clock"
-            value: Qt.formatDateTime(clock.date, "HH:mm:ss")
+            value: Qt.formatDateTime(clock.date, "ddd d MMM · HH:mm:ss")
         }
 
         ModuleChip {
