@@ -74,12 +74,26 @@ Rectangle {
             visible: source != ""
         }
 
+        // Measures the value in the same font to get its advance width.
+        TextMetrics {
+            id: valueMetrics
+            font.bold: chip.bold
+            font.family: Style.fontFamily
+            font.pixelSize: Style.fontSize
+            text: chip.value
+        }
+
         Text {
             anchors.verticalCenter: parent.verticalCenter
             color: chip.dim ? Style.textDim : Style.text
             font.bold: chip.bold
             font.family: Style.fontFamily
             font.pixelSize: Style.fontSize
+            horizontalAlignment: Text.AlignHCenter
+            // Size to the constant advance width, not the ink bounding box:
+            // glyphs with wide right bearings (e.g. 4, 7) otherwise grow the
+            // box by a pixel, resizing the chip and jittering the layout.
+            width: Math.ceil(valueMetrics.advanceWidth)
             text: chip.value
             visible: chip.value !== ""
         }

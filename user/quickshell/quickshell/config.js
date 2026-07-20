@@ -1,7 +1,7 @@
 .pragma library
 
 const font = {
-    family: "Atkinson Hyperlegible",
+    family: "Cascadia Mono",
     pixelSize: {
         xlarge: 22,
         large: 20,

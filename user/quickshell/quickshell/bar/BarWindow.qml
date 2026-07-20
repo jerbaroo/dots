@@ -57,6 +57,15 @@ PanelWindow {
         return Math.round(100 * x);
     }
 
+    // Right-align a 0..100 reading in a 3-char field (leading spaces) so the
+    // chip width stays constant as the value crosses 10 and 100.
+    function pad3(n) {
+        var s = String(n);
+        while (s.length < 3)
+            s = " " + s;
+        return s;
+    }
+
     // Hyprglass applies the liquid glass effect by layer namespace (see the
     // layer_rule in hyprland.nix).
     WlrLayershell.namespace: "quickshell-bar"
@@ -178,7 +187,7 @@ PanelWindow {
             }
             panelState: Brightness.value + "%"
             panelTitle: "Brightness"
-            value: Brightness.value
+            value: bar.pad3(Brightness.value)
             visible: Brightness.available
             onScrolled: up => Brightness.adjust(up ? 5 : -5)
         }
@@ -216,7 +225,7 @@ PanelWindow {
             panelState: value === "" ? "" : value + "%"
             panelTitle: "Volume"
             rightClickApp: Cmds.audioGui
-            value: bar.sink ? bar.pct(bar.sink.audio.volume) : ""
+            value: bar.sink ? bar.pad3(bar.pct(bar.sink.audio.volume)) : ""
             visible: bar.sink !== null
             onClicked: {
                 if (bar.sink)
@@ -312,7 +321,7 @@ PanelWindow {
             panelState: value
             panelTitle: "CPU"
             rightClickApp: Cmds.btop
-            value: Math.round(Sys.cpuPercent) + "%"
+            value: bar.pad3(Math.round(Sys.cpuPercent)) + "%"
             onClicked: Launcher.app(Cmds.btop)
         }
 
@@ -326,7 +335,7 @@ PanelWindow {
             panelState: value
             panelTitle: "Memory"
             rightClickApp: Cmds.btop
-            value: Math.round(Sys.memPercent) + "%"
+            value: bar.pad3(Math.round(Sys.memPercent)) + "%"
             onClicked: Launcher.app(Cmds.btop)
         }
 
