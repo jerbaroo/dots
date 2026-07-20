@@ -134,7 +134,7 @@ Rectangle {
     // from chip to panel before it closes.
     Timer {
         id: openTimer
-        interval: Style.hoverOpenMs
+        interval: Style.hoverMs
         onTriggered: {
             chip.panelOpening();
             panel.visible = true;
@@ -143,7 +143,7 @@ Rectangle {
 
     Timer {
         id: closeTimer
-        interval: Style.hoverCloseMs
+        interval: Style.hoverMs
         onTriggered: panel.visible = false
     }
 }

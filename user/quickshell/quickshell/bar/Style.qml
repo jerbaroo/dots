@@ -65,8 +65,7 @@ Singleton {
     readonly property color sliderTrack: Theme.surface1
 
     // Timings.
-    readonly property int hoverOpenMs: Config.bar.timing.hoverOpenMs
-    readonly property int hoverCloseMs: Config.bar.timing.hoverCloseMs
+    readonly property int hoverMs: Config.bar.timing.hoverMs
     readonly property int pollMs: Config.bar.timing.pollMs
     readonly property int wifiPollMs: Config.bar.timing.wifiPollMs
     readonly property int brightnessDebounceMs: Config.bar.timing.brightnessDebounceMs

@@ -68,8 +68,7 @@ const bar = {
         knobMargin: 2,
     },
     timing: {
-        hoverOpenMs: 300,
-        hoverCloseMs: 250,
+        hoverMs: 100,
         pollMs: 3000,
         wifiPollMs: 10000,
         brightnessDebounceMs: 300,
