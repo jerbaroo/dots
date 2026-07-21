@@ -421,4 +421,15 @@ PanelWindow {
             panelTitle: "Power"
         }
     }
+
+    // Coordinate/anchor space spanning the bar; the one shared panel hangs
+    // below it and slides between chips.
+    Item {
+        id: barBody
+        anchors.fill: parent
+    }
+
+    HoverPanel {
+        barItem: barBody
+    }
 }

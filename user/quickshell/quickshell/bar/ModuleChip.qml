@@ -29,8 +29,6 @@ Rectangle {
     property Component panelControls: null
     signal panelOpening // Refresh hook, e.g. wifi scan.
 
-    readonly property bool wantsPanel: panelTitle !== "" && (mouseArea.containsMouse || panel.hovered)
-
     // Minimum chip width; content stays centered (e.g. workspace chips).
     property int minWidth: 0
 
@@ -40,17 +38,6 @@ Rectangle {
     implicitHeight: Style.chipHeight
     implicitWidth: Math.max(minWidth, row.implicitWidth + Style.chipPaddingH * 2)
     radius: Style.chipRadius
-
-    onWantsPanelChanged: {
-        if (wantsPanel) {
-            closeTimer.stop();
-            if (!panel.visible)
-                openTimer.restart();
-        } else {
-            openTimer.stop();
-            closeTimer.restart();
-        }
-    }
 
     Row {
         id: row
@@ -123,6 +110,11 @@ Rectangle {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
         hoverEnabled: true
+        // Report hover to the shared panel; chips without a panel do nothing.
+        onEntered: if (chip.panelTitle !== "")
+            PanelController.request(chip)
+        onExited: if (chip.panelTitle !== "")
+            PanelController.release(chip)
         onClicked: event => {
             if (event.button === Qt.RightButton) {
                 if (chip.rightClickApp !== "")
@@ -133,31 +125,5 @@ Rectangle {
             }
         }
         onWheel: event => chip.scrolled(event.angleDelta.y > 0)
-    }
-
-    HoverPanel {
-        id: panel
-        chipItem: chip
-        controls: chip.panelControls
-        stateGood: chip.panelStateGood
-        stateText: chip.panelState
-        title: chip.panelTitle
-    }
-
-    // Hover verb: open after a delay; grace period lets the cursor travel
-    // from chip to panel before it closes.
-    Timer {
-        id: openTimer
-        interval: Style.hoverMs
-        onTriggered: {
-            chip.panelOpening();
-            panel.visible = true;
-        }
-    }
-
-    Timer {
-        id: closeTimer
-        interval: Style.hoverMs
-        onTriggered: panel.visible = false
     }
 }

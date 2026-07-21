@@ -84,7 +84,11 @@
   (add-to-list 'eglot-server-programs
                '((haskell-mode) . ("haskell-language-server" "--lsp"))))
 
-;;
+;; Automatically load qml-mode for .qml files
+(add-to-list 'auto-mode-alist '("\\.qml\\'" . qml-mode))
+;; Optional: If you use LSP and want to use the Qt Language Server (qmlls)
+(add-hook 'qml-mode-hook #'lsp!)
+
 ;; The exceptions to this rule:
 ;;
 ;;   - Setting file/directory variables (like `org-directory')

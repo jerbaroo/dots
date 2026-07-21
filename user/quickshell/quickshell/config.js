@@ -58,6 +58,10 @@ const bar = {
         padding: 12,
         radius: 8,
         spacing: 8,
+        // Height of the shared, full-width popup container the visible panel
+        // slides within. Generous so no panel is clipped; the empty area is
+        // transparent and click-through.
+        maxHeight: 600,
     },
     control: {
         height: 26,

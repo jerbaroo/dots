@@ -198,14 +198,16 @@ in
       '';
     };
     shellAbbrs = {
-      d = "git diff";
       dr = "direnv reload";
-      grep = "batgrep";
-      f = "git_fixup";
       g = "git";
+      gd = "git diff";
+      gf = "git_fixup";
+      gl = "git log";
+      gs = "git status";
       l = "eza";
+      # Bat utilities.
+      grep = "batgrep";
       man = "batman";
-      s = "git status";
       watch = "batwatch";
     };
     plugins = map plugin [

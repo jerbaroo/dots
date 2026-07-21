@@ -41,6 +41,7 @@ Singleton {
     readonly property int panelPadding: Config.bar.panel.padding
     readonly property int panelRadius: Config.bar.panel.radius
     readonly property int panelSpacing: Config.bar.panel.spacing
+    readonly property int panelMaxHeight: Config.bar.panel.maxHeight
     readonly property int panelFontSize: Config.font.pixelSize.small
     readonly property color panelColor: Theme.mantle
     readonly property color panelText: Theme.text
