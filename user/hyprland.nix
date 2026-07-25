@@ -315,17 +315,20 @@ in
               ];
             }
           ];
-        # Blur the menu bar (liquid glass).
+        # Blur the menu bar and the app launcher (liquid glass). Both quickshell
+        # surfaces set these layer namespaces (see BarWindow.qml / app_launcher.qml).
         layer_rule = [
           {
             blur = true;
             # Also blur xdg-popups of this layer e.g. menu bar popups.
             blur_popups = true;
-            # Only blur painted pixels: < 0.001: blur not applied.
-            # Allows us to use '0' for non-blurred transparency, and '0.002'
-            # for blurred neared-transparency.
+            # Only blur painted pixels: below this alpha, blur is not applied.
+            # Lets surfaces use '0' for non-blurred transparency and the glass
+            # tint for blurred near-transparency. Mirror of glass.threshold in
+            # quickshell/config.js (Nix can't read that JS file) — keep in sync,
+            # and keep it below glass.tint there.
             ignore_alpha = 0.001;
-            match.namespace = "^(quickshell-bar)$";
+            match.namespace = "^(quickshell-bar|quickshell-launcher)$";
           }
         ];
         window_rule =

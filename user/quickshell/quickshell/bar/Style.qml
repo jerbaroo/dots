@@ -10,7 +10,7 @@ Singleton {
     // Bar.
     // Near-transparent so the surface is only a faint tint over the blur, but
     // still above the layer rule's ignore_alpha so it gets blurred.
-    readonly property color barColor: Qt.alpha(Theme.crust, 0.002)
+    readonly property color barColor: Qt.alpha(Theme.crust, Config.glass.tint)
     readonly property int barHeight: Config.bar.height
     readonly property int barPadding: Config.bar.padding
 
@@ -27,8 +27,8 @@ Singleton {
     readonly property int dotGap: Config.bar.dot.gap
     // Near-transparent so the surface is only a faint tint over the blur, but
     // still above the layer rule's ignore_alpha so it gets blurred.
-    readonly property color chipColor: Qt.alpha(Theme.crust, 0.002)
-    readonly property color chipColorDim: Qt.alpha(Theme.crust, 0.002)
+    readonly property color chipColor: Qt.alpha(Theme.crust, Config.glass.tint)
+    readonly property color chipColorDim: Qt.alpha(Theme.crust, Config.glass.tint)
     readonly property color chipBorder: Qt.alpha(Theme.text, 0.28)
     readonly property color chipBorderDim: Qt.alpha(Theme.text, 0.15)
     readonly property color accent: Theme.accent
@@ -50,7 +50,7 @@ Singleton {
     readonly property int panelFontSize: Config.font.pixelSize.small
     // Near-transparent so the surface is only a faint tint over the blur, but
     // still above the layer rule's ignore_alpha so it gets blurred.
-    readonly property color panelColor: Qt.alpha(Theme.mantle, 0.002)
+    readonly property color panelColor: Qt.alpha(Theme.mantle, Config.glass.tint)
     readonly property color panelText: Theme.text
     readonly property color panelTextDim: Theme.subtext0
 

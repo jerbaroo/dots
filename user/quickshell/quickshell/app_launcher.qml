@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import Quickshell.Widgets
 
 import "config.js" as Config
@@ -74,6 +75,10 @@ Scope {
     PanelWindow {
         id: window
 
+        // Own layer namespace so Hyprland's blur rule (see hyprland.nix) applies
+        // the same liquid-glass blur as the menu bar.
+        WlrLayershell.namespace: "quickshell-launcher"
+
         anchors {
             bottom: true
             left: true
@@ -91,7 +96,11 @@ Scope {
 
         Rectangle {
             anchors.centerIn: parent
-            color: Theme.crust
+            // Near-transparent glass, matching the menu bar, so the Hyprland
+            // blur rule shows through as the same liquid glass. The tint sits
+            // above the compositor's ignore_alpha so it is blurred rather than
+            // passed through; the full-screen dismiss layer stays transparent.
+            color: Qt.alpha(Theme.crust, Config.glass.tint)
             // Responsive: a fraction of the screen, capped on large monitors.
             implicitHeight: Math.min(Config.launcher.maxHeight, window.height * Config.launcher.heightFraction)
             implicitWidth: Math.min(Config.launcher.maxWidth, window.width * Config.launcher.widthFraction)

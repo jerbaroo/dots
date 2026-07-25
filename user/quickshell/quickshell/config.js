@@ -16,6 +16,20 @@ const spacing = {
     medium: 16,
 };
 
+// Liquid glass. The bar, its popups and the launcher paint a near-transparent
+// tint so Hyprland's blur shows through (the blur rule lives in hyprland.nix).
+// A surface is blurred where its alpha exceeds the compositor's ignore_alpha
+// threshold; at 0 it is passed through unblurred. So the tint must stay above
+// the threshold.
+const glass = {
+    // Glass tint alpha (blurred). Used by Style.qml and app_launcher.qml.
+    tint: 0.002,
+    // The compositor's ignore_alpha. Authoritative copy is in hyprland.nix —
+    // Nix cannot read this JS file — recorded here to document the pair. Keep
+    // the two in sync; tint must stay above threshold.
+    threshold: 0.001,
+};
+
 // Menu bar. Colors are not configured here: they all derive from the Theme
 // module (see bar/Style.qml).
 //
