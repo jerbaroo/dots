@@ -102,6 +102,7 @@ in
               enabled = config.desktop.hyprland.blur;
               noise = 0.02;
               passes = 4;
+              popups = true;
               size = 5;
             };
             inactive_opacity = 1;
@@ -318,6 +319,12 @@ in
         layer_rule = [
           {
             blur = true;
+            # Also blur xdg-popups of this layer e.g. menu bar popups.
+            blur_popups = true;
+            # Only blur painted pixels: < 0.001: blur not applied.
+            # Allows us to use '0' for non-blurred transparency, and '0.002'
+            # for blurred neared-transparency.
+            ignore_alpha = 0.001;
             match.namespace = "^(quickshell-bar)$";
           }
         ];

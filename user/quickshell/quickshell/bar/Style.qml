@@ -8,6 +8,9 @@ import "../config.js" as Config
 // and timings come from config.js; all colors derive from Theme.
 Singleton {
     // Bar.
+    // Near-transparent so the surface is only a faint tint over the blur, but
+    // still above the layer rule's ignore_alpha so it gets blurred.
+    readonly property color barColor: Qt.alpha(Theme.crust, 0.002)
     readonly property int barHeight: Config.bar.height
     readonly property int barPadding: Config.bar.padding
 
@@ -22,8 +25,10 @@ Singleton {
     readonly property var trayExclude: Config.bar.tray.exclude
     readonly property int dotSize: Config.bar.dot.size
     readonly property int dotGap: Config.bar.dot.gap
-    readonly property color chipColor: Qt.alpha(Theme.crust, 0.36)
-    readonly property color chipColorDim: Qt.alpha(Theme.crust, 0.24)
+    // Near-transparent so the surface is only a faint tint over the blur, but
+    // still above the layer rule's ignore_alpha so it gets blurred.
+    readonly property color chipColor: Qt.alpha(Theme.crust, 0.002)
+    readonly property color chipColorDim: Qt.alpha(Theme.crust, 0.002)
     readonly property color chipBorder: Qt.alpha(Theme.text, 0.28)
     readonly property color chipBorderDim: Qt.alpha(Theme.text, 0.15)
     readonly property color accent: Theme.accent
@@ -43,7 +48,9 @@ Singleton {
     readonly property int panelSpacing: Config.bar.panel.spacing
     readonly property int panelMaxHeight: Config.bar.panel.maxHeight
     readonly property int panelFontSize: Config.font.pixelSize.small
-    readonly property color panelColor: Theme.mantle
+    // Near-transparent so the surface is only a faint tint over the blur, but
+    // still above the layer rule's ignore_alpha so it gets blurred.
+    readonly property color panelColor: Qt.alpha(Theme.mantle, 0.002)
     readonly property color panelText: Theme.text
     readonly property color panelTextDim: Theme.subtext0
 

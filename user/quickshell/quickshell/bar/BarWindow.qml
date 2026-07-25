@@ -15,6 +15,7 @@ import qs.bar
 // rendering or dispatch code.
 PanelWindow {
     id: bar
+    color: Style.barColor
 
     required property var notifications
 
@@ -24,7 +25,7 @@ PanelWindow {
     readonly property var btAdapter: Bluetooth.defaultAdapter
     readonly property var perfModes: [
         {
-            label: "Save",
+            label: "Saver",
             value: PowerProfile.PowerSaver,
             icon: "power-profile-power-saver-symbolic"
         },
@@ -79,7 +80,6 @@ PanelWindow {
         right: true
         top: true
     }
-    color: "transparent"
     implicitHeight: Style.barHeight
 
     // Track the default sink so its volume properties stay bound.
