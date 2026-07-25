@@ -31,13 +31,17 @@ Rectangle {
 
     // Minimum chip width; content stays centered (e.g. workspace chips).
     property int minWidth: 0
+    // Pill style: bordered, rounded, chip-height with a faint background (the
+    // workspace chips). The default is flat — full bar height, no border and a
+    // transparent background — so a chip reads as part of the bar itself.
+    property bool pill: false
 
     border.color: accent ? Style.accent : dim ? Style.chipBorderDim : Style.chipBorder
-    border.width: 1
-    color: dim ? Style.chipColorDim : Style.chipColor
-    implicitHeight: Style.chipHeight
+    border.width: pill ? 1 : 0
+    color: pill ? (dim ? Style.chipColorDim : Style.chipColor) : "transparent"
+    implicitHeight: pill ? Style.chipHeight : Style.barHeight
     implicitWidth: Math.max(minWidth, row.implicitWidth + Style.chipPaddingH * 2)
-    radius: Style.chipRadius
+    radius: pill ? Style.chipRadius : 0
 
     Row {
         id: row

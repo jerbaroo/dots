@@ -138,6 +138,7 @@ PanelWindow {
                 accent: modelData.focused
                 bold: modelData.focused
                 minWidth: Style.workspaceMinWidth
+                pill: true
                 value: modelData.name
                 // Only workspaces on this bar's monitor.
                 visible: modelData.monitor === bar.hyprMonitor
@@ -150,18 +151,21 @@ PanelWindow {
         ModuleChip {
             dim: true
             minWidth: Style.workspaceMinWidth
+            pill: true
             value: "+"
             onClicked: Hyprland.dispatch('hl.dsp.focus({ workspace = "empty" })')
             onScrolled: up => bar.focusWorkspace((Hyprland.focusedWorkspace?.id ?? 1) + (up ? 1 : -1))
         }
     }
 
-    // Modules (right).
+    // Modules (right). Flat, full-height chips butted together (no gap) so the
+    // cluster reads as part of the bar; only the workspace chips (left) keep the
+    // pill style.
     RowLayout {
         anchors.right: parent.right
         anchors.rightMargin: Style.barPadding
         anchors.verticalCenter: barStrip.verticalCenter
-        spacing: Style.chipGap
+        spacing: 0
 
         // System tray: app icons shown as-is, left-click activates,
 				// right-click opens the app's own menu. Icons whose id match
