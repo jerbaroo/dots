@@ -168,7 +168,7 @@ PanelWindow {
             icon: "cpu-symbolic"
             panelControls: Component {
                 Controls.InfoLines {
-                    lines: [Sys.loadInfo, Sys.tempInfo, Sys.topCpu].filter(l => l !== "")
+                    lines: [Sys.loadInfo, Sys.tempInfo].filter(l => l !== "").concat(Sys.topCpu)
                 }
             }
             panelState: value
@@ -182,7 +182,7 @@ PanelWindow {
             icon: "memory-symbolic"
             panelControls: Component {
                 Controls.InfoLines {
-                    lines: [Sys.memInfo, Sys.topMem].filter(l => l !== "")
+                    lines: [Sys.memInfo].filter(l => l !== "").concat(Sys.topMem)
                 }
             }
             panelState: value

@@ -11,10 +11,10 @@ Singleton {
     property real cpuPercent: 0
     property string loadInfo: ""
     property string tempInfo: ""
-    property string topCpu: ""
+    property var topCpu: []
     property real memPercent: 0
     property string memInfo: ""
-    property string topMem: ""
+    property var topMem: []
     property var _prevStat: null
 
     // "Key: value" with the key padded so the values line up across the lines
@@ -30,7 +30,16 @@ Singleton {
         return s.length > 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s;
     }
 
+    // A ranked "top process" line: labelled "Top:" for the first entry and
+    // indented to align beneath it for the rest.
+    function _topLine(first, comm, pct) {
+        const value = `${_cap(comm)} ${Math.round(Number(pct))}%`;
+        return first ? _kv("Top", value) : "      " + value;
+    }
+
     function _parse(out) {
+        const cpu = [];
+        const mem = [];
         for (const line of out.trim().split("\n")) {
             const parts = line.trim().split(/\s+/);
             const fields = parts.slice(1);
@@ -67,13 +76,16 @@ Singleton {
                 tempInfo = fields[0] ? _kv("Temp", `${Math.round(Number(fields[0]) / 1000)}°C`) : "";
                 break;
             case "c":
-                topCpu = _kv("Top", `${_cap(fields[0])} ${Math.round(Number(fields[1]))}%`);
+                // comm may contain spaces; the percentage is the last field.
+                cpu.push(_topLine(cpu.length === 0, fields.slice(0, -1).join(" "), fields[fields.length - 1]));
                 break;
             case "M":
-                topMem = _kv("Top", `${_cap(fields[0])} ${Math.round(Number(fields[1]))}%`);
+                mem.push(_topLine(mem.length === 0, fields.slice(0, -1).join(" "), fields[fields.length - 1]));
                 break;
             }
         }
+        topCpu = cpu;
+        topMem = mem;
     }
 
     Timer {
@@ -91,8 +103,8 @@ Singleton {
             echo l $(cut -d' ' -f1 /proc/loadavg) $(nproc)
             echo m $(awk '/MemTotal|MemAvailable/ {print $2}' /proc/meminfo | tr '\\n' ' ')
             echo t $(cat /sys/class/hwmon/hwmon*/temp1_input 2>/dev/null | sort -nr | head -1)
-            echo c $(ps -eo comm,%cpu --sort=-%cpu --no-headers | head -1)
-            echo M $(ps -eo comm,%mem --sort=-%mem --no-headers | head -1)
+            ps -eo comm,%cpu --sort=-%cpu --no-headers | head -3 | sed 's/^/c /'
+            ps -eo comm,%mem --sort=-%mem --no-headers | head -3 | sed 's/^/M /'
         `]
 
         stdout: StdioCollector {
