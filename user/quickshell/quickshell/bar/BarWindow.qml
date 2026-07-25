@@ -15,7 +15,11 @@ import qs.bar
 // rendering or dispatch code.
 PanelWindow {
     id: bar
-    color: Style.barColor
+    // Transparent surface: the bar strip and the hover panel paint their own
+    // (near-transparent, blurred) backgrounds. If the window itself were tinted,
+    // the whole tall surface — including the empty area below the bar — would be
+    // painted above the blur rule's ignore_alpha and blur as one big rectangle.
+    color: "transparent"
 
     required property var notifications
 
@@ -80,7 +84,22 @@ PanelWindow {
         right: true
         top: true
     }
-    implicitHeight: Style.barHeight
+    // The surface extends below the bar to host the hover panel in the same
+    // layer (see HoverPanel), but only the bar strip is reserved so windows tile
+    // beneath the panel and it floats over them.
+    implicitHeight: Style.barHeight + Style.panelMaxHeight
+    exclusiveZone: Style.barHeight
+
+    // Only the bar strip and the active hover panel take input; the rest of the
+    // (transparent) surface below the bar is click-through.
+    mask: Region {
+        width: bar.width
+        height: Style.barHeight
+
+        Region {
+            item: hoverPanel.panelActive ? hoverPanel.panelItem : null
+        }
+    }
 
     // Track the default sink so its volume properties stay bound.
     PwObjectTracker {
@@ -92,11 +111,23 @@ PanelWindow {
         precision: SystemClock.Seconds
     }
 
+    // The bar strip: a faint, blurred glass background occupying just the
+    // reserved (exclusive) top band. Chips are centred within it; the hover
+    // panel paints its own background below it.
+    Rectangle {
+        id: barStrip
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: Style.barHeight
+        color: Style.barColor
+    }
+
     // Workspaces (left): only open ones, plus a chip that creates a new one.
     RowLayout {
         anchors.left: parent.left
         anchors.leftMargin: Style.barPadding
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: barStrip.verticalCenter
         spacing: Style.workspaceGap
 
         Repeater {
@@ -129,7 +160,7 @@ PanelWindow {
     RowLayout {
         anchors.right: parent.right
         anchors.rightMargin: Style.barPadding
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenter: barStrip.verticalCenter
         spacing: Style.chipGap
 
         // System tray: app icons shown as-is, left-click activates,
@@ -422,14 +453,18 @@ PanelWindow {
         }
     }
 
-    // Coordinate/anchor space spanning the bar; the one shared panel hangs
-    // below it and slides between chips.
+    // Coordinate/anchor space spanning the full surface width; chips map into it
+    // so the shared panel can centre itself under whichever chip is hovered.
     Item {
         id: barBody
         anchors.fill: parent
     }
 
+    // The shared hover panel, rendered in this same layer surface (below the bar
+    // strip) so its blur is continuous with the bar.
     HoverPanel {
+        id: hoverPanel
+        anchors.fill: parent
         barItem: barBody
     }
 }

@@ -4,16 +4,19 @@ import Quickshell
 import qs.bar
 
 // The single shared hover panel (BAR.md: one panel component). There is exactly
-// one of these, instantiated by BarWindow. It is a static, full-width popup
-// sitting just below the bar; the visible panel Rectangle slides and resizes
-// between chips (driven by PanelController.activeChip), so moving from one
-// module to the next is a fluid transition rather than a pop in/out.
+// one of these, instantiated by BarWindow. Unlike a normal popup it is *not* a
+// separate surface: it renders inside the bar's own layer surface, in the empty
+// (non-exclusive) space below the bar. That is deliberate — a separate xdg-popup
+// surface gets its own blur pass, which both lags on first open (blur only lands
+// once the surface maps) and reads as a discontinuity against the bar's glass.
+// Living in the bar surface makes the blur one continuous region and removes the
+// open delay.
 //
-// Why full width / why one static surface: Wayland cannot smoothly tween a
-// popup's own position, so the moving part must live *inside* a static surface.
-// The surface is transparent and a mask keeps everything but the visible panel
-// click-through, so the width is an invisible coordinate space, not UI.
-PopupWindow {
+// The visible panel Rectangle slides and resizes between chips (driven by
+// PanelController.activeChip), so moving from one module to the next is a fluid
+// transition rather than a pop in/out. Wayland cannot smoothly tween a popup's
+// position, so the moving part lives inside this static, full-width item.
+Item {
     id: root
 
     // The bar's content item; chips live in its coordinate space.
@@ -22,6 +25,11 @@ PopupWindow {
     // The chip whose panel is shown (null while closing).
     readonly property Item chip: PanelController.activeChip
     readonly property bool shown: chip !== null
+    // The moving panel and whether it currently takes input (true while visible
+    // or fading out). BarWindow's input mask reads these to keep the rest of the
+    // surface click-through.
+    readonly property alias panelItem: panel
+    readonly property bool panelActive: shown || panel.opacity > 0.01
     // Retains the last chip so content/geometry stay put during the fade-out.
     property Item displayChip: null
     property bool opened: false
@@ -48,20 +56,6 @@ PopupWindow {
     onShownChanged: if (!shown)
         opened = false
 
-    anchor.item: barItem
-    anchor.rect.x: 0
-    anchor.rect.y: Style.barHeight
-    color: "transparent"
-    implicitHeight: Style.panelMaxHeight
-    implicitWidth: barItem ? barItem.width : 0
-    visible: shown || panel.opacity > 0.01
-
-    // Only the visible panel takes input; the rest of the surface is transparent
-    // and click-through.
-    mask: Region {
-        item: panel
-    }
-
     function titleCase(s) {
         return s.replace(/\b\w/g, c => c.toUpperCase());
     }
@@ -72,7 +66,9 @@ PopupWindow {
         readonly property Item chip: root.displayChip
 
         x: root.targetX
-        y: 0
+        // Directly below the bar strip, flush against it so the glass is
+        // continuous (the concave top corners flow down out of the bar).
+        y: Style.barHeight
         width: Style.panelWidth
         implicitHeight: column.implicitHeight + Style.panelPadding * 2
         height: implicitHeight
