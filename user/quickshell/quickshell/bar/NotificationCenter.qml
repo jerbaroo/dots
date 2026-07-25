@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications
+import Quickshell.Wayland
 import Quickshell.Widgets
 
 import "../config.js" as Config
@@ -36,12 +37,16 @@ Scope {
         // NotificationActions to show as buttons. Clicking a button invokes
         // the action and then dismisses the card.
         property var actions: []
+        // Card background. Opaque by default (floating popup toasts, which have
+        // no blur behind them); the notification center overrides it to
+        // transparent so its cards read as part of the frosted glass panel.
+        property color background: Theme.crust
 
         Layout.fillWidth: true
         implicitHeight: mainLayout.implicitHeight + 32
-        border.color: urgency === NotificationUrgency.Critical ? Theme.red : Theme.base
+        border.color: urgency === NotificationUrgency.Critical ? Theme.red : Theme.accent
         border.width: borderEnabled ? 2 : 0
-        color: Theme.crust
+        color: background
         radius: 8
 
         Rectangle {
@@ -280,6 +285,10 @@ Scope {
 
     // List of notifications.
     PanelWindow {
+        // Same blur namespace as the notification center, so the popup toasts
+        // get the same liquid-glass blur (see hyprland.nix).
+        WlrLayershell.namespace: "quickshell-notifications"
+
         anchors {
             right: true
             top: true
@@ -310,6 +319,9 @@ Scope {
                     required property var modelData
 
                     appName: modelData.appName || "Unknown"
+                    // Frosted glass, matching the bar and notification center;
+                    // the window's blur namespace shows through.
+                    background: Qt.alpha(Theme.crust, Config.glass.tint)
                     body: modelData.body || ""
                     borderEnabled: true
                     imageSource: modelData.image || modelData.appIcon || ""
@@ -353,6 +365,10 @@ Scope {
 
     // Notification center history view.
     PanelWindow {
+        // Own layer namespace so Hyprland's blur rule (see hyprland.nix) applies
+        // the same liquid-glass blur as the menu bar and launcher.
+        WlrLayershell.namespace: "quickshell-notifications"
+
         anchors {
             bottom: true
             left: true
@@ -385,7 +401,10 @@ Scope {
             }
             border.color: Theme.accent
             border.width: 2
-            color: Theme.crust
+            // Near-transparent glass, matching the bar and launcher, so the
+            // Hyprland blur rule shows through. The full-screen dismiss layer
+            // stays fully transparent so only this panel is blurred.
+            color: Qt.alpha(Theme.crust, Config.glass.tint)
             implicitHeight: centerColumn.implicitHeight + 32
             implicitWidth: 512
             radius: 10
@@ -508,6 +527,9 @@ Scope {
                         }
 
                         borderEnabled: false
+                        // Transparent so the card is part of the frosted glass
+                        // panel rather than an opaque block on top of it.
+                        background: "transparent"
                         // Actions are only available while the notification is
                         // still tracked by the server.
                         actions: Notifications.buttonActions(historyCard.trackedNotification)

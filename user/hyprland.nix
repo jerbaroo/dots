@@ -315,8 +315,9 @@ in
               ];
             }
           ];
-        # Blur the menu bar and the app launcher (liquid glass). Both quickshell
-        # surfaces set these layer namespaces (see BarWindow.qml / app_launcher.qml).
+        # Blur the menu bar, app launcher and notification center (liquid glass).
+        # Each quickshell surface sets its layer namespace (see BarWindow.qml /
+        # app_launcher.qml / NotificationCenter.qml).
         layer_rule = [
           {
             blur = true;
@@ -328,7 +329,7 @@ in
             # quickshell/config.js (Nix can't read that JS file) — keep in sync,
             # and keep it below glass.tint there.
             ignore_alpha = 0.001;
-            match.namespace = "^(quickshell-bar|quickshell-launcher)$";
+            match.namespace = "^(quickshell-bar|quickshell-launcher|quickshell-notifications)$";
           }
         ];
         window_rule =
