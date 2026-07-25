@@ -29,7 +29,11 @@ Item {
     // or fading out). BarWindow's input mask reads these to keep the rest of the
     // surface click-through.
     readonly property alias panelItem: panel
-    readonly property bool panelActive: shown || panel.opacity > 0.01
+    // Active while shown or while the content is still fading out. The glass
+    // backdrop keys off this (not off a slow opacity ramp), so the blur is
+    // present the instant content appears and stays until it is gone — no lag
+    // where text shows over an as-yet-unblurred background. See panel below.
+    readonly property bool panelActive: shown || column.opacity > 0.01
     // Retains the last chip so content/geometry stay put during the fade-out.
     property Item displayChip: null
     property bool opened: false
@@ -72,9 +76,11 @@ Item {
         width: Style.panelWidth
         implicitHeight: column.implicitHeight + Style.panelPadding * 2
         height: implicitHeight
-        opacity: root.shown ? 1 : 0
+        // The panel itself never fades: its glass backdrop appears/disappears
+        // with panelActive (so blur is not gated behind a slow ramp) and the
+        // content fades on its own opacity below.
 
-        // The fluid transition: slide and resize between chips, fade in/out.
+        // The fluid transition: slide and resize between chips.
         Behavior on x {
             id: xBehavior
             NumberAnimation {
@@ -86,11 +92,6 @@ Item {
             NumberAnimation {
                 duration: 160
                 easing.type: Easing.OutCubic
-            }
-        }
-        Behavior on opacity {
-            NumberAnimation {
-                duration: 120
             }
         }
 
@@ -109,6 +110,11 @@ Item {
             y: 0
             width: panel.width + pad * 2
             height: panel.height
+            // On/off with the panel, not faded: the blur is applied by the
+            // compositor only above an alpha threshold, so a slow opacity ramp
+            // would make blur lag the (already visible) text. Snapping it keeps
+            // the glass present the moment content shows and until it is gone.
+            opacity: root.panelActive ? 1 : 0
             onWidthChanged: requestPaint()
             onHeightChanged: requestPaint()
 
@@ -144,6 +150,14 @@ Item {
             anchors.right: parent.right
             anchors.top: parent.top
             spacing: Style.panelSpacing
+            // The content fades over the (already-blurred) glass backdrop.
+            opacity: root.shown ? 1 : 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 120
+                }
+            }
 
             RowLayout {
                 Layout.fillWidth: true
