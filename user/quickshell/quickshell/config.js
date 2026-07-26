@@ -1,42 +1,47 @@
 .pragma library
 
+// Raw Hyprland configuration values, substituted by Nix.
+const hyprlandBorderSize = @hyprlandBorderSize@;
+const hyprlandBlurThreshold = @hyprlandBlurThreshold@;
+const hyprlandGap = @hyprlandGap@;
+const hyprlandRounding = @hyprlandRounding@;
+
+// Quickshell-specific translations of the Hyprland values above.
+const borderSize = hyprlandBorderSize;
+const blurThreshold = hyprlandBlurThreshold;
+const gap = 2 * hyprlandGap;
+const rounding = hyprlandRounding;
+
+const shellFontSize = @shellFontSize@;
 const font = {
-    family: "Cascadia Mono",
+    family: "@shellFontName@",
     pixelSize: {
-        xlarge: 22,
-        large: 20,
-        medium: 18,
-        small: 16,
-        xsmall: 14,
+        xlarge: shellFontSize + 6,
+        large: shellFontSize + 4,
+        medium: shellFontSize + 2,
+        small: shellFontSize,
+        xsmall: shellFontSize - 2,
     },
 };
-
 const spacing = {
     large: 32,
     medium: 16,
 };
 
-// Liquid glass. The bar, its popups and the launcher paint a near-transparent
-// tint so Hyprland's blur shows through (the blur rule lives in hyprland.nix).
-// A surface is blurred where its alpha exceeds the compositor's ignore_alpha
-// threshold; at 0 it is passed through unblurred. So the tint must stay above
-// the threshold.
+// Liquid glass.
 const glass = {
-    // Glass tint alpha (blurred). Used by Style.qml and app_launcher.qml.
-    tint: 0.002,
-    // The compositor's ignore_alpha. Authoritative copy is in hyprland.nix —
-    // Nix cannot read this JS file — recorded here to document the pair. Keep
-    // the two in sync; tint must stay above threshold.
-    threshold: 0.001,
+    // Glass tint alpha (blurred).
+    tint: blurThreshold + 0.001,
+    // The compositor's ignore_alpha.
+    threshold: blurThreshold,
 };
 
-// Menu bar. Colors are not configured here: they all derive from the Theme
-// module (see bar/Style.qml).
+// Menu bar.
 //
 // Geometry invariant: chips are centred vertically, so the margin above/below
 // a chip is (barHeight − chipHeight) / 2. We keep the gap between chips equal
 // to that margin by deriving chipGap from it. Increasing chipHeight pads the
-// buttons more (bar height fixed) and shrinks both margins in step.
+// buttons more (bar height fixed).
 const barHeight = 42;
 const chipHeight = 30;
 const chipGap = (barHeight - chipHeight) / 2;
@@ -48,7 +53,7 @@ const bar = {
     chip: {
         height: chipHeight,
         paddingH: 14,
-        radius: 5,
+        radius: rounding,
         gap: chipGap,
         contentGap: 5,
     },
@@ -70,7 +75,7 @@ const bar = {
         width: 260,
         gap: 6,
         padding: 12,
-        radius: 8,
+        radius: rounding,
         spacing: 8,
         // Height of the shared, full-width popup container the visible panel
         // slides within. Generous so no panel is clipped; the empty area is
@@ -79,7 +84,7 @@ const bar = {
     },
     control: {
         height: 26,
-        radius: 4,
+        radius: rounding,
         spacing: 4,
         padding: 8,
         infoSpacing: 3,
@@ -102,16 +107,25 @@ const bar = {
     },
 };
 
-// App launcher. Sized relative to the screen, capped for large monitors.
+// App launcher.
 const launcher = {
     widthFraction: 0.4,
     maxWidth: 640,
     heightFraction: 0.7,
     maxHeight: 960,
     padding: 16,
-    radius: 8,
+    radius: rounding,
     iconSize: 64,
     searchHeight: 128,
     rowHeight: 96,
     textSpacing: 8,
+};
+
+// Notifications (individual and notification center).
+// Inset from the screen edges = Hyprland's gaps_out (gap * 2), so the panels
+// align with the tiled-window area; 'top' additionally clears the menu bar.
+const notification = {
+    top: barHeight + 2 * gap,
+    right: 2 * gap,
+    radius: rounding,
 };

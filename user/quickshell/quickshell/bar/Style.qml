@@ -13,6 +13,8 @@ Singleton {
     readonly property color barColor: Qt.alpha(Theme.crust, Config.glass.tint)
     readonly property int barHeight: Config.bar.height
     readonly property int barPadding: Config.bar.padding
+    // Border width matching Hyprland's window borders (see hyprland.nix).
+    readonly property int borderSize: Config.borderSize
 
     // Chips.
     readonly property int chipHeight: Config.bar.chip.height

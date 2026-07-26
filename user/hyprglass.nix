@@ -28,15 +28,20 @@ let
   });
 in
 {
-  wayland.windowManager.hyprland = {
+  wayland.windowManager.hyprland = lib.mkIf config.desktop.hyprland.blur.liquidGlass.enabled {
     extraConfig = ''
       if hl.plugin.hyprglass then
         local hg = hl.plugin.hyprglass
         hg.config({
           default_preset = "glass",
           default_theme = "dark",
+          -- We only use hyprglass for windows, not layers (e.g. Quickshell components).
           layers = { enabled = 0 },
         })
+        hg.preset("glass",
+          { blur_strength = ${toString config.desktop.hyprland.blur.liquidGlass.size}
+          , blur_iterations = ${toString config.desktop.hyprland.blur.liquidGlass.iterations}
+          })
       end
     '';
     plugins = [ hyprglass ];

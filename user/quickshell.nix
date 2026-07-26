@@ -5,6 +5,20 @@
   ...
 }:
 let
+  configJs = pkgs.replaceVars ./quickshell/quickshell/config.js {
+    hyprlandBlurThreshold = toString config.desktop.hyprland.blur.threshold;
+    hyprlandBorderSize = toString config.desktop.hyprland.border.size;
+    hyprlandGap = toString config.desktop.hyprland.gap;
+    hyprlandRounding = toString config.desktop.hyprland.rounding;
+    shellFontName = config.desktop.font.shell.name;
+    shellFontSize = toString config.desktop.font.shell.size;
+  };
+  configDir = pkgs.runCommandLocal "quickshell-config" { } ''
+    mkdir $out
+    cp -r ${./quickshell/quickshell}/. $out/
+    chmod -R u+w $out # Needed to copy the file.
+    cp ${configJs} $out/config.js
+  '';
   # Packages and paths of dependencies.
   qtPkg = pkgs.kdePackages.qtdeclarative;
   qtPath = "${qtPkg}/lib/qt-6/qml";
@@ -129,6 +143,6 @@ in
   # store), allowing the generated Theme/ files above to live alongside them.
   xdg.configFile."quickshell" = {
     recursive = true;
-    source = ./quickshell/quickshell;
+    source = configDir;
   };
 }

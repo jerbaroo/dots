@@ -12,7 +12,7 @@
     };
     hyprland = {
       inputs.nixpkgs.follows = "nixpkgs";
-      # Required for hyprglasss:
+      # Required for hyprglasss (bumping this requires a bump in hyprglass.nix):
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
       url = "github:hyprwm/Hyprland?ref=refs/tags/v0.55.4";
     };

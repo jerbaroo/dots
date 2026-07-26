@@ -45,9 +45,9 @@ Scope {
         Layout.fillWidth: true
         implicitHeight: mainLayout.implicitHeight + 32
         border.color: urgency === NotificationUrgency.Critical ? Theme.red : Theme.accent
-        border.width: borderEnabled ? 2 : 0
+        border.width: borderEnabled ? Config.borderSize : 0
         color: background
-        radius: 8
+        radius: Config.notification.radius
 
         Rectangle {
             color: Theme.accent
@@ -179,7 +179,7 @@ Scope {
                         color: actionMouseArea.containsMouse ? Theme.accent : Theme.surface0
                         implicitHeight: actionText.implicitHeight + 12
                         implicitWidth: actionText.implicitWidth + 24
-                        radius: 8
+                        radius: Config.notification.radius
 
                         Text {
                             id: actionText
@@ -298,8 +298,9 @@ Scope {
         implicitHeight: popupColumn.implicitHeight
         implicitWidth: 512
         margins {
-            right: 32
-            top: 32
+            right: Config.notification.right
+            // Clear the menu bar (see config.js), rather than overlapping it.
+            top: Config.notification.top
         }
         visible: !root.centerOpen && !root.doNotDisturb
 
@@ -395,19 +396,21 @@ Scope {
 
         Rectangle {
             anchors {
-                margins: 16
                 right: parent.right
+                rightMargin: Config.notification.right
                 top: parent.top
+                // Clear the menu bar (see config.js), rather than overlapping it.
+                topMargin: Config.notification.top
             }
             border.color: Theme.accent
-            border.width: 2
+            border.width: Config.borderSize
             // Near-transparent glass, matching the bar and launcher, so the
             // Hyprland blur rule shows through. The full-screen dismiss layer
             // stays fully transparent so only this panel is blurred.
             color: Qt.alpha(Theme.crust, Config.glass.tint)
             implicitHeight: centerColumn.implicitHeight + 32
             implicitWidth: 512
-            radius: 10
+            radius: Config.notification.radius
 
             // Trap mouse clicks, to avoid bubbling up to the dismiss layer.
             MouseArea {
@@ -439,7 +442,7 @@ Scope {
                         color: dndToggleMouseArea.containsMouse ? Theme.surface0 : "transparent"
                         implicitHeight: dndToggle.implicitHeight + 16
                         implicitWidth: dndToggle.implicitWidth + 16
-                        radius: 8
+                        radius: Config.notification.radius
 
                         IconImage {
                             id: dndToggle
@@ -472,7 +475,7 @@ Scope {
                         color: clearAllMouseArea.containsMouse ? Theme.red : "transparent"
                         implicitHeight: clearAllText.implicitHeight + 8
                         implicitWidth: clearAllText.implicitWidth + 16
-                        radius: 8
+                        radius: Config.notification.radius
                         visible: history.count > 0
 
                         Text {

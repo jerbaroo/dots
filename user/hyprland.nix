@@ -99,11 +99,11 @@ in
           decoration = {
             active_opacity = 1;
             blur = {
-              enabled = config.desktop.hyprland.blur;
+              enabled = config.desktop.hyprland.blur.enabled;
               noise = 0.02;
-              passes = 4;
+              passes = config.desktop.hyprland.blur.iterations;
               popups = true;
-              size = 5;
+              size = config.desktop.hyprland.blur.size;
             };
             inactive_opacity = 1;
             rounding = config.desktop.hyprland.rounding;
@@ -315,20 +315,12 @@ in
               ];
             }
           ];
-        # Blur the menu bar, app launcher and notification center (liquid glass).
-        # Each quickshell surface sets its layer namespace (see BarWindow.qml /
-        # app_launcher.qml / NotificationCenter.qml).
+        # Blur Quickshell components.
         layer_rule = [
           {
-            blur = true;
-            # Also blur xdg-popups of this layer e.g. menu bar popups.
-            blur_popups = true;
-            # Only blur painted pixels: below this alpha, blur is not applied.
-            # Lets surfaces use '0' for non-blurred transparency and the glass
-            # tint for blurred near-transparency. Mirror of glass.threshold in
-            # quickshell/config.js (Nix can't read that JS file) — keep in sync,
-            # and keep it below glass.tint there.
-            ignore_alpha = 0.001;
+            blur = config.desktop.hyprland.blur.enabled;
+            # Necessary for how the Quickshell menu bar is built.
+            ignore_alpha = config.desktop.hyprland.blur.threshold;
             match.namespace = "^(quickshell-bar|quickshell-launcher|quickshell-notifications)$";
           }
         ];
@@ -348,8 +340,8 @@ in
               };
             };
             noBlur = {
-              # Blur disabled on windows to allow hyprglass to take over.
-              no_blur = true;
+              # Regular hyprland blur disabled if using hyprglass.
+              no_blur = config.desktop.hyprland.blur.liquidGlass.enabled;
               match.title = "^(.*)$";
             };
           in
@@ -376,10 +368,44 @@ in
       description = "Size of window borders.";
       type = lib.types.ints.unsigned;
     };
-    blur = lib.mkOption {
-      default = true;
-      description = "Enable background blur for transparent windows.";
-      type = lib.types.bool;
+    blur = {
+      enabled = lib.mkOption {
+        default = true;
+        description = "Enable background blur for transparent windows.";
+        type = lib.types.bool;
+      };
+      iterations = lib.mkOption {
+        default = 4;
+        description = "Amount of regular (not liquid glass) blurring iterations.";
+        type = lib.types.ints.unsigned;
+      };
+      liquidGlass = {
+        enabled = lib.mkOption {
+          default = true;
+          description = "Apply liquid glass effect for blurred windows.";
+          type = lib.types.bool;
+        };
+        iterations = lib.mkOption {
+          default = 3;
+          description = "Amount of liquid glass blurring iterations.";
+          type = lib.types.ints.unsigned;
+        };
+        size = lib.mkOption {
+          default = 2.0;
+          description = "Liquid glass blur size.";
+          type = lib.types.float;
+        };
+      };
+      size = lib.mkOption {
+        default = 5;
+        description = "Regular (not liquid glass) blur size.";
+        type = lib.types.ints.unsigned;
+      };
+      threshold = lib.mkOption {
+        default = 0.001;
+        description = "Alpha below which blur is not applied.";
+        type = lib.types.float;
+      };
     };
     defaultColumnWidth = lib.mkOption {
       default = 0.25;
@@ -409,7 +435,7 @@ in
       type = lib.types.attrs;
     };
     rounding = lib.mkOption {
-      default = 1;
+      default = 8;
       description = "Rounding of borders.";
       type = lib.types.ints.unsigned;
     };

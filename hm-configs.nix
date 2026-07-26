@@ -18,7 +18,6 @@
             in
             pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
           browser = {
-            cmd = "google-chrome";
             homepage = "http://localhost:${toString config.desktop.ghdashboard.port}";
           };
           genericLinux = {
@@ -27,7 +26,7 @@
           };
           hyprland = {
             defaultColumnWidth = 0.333333;
-            gap = 0;
+            gap = 2;
           };
         };
       };

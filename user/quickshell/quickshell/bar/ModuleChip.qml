@@ -37,7 +37,7 @@ Rectangle {
     property bool pill: false
 
     border.color: accent ? Style.accent : dim ? Style.chipBorderDim : Style.chipBorder
-    border.width: pill ? 1 : 0
+    border.width: pill ? Style.borderSize : 0
     color: pill ? (dim ? Style.chipColorDim : Style.chipColor) : "transparent"
     implicitHeight: pill ? Style.chipHeight : Style.barHeight
     implicitWidth: Math.max(minWidth, row.implicitWidth + Style.chipPaddingH * 2)

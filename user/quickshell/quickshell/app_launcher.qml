@@ -96,6 +96,8 @@ Scope {
 
         Rectangle {
             anchors.centerIn: parent
+            border.color: Theme.accent
+            border.width: Config.borderSize
             // Near-transparent glass, matching the menu bar, so the Hyprland
             // blur rule shows through as the same liquid glass. The tint sits
             // above the compositor's ignore_alpha so it is blurred rather than
