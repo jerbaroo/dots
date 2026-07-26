@@ -5,15 +5,40 @@
   ...
 }:
 let
-  configJs = pkgs.replaceVars ./quickshell/quickshell/config.js {
-    hyprlandBlurThreshold = toString config.desktop.hyprland.blur.threshold;
-    hyprlandBorderSize = toString config.desktop.hyprland.border.size;
-    hyprlandGap = toString config.desktop.hyprland.gap;
-    hyprlandRounding = toString config.desktop.hyprland.rounding;
-    inhibitLockPath = config.desktop.lock.inhibitPath;
-    shellFontName = config.desktop.font.shell.name;
-    shellFontSize = toString config.desktop.font.shell.size;
-  };
+  configJs = pkgs.replaceVars ./quickshell/quickshell/config.js (
+    {
+      accent = config.desktop.theme.palette.${config.desktop.theme.accent}.hex;
+      hyprlandBorderSize = toString config.desktop.hyprland.border.size;
+      hyprlandGap = toString config.desktop.hyprland.gap;
+      hyprlandRounding = toString config.desktop.hyprland.rounding;
+      inhibitLockPath = config.desktop.lock.inhibitPath;
+      shellFontName = config.desktop.font.shell.name;
+      shellFontSize = toString config.desktop.font.shell.size;
+    }
+    // builtins.listToAttrs paletteHexColours
+  );
+  paletteHexColours =
+    map
+      (name: {
+        name = name;
+        value = config.desktop.theme.palette.${name}.hex;
+      })
+      [
+        "base"
+        "crust"
+        "mantle"
+        "overlay0"
+        "overlay1"
+        "overlay2"
+        "red"
+        "text"
+        "subtext0"
+        "subtext1"
+        "surface0"
+        "surface1"
+        "surface2"
+        "yellow"
+      ];
   configDir = pkgs.runCommandLocal "quickshell-config" { } ''
     mkdir $out
     cp -r ${./quickshell/quickshell}/. $out/
@@ -53,7 +78,7 @@ in
     qtPkg # For qmlformat and other tools.
     shellServer
   ];
-  # Make the Theme module and icon theme available from any config, including
+  # Make the Cmds module and icon theme available from any config, including
   # when launching a single file with `quickshell -p <file>` (whose config root
   # is the file's own directory rather than ~/.config/quickshell).
   home.sessionVariables.QML_IMPORT_PATH = "${config.xdg.configHome}/quickshell";
@@ -78,39 +103,6 @@ in
       BindsTo = [ "graphical-session.target" ];
     };
   };
-  # Global theme module. Exposed as `import Theme 1.0`, which requires a
-  # proper module directory (Theme/qmldir declaring `module Theme`) rather
-  # than a singleton entry in the config-root qmldir.
-  xdg.configFile."quickshell/Theme/Theme.qml".text = ''
-    pragma Singleton
-    import QtQuick
-    import Quickshell
-
-    QtObject {
-      readonly property string accent: "${
-        config.desktop.theme.palette.${config.desktop.theme.accent}.hex
-      }"
-      readonly property string base: "${config.desktop.theme.palette.base.hex}"
-      readonly property string crust: "${config.desktop.theme.palette.crust.hex}"
-      readonly property string mantle: "${config.desktop.theme.palette.mantle.hex}"
-      readonly property string overlay0: "${config.desktop.theme.palette.overlay0.hex}"
-      readonly property string overlay1: "${config.desktop.theme.palette.overlay1.hex}"
-      readonly property string overlay2: "${config.desktop.theme.palette.overlay2.hex}"
-      readonly property string red: "${config.desktop.theme.palette.red.hex}"
-      readonly property string text: "${config.desktop.theme.palette.text.hex}"
-      readonly property string subtext0: "${config.desktop.theme.palette.subtext0.hex}"
-      readonly property string subtext1: "${config.desktop.theme.palette.subtext1.hex}"
-      readonly property string surface0: "${config.desktop.theme.palette.surface0.hex}"
-      readonly property string surface1: "${config.desktop.theme.palette.surface1.hex}"
-      readonly property string surface2: "${config.desktop.theme.palette.surface2.hex}"
-      readonly property string yellow: "${config.desktop.theme.palette.yellow.hex}"
-    }
-  '';
-  # Tell quickshell/Qt about our global theme module.
-  xdg.configFile."quickshell/Theme/qmldir".text = ''
-    module Theme
-    singleton Theme 0.1 Theme.qml
-  '';
   # Commands from the Nix config for use in QML. Launched through hyprland's
   # exec dispatcher, so rule prefixes like [float;center] apply — the same
   # mechanism the keybinds in hyprland.nix use.
@@ -141,7 +133,7 @@ in
   '';
   # Copy our entire quickshell configuration. Use recursive so individual files
   # are linked (rather than symlinking the whole directory into the read-only
-  # store), allowing the generated Theme/ files above to live alongside them.
+  # store), allowing the generated Cmds/ files above to live alongside them.
   xdg.configFile."quickshell" = {
     recursive = true;
     source = configDir;

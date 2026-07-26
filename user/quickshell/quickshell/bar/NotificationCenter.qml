@@ -9,7 +9,6 @@ import Quickshell.Widgets
 
 import "../config.js" as Config
 import "notifications.js" as Notifications
-import Theme 0.1
 
 Scope {
     id: root
@@ -40,17 +39,17 @@ Scope {
         // Card background. Opaque by default (floating popup toasts, which have
         // no blur behind them); the notification center overrides it to
         // transparent so its cards read as part of the frosted glass panel.
-        property color background: Theme.crust
+        property color background: Config.crust
 
         Layout.fillWidth: true
         implicitHeight: mainLayout.implicitHeight + 32
-        border.color: urgency === NotificationUrgency.Critical ? Theme.red : Theme.accent
+        border.color: urgency === NotificationUrgency.Critical ? Config.red : Config.accent
         border.width: borderEnabled ? Config.borderSize : 0
         color: background
         radius: Config.notification.radius
 
         Rectangle {
-            color: Theme.accent
+            color: Config.accent
             height: 1
             opacity: 0.2
             visible: !card.borderEnabled
@@ -70,7 +69,7 @@ Scope {
                 // App name.
                 Text {
                     Layout.fillWidth: true
-                    color: card.urgency === NotificationUrgency.Critical ? Theme.red : Theme.accent
+                    color: card.urgency === NotificationUrgency.Critical ? Config.red : Config.accent
                     font.family: Config.font.family
                     font.pixelSize: Config.font.pixelSize.small
                     font.bold: true
@@ -79,7 +78,7 @@ Scope {
 
                 // Notification time.
                 Text {
-                    color: Theme.accent
+                    color: Config.accent
                     font.family: Config.font.family
                     font.pixelSize: Config.font.pixelSize.xsmall
                     text: card.time
@@ -87,14 +86,14 @@ Scope {
 
                 // Close button.
                 Rectangle {
-                    color: closeMouseArea.containsMouse ? Theme.red : "transparent"
+                    color: closeMouseArea.containsMouse ? Config.red : "transparent"
                     height: 24
                     width: 24
                     radius: 12
 
                     Text {
                         anchors.centerIn: parent
-                        color: closeMouseArea.containsMouse ? Theme.crust : Theme.accent
+                        color: closeMouseArea.containsMouse ? Config.crust : Config.accent
                         font.family: Config.font.family
                         font.pixelSize: Config.font.pixelSize.small
                         font.bold: true
@@ -132,7 +131,7 @@ Scope {
                     // Notification title.
                     Text {
                         Layout.fillWidth: true
-                        color: Theme.yellow
+                        color: Config.yellow
                         font.bold: true
                         font.family: Config.font.family
                         font.pixelSize: Config.font.pixelSize.medium
@@ -145,10 +144,10 @@ Scope {
                     // hyperlinks, per the freedesktop notification spec.
                     Text {
                         Layout.fillWidth: true
-                        color: Theme.text
+                        color: Config.text
                         font.family: Config.font.family
                         font.pixelSize: Config.font.pixelSize.small
-                        linkColor: Theme.accent
+                        linkColor: Config.accent
                         text: card.body
                         textFormat: Text.StyledText
                         visible: text !== ""
@@ -176,7 +175,7 @@ Scope {
 
                         required property var modelData
 
-                        color: actionMouseArea.containsMouse ? Theme.accent : Theme.surface0
+                        color: actionMouseArea.containsMouse ? Config.accent : Config.surface0
                         implicitHeight: actionText.implicitHeight + 12
                         implicitWidth: actionText.implicitWidth + 24
                         radius: Config.notification.radius
@@ -184,7 +183,7 @@ Scope {
                         Text {
                             id: actionText
                             anchors.centerIn: parent
-                            color: actionMouseArea.containsMouse ? Theme.crust : Theme.text
+                            color: actionMouseArea.containsMouse ? Config.crust : Config.text
                             font.family: Config.font.family
                             font.pixelSize: Config.font.pixelSize.small
                             text: actionButton.modelData.text
@@ -322,7 +321,7 @@ Scope {
                     appName: modelData.appName || "Unknown"
                     // Frosted glass, matching the bar and notification center;
                     // the window's blur namespace shows through.
-                    background: Qt.alpha(Theme.crust, Config.glass.tint)
+                    background: Config.glass
                     body: modelData.body || ""
                     borderEnabled: true
                     imageSource: modelData.image || modelData.appIcon || ""
@@ -402,12 +401,12 @@ Scope {
                 // Clear the menu bar (see config.js), rather than overlapping it.
                 topMargin: Config.notification.top
             }
-            border.color: Theme.accent
+            border.color: Config.accent
             border.width: Config.borderSize
             // Near-transparent glass, matching the bar and launcher, so the
             // Hyprland blur rule shows through. The full-screen dismiss layer
             // stays fully transparent so only this panel is blurred.
-            color: Qt.alpha(Theme.crust, Config.glass.tint)
+            color: Config.glass
             implicitHeight: centerColumn.implicitHeight + 32
             implicitWidth: 512
             radius: Config.notification.radius
@@ -429,7 +428,7 @@ Scope {
                     // Notification center title.
                     Text {
                         Layout.fillWidth: true
-                        color: Theme.accent
+                        color: Config.accent
                         font.bold: true
                         font.family: Config.font.family
                         font.pixelSize: Config.font.pixelSize.medium
@@ -439,7 +438,7 @@ Scope {
                     // Do not disturb toggle. Same icon as the bar's
                     // notifications module.
                     Rectangle {
-                        color: dndToggleMouseArea.containsMouse ? Theme.surface0 : "transparent"
+                        color: dndToggleMouseArea.containsMouse ? Config.surface0 : "transparent"
                         implicitHeight: dndToggle.implicitHeight + 16
                         implicitWidth: dndToggle.implicitWidth + 16
                         radius: Config.notification.radius
@@ -453,7 +452,7 @@ Scope {
                             layer.effect: MultiEffect {
                                 brightness: 1
                                 colorization: 1
-                                colorizationColor: Theme.text
+                                colorizationColor: Config.text
                             }
                             source: Quickshell.iconPath(root.doNotDisturb ? "notifications-disabled-symbolic" : "notifications-symbolic")
                         }
@@ -472,7 +471,7 @@ Scope {
 
                     // Clear all button.
                     Rectangle {
-                        color: clearAllMouseArea.containsMouse ? Theme.red : "transparent"
+                        color: clearAllMouseArea.containsMouse ? Config.red : "transparent"
                         implicitHeight: clearAllText.implicitHeight + 8
                         implicitWidth: clearAllText.implicitWidth + 16
                         radius: Config.notification.radius
@@ -481,7 +480,7 @@ Scope {
                         Text {
                             id: clearAllText
                             anchors.centerIn: parent
-                            color: clearAllMouseArea.containsMouse ? Theme.crust : Theme.accent
+                            color: clearAllMouseArea.containsMouse ? Config.crust : Config.accent
                             font.family: Config.font.family
                             font.pixelSize: Config.font.pixelSize.small
                             text: "Clear all"
@@ -549,7 +548,7 @@ Scope {
 
                 Text {
                     Layout.fillWidth: true
-                    color: Theme.accent
+                    color: Config.accent
                     font.family: Config.font.family
                     font.pixelSize: Config.font.pixelSize.small
                     horizontalAlignment: Text.AlignHCenter

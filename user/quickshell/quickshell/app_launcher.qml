@@ -6,7 +6,6 @@ import Quickshell.Wayland
 import Quickshell.Widgets
 
 import "config.js" as Config
-import Theme 0.1
 
 Scope {
     id: root
@@ -96,13 +95,13 @@ Scope {
 
         Rectangle {
             anchors.centerIn: parent
-            border.color: Theme.accent
+            border.color: Config.accent
             border.width: Config.borderSize
             // Near-transparent glass, matching the menu bar, so the Hyprland
             // blur rule shows through as the same liquid glass. The tint sits
             // above the compositor's ignore_alpha so it is blurred rather than
             // passed through; the full-screen dismiss layer stays transparent.
-            color: Qt.alpha(Theme.crust, Config.glass.tint)
+            color: Config.glass
             // Responsive: a fraction of the screen, capped on large monitors.
             implicitHeight: Math.min(Config.launcher.maxHeight, window.height * Config.launcher.heightFraction)
             implicitWidth: Math.min(Config.launcher.maxWidth, window.width * Config.launcher.widthFraction)
@@ -127,7 +126,7 @@ Scope {
 
                         anchors.fill: parent
                         anchors.margins: Config.launcher.padding // Padding around the search box
-                        color: Theme.base
+                        color: Config.field
                         radius: Config.launcher.radius
 
                         Row {
@@ -152,12 +151,12 @@ Scope {
 
                                 anchors.verticalCenter: parent.verticalCenter
                                 background: null
-                                color: Theme.text
+                                color: Config.text
                                 focus: true
                                 font.family: Config.font.family
                                 font.pixelSize: Config.font.pixelSize.xlarge
                                 placeholderText: "Search apps..."
-                                placeholderTextColor: Theme.text
+                                placeholderTextColor: Config.text
 
                                 onTextChanged: {
                                     resultsModel.clear();
@@ -216,8 +215,8 @@ Scope {
 
                         background: Rectangle {
                             readonly property bool isCurrent: resultsList.currentIndex === delegateItem.index
-                            color: delegateItem.hovered ? Theme.base : "transparent"
-                            border.color: isCurrent ? Theme.accent : "transparent"
+                            color: delegateItem.hovered ? Config.field : "transparent"
+                            border.color: isCurrent ? Config.accent : "transparent"
                             border.width: isCurrent ? 1 : 0
                             radius: Config.launcher.radius
                         }
@@ -243,7 +242,7 @@ Scope {
                                 spacing: Config.launcher.textSpacing
 
                                 Text {
-                                    color: Theme.text
+                                    color: Config.text
                                     font.bold: true
                                     font.family: Config.font.family
                                     font.pixelSize: Config.font.pixelSize.large
@@ -251,7 +250,7 @@ Scope {
                                 }
 
                                 Text {
-                                    color: Theme.accent
+                                    color: Config.accent
                                     font.family: Config.font.family
                                     font.pixelSize: Config.font.pixelSize.medium
                                     text: modelData.comment

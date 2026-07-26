@@ -2,7 +2,6 @@
 
 // Raw Hyprland configuration values, substituted by Nix.
 const hyprlandBorderSize = @hyprlandBorderSize@;
-const hyprlandBlurThreshold = @hyprlandBlurThreshold@;
 const hyprlandGap = @hyprlandGap@;
 const hyprlandRounding = @hyprlandRounding@;
 
@@ -13,7 +12,6 @@ const inhibitLockPath = "@inhibitLockPath@";
 
 // Quickshell-specific translations of the Hyprland values above.
 const borderSize = hyprlandBorderSize;
-const blurThreshold = hyprlandBlurThreshold;
 const gap = 2 * hyprlandGap;
 const rounding = hyprlandRounding;
 
@@ -33,15 +31,36 @@ const spacing = {
     medium: 16,
 };
 
-// Liquid glass.
-const glass = {
-    // Frosted-glass tint alpha (blurred). The only hard constraint is tint >
-    // threshold, so the compositor still blurs the surface rather than passing
-    // it straight through.
-    tint: 0.35,
-    // The compositor's ignore_alpha.
-    threshold: blurThreshold,
-};
+// Colours (Catppuccin palette, substituted by Nix).
+const accent = "@accent@";
+const base = "@base@";
+const crust = "@crust@";
+const mantle = "@mantle@";
+const overlay0 = "@overlay0@";
+const overlay1 = "@overlay1@";
+const overlay2 = "@overlay2@";
+const red = "@red@";
+const text = "@text@";
+const subtext0 = "@subtext0@";
+const subtext1 = "@subtext1@";
+const surface0 = "@surface0@";
+const surface1 = "@surface1@";
+const surface2 = "@surface2@";
+const yellow = "@yellow@";
+
+// Overlay a "#RRGGBB" colour at alpha `a`, returning QML's "#AARRGGBB" form. A
+// .pragma library cannot call Qt.alpha, so we build the string directly.
+function withAlpha(hex, a) {
+    const aa = ("0" + Math.round(a * 255).toString(16)).slice(-2);
+    return "#" + aa + hex.slice(1);
+}
+
+// Semantic colour aliases (single source for each).
+// TODO improve these names.
+const field = base;
+const glassTint = 0.35;
+const glass = withAlpha(crust, glassTint);
+const panelGlass = withAlpha(mantle, glassTint);
 
 // Menu bar.
 //
