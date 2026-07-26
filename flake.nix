@@ -16,10 +16,6 @@
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
       url = "github:hyprwm/Hyprland?ref=refs/tags/v0.56.0";
     };
-    lanzaboote = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:nix-community/lanzaboote";
-    };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     spicetify.url = "github:Gerg-L/spicetify-nix";
@@ -58,7 +54,6 @@
               ./system/nixos.nix
               inputs.catppuccin.nixosModules.catppuccin
               inputs.home-manager.nixosModules.home-manager
-              inputs.lanzaboote.nixosModules.lanzaboote
             ];
             specialArgs = sharedArgs // nixosConfig;
           };

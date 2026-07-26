@@ -54,7 +54,6 @@
     ./hardware-configuration.nix
     ./kanata.nix
     ./keyboard.nix
-    ./lanzaboote.nix
     ./locale.nix
     ./network.nix
     ./openrgb.nix
