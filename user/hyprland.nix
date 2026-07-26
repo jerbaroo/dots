@@ -65,10 +65,10 @@ in
               (animation "fadeOut" 2.0 "emphasizedDecel" null)
               (animation "windowsMove" 3.0 "emphasizedDecel" "slide")
               (animation "border" 10.0 "emphasizedDecel" null)
-              (animation "layersIn" 2.7 "emphasizedDecel" "popin 93%")
-              (animation "layersOut" 2.4 "menu_accel" "popin 94%")
+              (animation "layersIn" 1.2 "emphasizedDecel" "popin 93%")
+              (animation "layersOut" 1.0 "menu_accel" "popin 94%")
               (animation "fadeLayersIn" 0.5 "menu_decel" null)
-              (animation "fadeLayersOut" 2.7 "stall" null)
+              (animation "fadeLayersOut" 1.0 "menu_accel" null)
               (animation "workspaces" 7.0 "menu_decel" "slide")
               (animation "specialWorkspaceIn" 2.8 "emphasizedDecel" "slidevert")
               (animation "specialWorkspaceOut" 1.2 "emphasizedAccel" "slidevert")
@@ -322,6 +322,14 @@ in
             # Necessary for how the Quickshell menu bar is built.
             ignore_alpha = config.desktop.hyprland.blur.threshold;
             match.namespace = "^(quickshell-bar|quickshell-launcher|quickshell-notifications)$";
+          }
+          {
+            # Fade the transient popups in/out in place. The global default
+            # layer style is "popin", which scales out from the centre and
+            # reads as the launcher/notifications "growing" from the middle
+            # rather than appearing where they sit; "fade" keeps them put.
+            animation = "fade";
+            match.namespace = "^(quickshell-launcher|quickshell-notifications)$";
           }
         ];
         window_rule =
