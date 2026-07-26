@@ -30,11 +30,24 @@ Singleton {
         return s.length > 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s;
     }
 
-    // A ranked "top process" line: labelled "Top:" for the first entry and
-    // indented to align beneath it for the rest.
-    function _topLine(first, comm, pct) {
-        const value = `${_cap(comm)} ${Math.round(Number(pct))}%`;
-        return first ? _kv("Top", value) : "      " + value;
+    // Pad `s` to width `n` with spaces (prepended when `left`, else appended).
+    function _pad(s, n, left) {
+        while (s.length < n)
+            s = left ? " " + s : s + " ";
+        return s;
+    }
+
+    // Format the top processes as rows with the names left-aligned and the
+    // percentages right-aligned into a column (the panel font is monospaced,
+    // so equal-width columns line up).
+    function _formatTop(procs) {
+        var nameW = 0;
+        var pctW = 0;
+        for (const p of procs) {
+            nameW = Math.max(nameW, p.comm.length);
+            pctW = Math.max(pctW, p.pct.length);
+        }
+        return procs.map(p => _pad(p.comm, nameW, false) + " " + _pad(p.pct, pctW, true));
     }
 
     function _parse(out) {
@@ -77,15 +90,21 @@ Singleton {
                 break;
             case "c":
                 // comm may contain spaces; the percentage is the last field.
-                cpu.push(_topLine(cpu.length === 0, fields.slice(0, -1).join(" "), fields[fields.length - 1]));
+                cpu.push({
+                    comm: _cap(fields.slice(0, -1).join(" ")),
+                    pct: Math.round(Number(fields[fields.length - 1])) + "%"
+                });
                 break;
             case "M":
-                mem.push(_topLine(mem.length === 0, fields.slice(0, -1).join(" "), fields[fields.length - 1]));
+                mem.push({
+                    comm: _cap(fields.slice(0, -1).join(" ")),
+                    pct: Math.round(Number(fields[fields.length - 1])) + "%"
+                });
                 break;
             }
         }
-        topCpu = cpu;
-        topMem = mem;
+        topCpu = _formatTop(cpu);
+        topMem = _formatTop(mem);
     }
 
     Timer {
