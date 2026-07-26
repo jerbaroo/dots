@@ -176,7 +176,16 @@ Item {
                     color: (panel.chip?.panelStateGood ?? false) ? Style.good : Style.panelText
                     font.family: Style.fontFamily
                     font.pixelSize: Style.panelFontSize
+                    // Hidden (and space-free, being in a Layout) when the chip
+                    // supplies a header control instead — e.g. a toggle.
+                    visible: (panel.chip?.panelStateControl ?? null) === null
                     text: root.titleCase(panel.chip?.panelState ?? "")
+                }
+
+                Loader {
+                    active: (panel.chip?.panelStateControl ?? null) !== null
+                    sourceComponent: panel.chip?.panelStateControl ?? null
+                    visible: active
                 }
             }
 

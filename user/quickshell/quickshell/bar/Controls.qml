@@ -187,7 +187,39 @@ Item {
         }
     }
 
-    // Labelled on/off switch. Used by: DND, wifi, bluetooth.
+    // Bare on/off switch. Interactive by default; set `interactive: false` to
+    // let a wrapping row own the click (see ToggleRow). Used standalone in panel
+    // headers (wifi, bluetooth) and embedded by ToggleRow (DND).
+    component Toggle: Rectangle {
+        id: sw
+
+        property bool checked: false
+        property bool interactive: true
+        signal toggled(bool checked)
+
+        color: sw.checked ? Style.good : Style.controlBorder
+        implicitHeight: Style.togglePillHeight
+        implicitWidth: Style.togglePillWidth
+        radius: height / 2
+
+        Rectangle {
+            anchors.verticalCenter: parent.verticalCenter
+            color: Style.panelText
+            height: Style.toggleKnobSize
+            radius: height / 2
+            width: Style.toggleKnobSize
+            x: sw.checked ? parent.width - width - Style.toggleKnobMargin : Style.toggleKnobMargin
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: sw.interactive
+            onClicked: sw.toggled(!sw.checked)
+        }
+    }
+
+    // Labelled on/off switch: whole row is clickable, switch is visual only.
+    // Used by: DND. (wifi/bluetooth put a bare Toggle in the panel header.)
     component ToggleRow: ControlRow {
         id: toggle
 
@@ -204,23 +236,12 @@ Item {
             text: toggle.label
         }
 
-        Rectangle {
+        Toggle {
             anchors.right: parent.right
             anchors.rightMargin: Style.controlPadding
             anchors.verticalCenter: parent.verticalCenter
-            color: toggle.checked ? Style.good : Style.controlBorder
-            height: Style.togglePillHeight
-            radius: height / 2
-            width: Style.togglePillWidth
-
-            Rectangle {
-                anchors.verticalCenter: parent.verticalCenter
-                color: Style.panelText
-                height: Style.toggleKnobSize
-                radius: height / 2
-                width: Style.toggleKnobSize
-                x: toggle.checked ? parent.width - width - Style.toggleKnobMargin : Style.toggleKnobMargin
-            }
+            checked: toggle.checked
+            interactive: false
         }
     }
 

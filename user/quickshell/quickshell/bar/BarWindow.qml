@@ -334,37 +334,31 @@ PanelWindow {
             dim: !btOn
             icon: btOn ? "bluetooth-active-symbolic" : "bluetooth-disabled-symbolic"
             panelControls: Component {
-                ColumnLayout {
-                    spacing: Style.panelSpacing
-
-                    Controls.ToggleRow {
-                        checked: bar.btAdapter?.enabled ?? false
-                        label: "Bluetooth"
-                        onToggled: checked => {
-                            if (bar.btAdapter)
-                                bar.btAdapter.enabled = checked;
-                        }
-                    }
-
-                    Controls.Dropdown {
-                        readonly property var connected: Bluetooth.devices.values.filter(d => d.connected)
-                        current: connected.length > 0 ? connected[0].name : "no device"
-                        options: Bluetooth.devices.values.filter(d => d.bonded).map(d => ({
-                                    label: d.name + (d.connected ? " ✓" : ""),
-                                    value: d,
-                                    active: d.connected
-                                }))
-                        onSelected: value => {
-                            if (value.connected)
-                                value.disconnect();
-                            else
-                                value.connect();
-                        }
+                Controls.Dropdown {
+                    readonly property var connected: Bluetooth.devices.values.filter(d => d.connected)
+                    current: connected.length > 0 ? connected[0].name : "no device"
+                    options: Bluetooth.devices.values.filter(d => d.bonded).map(d => ({
+                                label: d.name + (d.connected ? " ✓" : ""),
+                                value: d,
+                                active: d.connected
+                            }))
+                    onSelected: value => {
+                        if (value.connected)
+                            value.disconnect();
+                        else
+                            value.connect();
                     }
                 }
             }
-            panelState: btOn ? "on" : "off"
-            panelStateGood: btOn
+            panelStateControl: Component {
+                Controls.Toggle {
+                    checked: bar.btAdapter?.enabled ?? false
+                    onToggled: checked => {
+                        if (bar.btAdapter)
+                            bar.btAdapter.enabled = checked;
+                    }
+                }
+            }
             panelTitle: "Bluetooth"
             rightClickApp: Cmds.bluetoothGui
             visible: bar.btAdapter !== null
@@ -378,24 +372,18 @@ PanelWindow {
             dim: !Wifi.enabled
             icon: "network-wireless-symbolic"
             panelControls: Component {
-                ColumnLayout {
-                    spacing: Style.panelSpacing
-
-                    Controls.ToggleRow {
-                        checked: Wifi.enabled
-                        label: "WiFi"
-                        onToggled: checked => Wifi.setEnabled(checked)
-                    }
-
-                    Controls.Dropdown {
-                        current: Wifi.ssid || "not connected"
-                        options: Wifi.networks
-                        onSelected: value => Wifi.connectTo(value)
-                    }
+                Controls.Dropdown {
+                    current: Wifi.ssid || "not connected"
+                    options: Wifi.networks
+                    onSelected: value => Wifi.connectTo(value)
                 }
             }
-            panelState: Wifi.enabled ? "on" : "off"
-            panelStateGood: Wifi.enabled
+            panelStateControl: Component {
+                Controls.Toggle {
+                    checked: Wifi.enabled
+                    onToggled: checked => Wifi.setEnabled(checked)
+                }
+            }
             panelTitle: "WiFi"
             rightClickApp: `quickshell -p ${Quickshell.shellDir}/nmtui.qml`
             visible: Wifi.hasDevice

@@ -26,6 +26,9 @@ Rectangle {
     property string panelTitle: ""
     property string panelState: ""
     property bool panelStateGood: false
+    // Optional header control shown in place of the panelState text (e.g. a
+    // Toggle for wifi/bluetooth, so on/off is not duplicated as text + switch).
+    property Component panelStateControl: null
     property Component panelControls: null
     signal panelOpening // Refresh hook, e.g. wifi scan.
 
