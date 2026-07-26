@@ -31,6 +31,12 @@ const spacing = {
     medium: 16,
 };
 
+const iconSize = {
+    small: 16,
+    medium: 32,
+    large: 64,
+};
+
 // Colours (Catppuccin palette, substituted by Nix).
 const accent = "@accent@";
 const base = "@base@";
@@ -75,7 +81,7 @@ const chipGap = (barHeight - chipHeight) / 2;
 const bar = {
     height: barHeight,
     padding: 10,
-    iconSize: 16,
+    iconSize: iconSize.small,
     chip: {
         height: chipHeight,
         paddingH: 14,
@@ -141,17 +147,24 @@ const launcher = {
     maxHeight: 960,
     padding: 16,
     radius: rounding,
-    iconSize: 64,
+    iconSize: iconSize.large,
     searchHeight: 128,
     rowHeight: 96,
     textSpacing: 8,
 };
 
 // Notifications (individual and notification center).
-// Inset from the screen edges = Hyprland's gaps_out (gap * 2), so the panels
-// align with the tiled-window area; 'top' additionally clears the menu bar.
 const notification = {
     top: barHeight + 2 * gap,
     right: 2 * gap,
     radius: rounding,
+};
+
+// On-screen display: the transient volume/brightness card.
+const osd = {
+    barHeight: 6,
+    height: 128,
+    margin: 96,
+    hideMs: 1200,
+    width: 256,
 };

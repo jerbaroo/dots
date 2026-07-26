@@ -321,7 +321,7 @@ in
             blur = config.desktop.hyprland.blur.enabled;
             # Necessary for how the Quickshell menu bar is built.
             ignore_alpha = config.desktop.hyprland.blur.threshold;
-            match.namespace = "^(quickshell-bar|quickshell-launcher|quickshell-notifications)$";
+            match.namespace = "^(quickshell-bar|quickshell-launcher|quickshell-notifications|quickshell-osd)$";
           }
           {
             # Fade the transient popups in/out in place. The global default
@@ -329,7 +329,7 @@ in
             # reads as the launcher/notifications "growing" from the middle
             # rather than appearing where they sit; "fade" keeps them put.
             animation = "fade";
-            match.namespace = "^(quickshell-launcher|quickshell-notifications)$";
+            match.namespace = "^(quickshell-launcher|quickshell-notifications|quickshell-osd)$";
           }
         ];
         window_rule =

@@ -11,6 +11,9 @@ Scope {
         id: awakeState
     }
 
+    // Transient volume/brightness OSD (watches Pipewire + Brightness itself).
+    Osd {}
+
     Variants {
         model: Quickshell.screens
 
