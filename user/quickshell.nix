@@ -10,6 +10,7 @@ let
     hyprlandBorderSize = toString config.desktop.hyprland.border.size;
     hyprlandGap = toString config.desktop.hyprland.gap;
     hyprlandRounding = toString config.desktop.hyprland.rounding;
+    inhibitLockPath = config.desktop.lock.inhibitPath;
     shellFontName = config.desktop.font.shell.name;
     shellFontSize = toString config.desktop.font.shell.size;
   };

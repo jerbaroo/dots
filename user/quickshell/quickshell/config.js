@@ -6,6 +6,11 @@ const hyprlandBlurThreshold = @hyprlandBlurThreshold@;
 const hyprlandGap = @hyprlandGap@;
 const hyprlandRounding = @hyprlandRounding@;
 
+// Flag file whose presence suppresses hypridle locking / screen-off. Shared
+// with hypridle.nix (single source: desktop.lock.inhibitPath); the menu bar's
+// "No lock" mode (see bar/Awake.qml) drops it.
+const inhibitLockPath = "@inhibitLockPath@";
+
 // Quickshell-specific translations of the Hyprland values above.
 const borderSize = hyprlandBorderSize;
 const blurThreshold = hyprlandBlurThreshold;

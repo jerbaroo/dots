@@ -55,7 +55,25 @@ let
 in
 {
   options.desktop.lock = {
-    cmd = lib.mkOption { type = lib.types.str; };
+    cmd = lib.mkOption {
+      default = "${swaylock_}/bin/swaylock_";
+      type = lib.types.str;
+    };
+    inhibitPath = lib.mkOption {
+      default = "/tmp/inhibit_lock";
+      description = "Flag file to tell idling programs (e.g. hypridle) to skip locking.";
+      type = lib.types.str;
+    };
+    unlessNoLock = lib.mkOption {
+      default = cmd: "[ -e ${config.desktop.lock.inhibitPath} ] || { ${cmd}; }";
+      description = ''
+        Wraps a shell command (run via `sh -c`) so it is skipped while
+        `inhibitPath` exists.
+      '';
+      internal = true;
+      readOnly = true;
+      type = lib.types.functionTo lib.types.str;
+    };
     timeout = lib.mkOption {
       default = 180;
       description = "Time until system locks.";
@@ -63,7 +81,6 @@ in
     };
   };
   config = {
-    desktop.lock.cmd = "${swaylock_}/bin/swaylock_";
     home.packages = [
       # We make sure that, regardless of the locking program, it can be found
       # at the same command. TODO use CLI for this.

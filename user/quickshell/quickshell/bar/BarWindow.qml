@@ -21,6 +21,7 @@ PanelWindow {
     // painted above the blur rule's ignore_alpha and blur as one big rectangle.
     color: "transparent"
 
+    required property var awake
     required property var notifications
 
     readonly property PwNode sink: Pipewire.defaultAudioSink
@@ -242,6 +243,30 @@ PanelWindow {
             panelTitle: "Power mode"
             onClicked: PowerProfiles.profile = bar.perfModes[(bar.perfIndex + 1) % 3].value
             onScrolled: up => PowerProfiles.profile = bar.perfModes[(bar.perfIndex + (up ? 1 : 2)) % 3].value
+        }
+
+        ModuleChip {
+            dim: bar.awake.mode === 0
+            dotIndex: bar.awake.mode
+            icon: bar.awake.modes[bar.awake.mode].icon
+            panelControls: Component {
+                Controls.ModeList {
+                    current: bar.awake.mode
+                    // Derived from the single mode list in Awake.qml; the index
+                    // is the mode value, so the two never drift apart.
+                    options: bar.awake.modes.map((m, i) => ({
+                                label: m.label,
+                                value: i,
+                                icon: m.icon
+                            }))
+                    onSelected: value => bar.awake.mode = value
+                }
+            }
+            panelState: bar.awake.modes[bar.awake.mode].label
+            panelStateGood: bar.awake.mode > 0
+            panelTitle: "Keep awake"
+            onClicked: bar.awake.mode = (bar.awake.mode + 1) % 3
+            onScrolled: up => bar.awake.mode = (bar.awake.mode + (up ? 1 : 2)) % 3
         }
 
         ModuleChip {

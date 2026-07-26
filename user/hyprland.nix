@@ -383,7 +383,7 @@ in
         type = lib.types.bool;
       };
       iterations = lib.mkOption {
-        default = 4;
+        default = 5;
         description = "Amount of regular (not liquid glass) blurring iterations.";
         type = lib.types.ints.unsigned;
       };
