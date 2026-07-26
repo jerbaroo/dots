@@ -35,8 +35,10 @@ const spacing = {
 
 // Liquid glass.
 const glass = {
-    // Glass tint alpha (blurred).
-    tint: blurThreshold + 0.001,
+    // Frosted-glass tint alpha (blurred). The only hard constraint is tint >
+    // threshold, so the compositor still blurs the surface rather than passing
+    // it straight through.
+    tint: 0.35,
     // The compositor's ignore_alpha.
     threshold: blurThreshold,
 };
