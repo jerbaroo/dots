@@ -4,6 +4,7 @@
   catppuccin,
   colorSchemes,
   config,
+  doomModule,
   flavor,
   homeConfig,
   hostname,
@@ -23,6 +24,7 @@
         accent
         catppuccin
         colorSchemes
+        doomModule
         flavor
         hostname
         hyprland

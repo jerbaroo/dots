@@ -1,6 +1,12 @@
-{ config, pkgs, ... }:
 {
-  home.file.".config/doom/config.el".source = pkgs.replaceVars ./config.el {
+  config,
+  pkgs,
+  lib,
+  doomModule,
+  ...
+}:
+let
+  configEl = pkgs.replaceVars ./config.el {
     codeFontName = config.desktop.font.code.name;
     codeBackgroundOpacity = toString (
       builtins.floor (config.desktop.font.code.backgroundOpacity * 100)
@@ -11,12 +17,20 @@
     colourLineNumberCurrent = config.desktop.theme.palette.peach.hex;
     flavor = config.desktop.theme.flavor;
   };
-  home.file.".config/doom/init.el".source = ./init.el;
-  home.file.".config/doom/packages.el".source = ./packages.el;
+  doomDir = pkgs.runCommandLocal "doom-config" { } ''
+    mkdir -p $out
+    cp ${./init.el} $out/init.el
+    cp ${./packages.el} $out/packages.el
+    cp ${configEl} $out/config.el
+  '';
+in
+{
+  imports = [ doomModule ];
   home.packages = [ pkgs.fd ];
-  programs.emacs = {
+  programs.doom-emacs = {
     enable = true;
-    package = pkgs.emacs-pgtk;
+    doomDir = doomDir;
+    emacs = pkgs.emacs-pgtk;
   };
   programs.ripgrep.enable = true;
 }

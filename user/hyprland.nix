@@ -186,7 +186,7 @@ in
             (bind "${mod} + SHIFT + B" (execCmd config.desktop.cli.ui.menuBar.toggle))
             (bind "${mod} + D" (execCmd "kitty ${pkgs.yazi}/bin/yazi"))
             (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
-            (bind "${mod} + E" (execCmd "${pkgs.emacs-pgtk}/bin/emacs"))
+            (bind "${mod} + E" (execCmd "${config.programs.doom-emacs.finalEmacsPackage}/bin/emacs"))
             (bind "${mod} + F" (dispatch "window.fullscreen" "{ mode = \"fullscreen\" }"))
             # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
             (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))

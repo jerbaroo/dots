@@ -6,6 +6,10 @@
       flake = false;
       url = "github:mbadolato/iTerm2-Color-Schemes";
     };
+    nix-doom-emacs-unstraightened = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "git+https://github.com/marienz/nix-doom-emacs-unstraightened";
+    };
     home-manager = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/home-manager/master";
@@ -33,6 +37,7 @@
         accent = "pink";
         catppuccin = inputs.catppuccin;
         colorSchemes = inputs.color-schemes;
+        doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;
         flavor = "mocha";
         hyprland = inputs.hyprland;
         spicetify = inputs.spicetify;

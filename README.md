@@ -28,12 +28,6 @@
 You may need to run `start-hyprland [--no-nixgl]` from a TTY once, or try
 a different display manager, or just start hyprland from the TTY.
 
-
-### Doom Emacs
-- `git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs`
-- `~/.config/emacs/bin/doom install` (no envvar file)
-- If necessary: `rm -rf ~/.emacs.d`
-
 ## Pre-commit
 ``` bash
 pre-commit install # Only once.
