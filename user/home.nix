@@ -10,7 +10,6 @@
   spicetify,
   stateVersion,
   system,
-  zen,
   ...
 }:
 {

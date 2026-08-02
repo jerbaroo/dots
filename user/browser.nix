@@ -3,12 +3,10 @@
   lib,
   pkgs,
   system,
-  zen,
   ...
 }:
 let
   chromiumPkg = config.lib.nixGL.wrap pkgs.chromium;
-  # Name is used by Firefox in the install URL.
   commonExtensions = [
     {
       name = "darkreader";
@@ -31,60 +29,96 @@ let
       chromiumId = "ddkjiahejlhfcafbddmgiahcphecmpfh";
     }
   ];
-  # A Firefox extension from the common format above.
   firefoxExtension = { name, firefoxId, ... }: {
-    name = name;
+    name = firefoxId;
     value = {
-      install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${firefoxId}/latest.xpi";
+      install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${name}/latest.xpi";
       installation_mode = "normal_installed";
     };
   };
-  zenPkg = config.lib.nixGL.wrap (
-    pkgs.wrapFirefox zen.packages.${system}.zen-browser-unwrapped {
-      extraPolicies = {
-        DisableTelemetry = true;
-        ExtensionSettings = builtins.listToAttrs (map firefoxExtension commonExtensions);
-        SearchEngines = {
-          Default = "google";
-          Add = [
-            {
-              Alias = "@h";
-              IconURL = "https://hoogle.haskell.org/favicon.ico";
-              Name = "hoogle";
-              URLTemplate = "https://hoogle.haskell.org/?hoogle={searchTerms}";
-            }
-            {
-              Alias = "@np";
-              IconURL = "https://wiki.nixos.org/favicon.ico";
-              Name = "nixpkgs packages";
-              URLTemplate = "https://search.nixos.org/packages?query={searchTerms}";
-            }
-            {
-              Alias = "@no";
-              IconURL = "https://noogle.dev/favicon.ico";
-              Name = "noogle";
-              URLTemplate = "https://noogle.dev/q?term={searchTerms}";
-            }
-          ];
-        };
-      };
-      extraPrefs = lib.concatLines (
-        lib.mapAttrsToList
-          (name: value: "lockPref(${lib.strings.toJSON name}, ${lib.strings.toJSON value});")
-          {
-            # See about:config
-            "extensions.autoDisableScopes" = 0;
-            "extensions.pocket.enabled" = false;
-            # Disable syncing tabs across windows.
-            "zen.window-sync.sync-only-pinned-tabs" = true;
-          }
-      );
-    }
-  );
 in
 {
   config = {
-    home.packages = [ zenPkg ];
+    catppuccin.firefox.force = true;
+    # Run Firefox natively on Wayland instead of via XWayland.
+    home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
+    programs.firefox = {
+      enable = true;
+      policies = {
+        DisableTelemetry = true;
+        DisableFirefoxStudies = true;
+        DisablePocket = true;
+        DontCheckDefaultBrowser = true;
+        EncryptedMediaExtensions.Enabled = true; # Widevine (Netflix, etc.).
+        ExtensionSettings = builtins.listToAttrs (map firefoxExtension commonExtensions) // {
+          # Firefox Color is required by the Catppuccin Firefox module, which
+          # only provides this extension's theme but does not install it.
+          "FirefoxColor@mozilla.com" = {
+            install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/firefox-color/latest.xpi";
+            installation_mode = "normal_installed";
+          };
+        };
+        FirefoxHome = {
+          Pocket = false;
+          SponsoredPocket = false;
+          SponsoredTopSites = false;
+          Snippets = false;
+        };
+        Homepage = {
+          StartPage = "homepage";
+          URL = config.desktop.browser.homepage;
+        };
+        NoDefaultBookmarks = true;
+        OverrideFirstRunPage = "";
+        OverridePostUpdatePage = "";
+        UserMessaging = {
+          ExtensionRecommendations = false;
+          SkipOnboarding = true;
+          WhatsNew = false;
+        };
+      };
+      profiles.default = {
+        id = 0;
+        isDefault = true;
+        search = {
+          default = "google";
+          force = true;
+          engines = {
+            "hoogle" = {
+              urls = [ { template = "https://hoogle.haskell.org/?hoogle={searchTerms}"; } ];
+              icon = "https://hoogle.haskell.org/favicon.ico";
+              definedAliases = [ "@h" ];
+            };
+            "nixpkgs packages" = {
+              urls = [ { template = "https://search.nixos.org/packages?query={searchTerms}"; } ];
+              icon = "https://wiki.nixos.org/favicon.ico";
+              definedAliases = [ "@np" ];
+            };
+            "noogle" = {
+              urls = [ { template = "https://noogle.dev/q?term={searchTerms}"; } ];
+              icon = "https://noogle.dev/favicon.ico";
+              definedAliases = [ "@no" ];
+            };
+          };
+        };
+        settings = {
+          "browser.aboutConfig.showWarning" = false;
+          "browser.compactmode.show" = true;
+          "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
+          "browser.newtabpage.activity-stream.showSponsored" = false;
+          "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+          "browser.newtabpage.activity-stream.showWeather" = false;
+          "browser.tabs.warnOnClose" = false;
+          "browser.urlbar.suggest.quicksuggest.sponsored" = false;
+          "browser.urlbar.suggest.quicksuggest.nonsponsored" = false;
+          "dom.security.https_only_mode" = true;
+          "extensions.autoDisableScopes" = 0;
+          "extensions.pocket.enabled" = false;
+          "gfx.webrender.all" = true;
+          "media.ffmpeg.vaapi.enabled" = true;
+        };
+      };
+    };
     programs.chromium = {
       commandLineArgs = [
         "--disable-gpu" # FIXME
@@ -109,7 +143,7 @@ in
   };
   options.desktop.browser = {
     cmd = lib.mkOption {
-      default = "${zenPkg}/bin/zen";
+      default = "${config.programs.firefox.finalPackage}/bin/firefox";
       description = "Command to open a browser";
       type = lib.types.str;
     };
