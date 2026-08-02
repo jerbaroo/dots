@@ -67,11 +67,11 @@ PanelWindow {
         return Math.round(100 * x);
     }
 
-    // Right-align a 0..100 reading in a 3-char field (leading spaces) so the
-    // chip width stays constant as the value crosses 10 and 100.
-    function pad3(n) {
+    // Right-align a reading in a `width`-char field (leading spaces) so the chip
+    // width stays constant as the value gains digits.
+    function pad(n, width) {
         var s = String(n);
-        while (s.length < 3)
+        while (s.length < width)
             s = " " + s;
         return s;
     }
@@ -210,7 +210,7 @@ PanelWindow {
             panelState: value
             panelTitle: "CPU"
             rightClickApp: Cmds.btop
-            value: bar.pad3(Math.round(Sys.cpuPercent)) + "%"
+            value: bar.pad(Math.round(Sys.cpuPercent), 3) + "%"
             onClicked: Launcher.app(Cmds.btop)
         }
 
@@ -224,7 +224,7 @@ PanelWindow {
             panelState: value
             panelTitle: "Memory"
             rightClickApp: Cmds.btop
-            value: bar.pad3(Math.round(Sys.memPercent)) + "%"
+            value: bar.pad(Math.round(Sys.memPercent), 3) + "%"
             onClicked: Launcher.app(Cmds.btop)
         }
 
@@ -279,7 +279,7 @@ PanelWindow {
             }
             panelState: Brightness.value + "%"
             panelTitle: "Brightness"
-            value: bar.pad3(Brightness.value)
+            value: bar.pad(Brightness.value, 3)
             visible: Brightness.available
             onScrolled: up => Brightness.adjust(up ? 5 : -5)
         }
@@ -317,7 +317,7 @@ PanelWindow {
             panelState: value === "" ? "" : value + "%"
             panelTitle: "Volume"
             rightClickApp: Cmds.audioGui
-            value: bar.sink ? bar.pad3(bar.pct(bar.sink.audio.volume)) : ""
+            value: bar.sink ? bar.pad(bar.pct(bar.sink.audio.volume), 3) : ""
             visible: bar.sink !== null
             onClicked: {
                 if (bar.sink)
@@ -419,7 +419,7 @@ PanelWindow {
             }
             panelState: bar.notifications.unreadCount + " unread"
             panelTitle: "Notifications"
-            value: bar.notifications.unreadCount > 0 ? bar.notifications.unreadCount : ""
+            value: bar.pad(bar.notifications.unreadCount, 2)
             onClicked: bar.notifications.centerOpen = !bar.notifications.centerOpen
             onRightClicked: bar.notifications.doNotDisturb = !bar.notifications.doNotDisturb
         }
