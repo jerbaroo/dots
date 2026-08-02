@@ -203,8 +203,18 @@ PanelWindow {
         ModuleChip {
             icon: "cpu-symbolic"
             panelControls: Component {
-                Controls.InfoLines {
-                    lines: [Sys.loadInfo, Sys.tempInfo].filter(l => l !== "").concat(Sys.topCpu)
+                ColumnLayout {
+                    spacing: Style.infoSpacing
+
+                    Controls.InfoLines {
+                        Layout.fillWidth: true
+                        lines: [Sys.loadInfo, Sys.tempInfo].filter(l => l !== "")
+                    }
+
+                    Controls.InfoProcs {
+                        Layout.fillWidth: true
+                        rows: Sys.topCpu
+                    }
                 }
             }
             panelState: value
@@ -217,8 +227,18 @@ PanelWindow {
         ModuleChip {
             icon: "memory-symbolic"
             panelControls: Component {
-                Controls.InfoLines {
-                    lines: [Sys.memInfo].filter(l => l !== "").concat(Sys.topMem)
+                ColumnLayout {
+                    spacing: Style.infoSpacing
+
+                    Controls.InfoLines {
+                        Layout.fillWidth: true
+                        lines: [Sys.memInfo].filter(l => l !== "")
+                    }
+
+                    Controls.InfoProcs {
+                        Layout.fillWidth: true
+                        rows: Sys.topMem
+                    }
                 }
             }
             panelState: value

@@ -30,24 +30,11 @@ Singleton {
         return s.length > 0 ? s.charAt(0).toUpperCase() + s.slice(1) : s;
     }
 
-    // Pad `s` to width `n` with spaces (prepended when `left`, else appended).
-    function _pad(s, n, left) {
-        while (s.length < n)
-            s = left ? " " + s : s + " ";
-        return s;
-    }
-
-    // Format the top processes as rows with the names left-aligned and the
-    // percentages right-aligned into a column (the panel font is monospaced,
-    // so equal-width columns line up).
-    function _formatTop(procs) {
-        var nameW = 0;
-        var pctW = 0;
-        for (const p of procs) {
-            nameW = Math.max(nameW, p.comm.length);
-            pctW = Math.max(pctW, p.pct.length);
-        }
-        return procs.map(p => _pad(p.comm, nameW, false) + " " + _pad(p.pct, pctW, true));
+    // Basename of a path (argv[0]), giving the full executable name rather than
+    // the kernel's 15-char-truncated `comm`.
+    function _basename(p) {
+        const i = p.lastIndexOf("/");
+        return i >= 0 ? p.slice(i + 1) : p;
     }
 
     function _parse(out) {
@@ -89,22 +76,23 @@ Singleton {
                 tempInfo = fields[0] ? _kv("Temp", `${Math.round(Number(fields[0]) / 1000)}°C`) : "";
                 break;
             case "c":
-                // comm may contain spaces; the percentage is the last field.
+                // "%cpu args": percentage first, then the full command line;
+                // use argv[0]'s basename as the process name.
                 cpu.push({
-                    comm: _cap(fields.slice(0, -1).join(" ")),
-                    pct: Math.round(Number(fields[fields.length - 1])) + "%"
+                    comm: _cap(_basename(fields[1] || "")),
+                    pct: Math.round(Number(fields[0])) + "%"
                 });
                 break;
             case "M":
                 mem.push({
-                    comm: _cap(fields.slice(0, -1).join(" ")),
-                    pct: Math.round(Number(fields[fields.length - 1])) + "%"
+                    comm: _cap(_basename(fields[1] || "")),
+                    pct: Math.round(Number(fields[0])) + "%"
                 });
                 break;
             }
         }
-        topCpu = _formatTop(cpu);
-        topMem = _formatTop(mem);
+        topCpu = cpu;
+        topMem = mem;
     }
 
     Timer {
@@ -122,8 +110,8 @@ Singleton {
             echo l $(cut -d' ' -f1 /proc/loadavg) $(nproc)
             echo m $(awk '/MemTotal|MemAvailable/ {print $2}' /proc/meminfo | tr '\\n' ' ')
             echo t $(cat /sys/class/hwmon/hwmon*/temp1_input 2>/dev/null | sort -nr | head -1)
-            ps -eo comm,%cpu --sort=-%cpu --no-headers | head -3 | sed 's/^/c /'
-            ps -eo comm,%mem --sort=-%mem --no-headers | head -3 | sed 's/^/M /'
+            ps -eo %cpu,args -ww --sort=-%cpu --no-headers | head -3 | sed 's/^/c /'
+            ps -eo %mem,args -ww --sort=-%mem --no-headers | head -3 | sed 's/^/M /'
         `]
 
         stdout: StdioCollector {

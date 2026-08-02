@@ -265,4 +265,36 @@ Item {
             }
         }
     }
+
+    // Process rows: the name takes the remaining width and elides, the
+    // percentage is pinned to the far right. No fixed column widths.
+    component InfoProcs: ColumnLayout {
+        id: infoProcs
+
+        property var rows: []
+
+        spacing: Style.infoSpacing
+
+        Repeater {
+            model: infoProcs.rows
+
+            RowLayout {
+                required property var modelData
+                Layout.fillWidth: true
+                spacing: Style.infoSpacing
+
+                PanelText {
+                    Layout.fillWidth: true
+                    color: Style.panelTextDim
+                    elide: Text.ElideRight
+                    text: modelData.comm
+                }
+
+                PanelText {
+                    color: Style.panelTextDim
+                    text: modelData.pct
+                }
+            }
+        }
+    }
 }
