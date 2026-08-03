@@ -16,7 +16,7 @@
   };
   programs.delta = {
     enable = true;
-    enableGitIntegration = true;
+    enableGitIntegration = false;
     options.line-numbers = true;
   };
   programs.git = {
