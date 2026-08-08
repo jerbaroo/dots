@@ -264,6 +264,10 @@ Item {
 
                 RowLayout {
                     Layout.fillWidth: true
+                    // Nothing to head the panel with: no title, no state, no
+                    // state control. Hidden rather than empty, and being in a
+                    // Layout it then takes no space or spacing either.
+                    visible: (panel.chip?.panelTitle ?? "") !== "" || (panel.chip?.panelState ?? "") !== "" || (panel.chip?.panelStateControl ?? null) !== null
 
                     Text {
                         Layout.fillWidth: true

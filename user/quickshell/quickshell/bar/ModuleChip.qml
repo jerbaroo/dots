@@ -25,7 +25,11 @@ StyledRect {
     signal scrolled(bool up)
     signal rightClicked
     property string rightClickApp: ""
-    // Hover panel spec (data only; empty title = no panel).
+    // Hover panel spec (data only). A chip has a panel if it specifies any
+    // panel content: the title is presentation, not the switch, so a panel
+    // whose controls speak for themselves (the power menu) can omit it and
+    // show no header at all.
+    readonly property bool hasPanel: panelTitle !== "" || panelState !== "" || panelStateControl !== null || panelControls !== null
     property string panelTitle: ""
     property string panelState: ""
     property bool panelStateGood: false
@@ -121,9 +125,9 @@ StyledRect {
         anchors.fill: parent
         hoverEnabled: true
         // Report hover to the shared panel; chips without a panel do nothing.
-        onEntered: if (chip.panelTitle !== "")
+        onEntered: if (chip.hasPanel)
             PanelController.request(chip)
-        onExited: if (chip.panelTitle !== "")
+        onExited: if (chip.hasPanel)
             PanelController.release(chip)
         onClicked: event => {
             if (event.button === Qt.RightButton) {

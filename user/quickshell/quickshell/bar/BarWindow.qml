@@ -486,7 +486,8 @@ PanelWindow {
                     onSelected: value => Launcher.app(value)
                 }
             }
-            panelTitle: "Power"
+            // No panelTitle: the four buttons are self-explanatory, so the
+            // panel shows them alone rather than heading them with "Power".
         }
     }
 
