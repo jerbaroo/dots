@@ -16,9 +16,73 @@ let
     ];
     themeVariants = [ config.desktop.theme.accent ];
   };
+  # OLED overrides (mocha only).
+  oledOverrides = {
+    base = {
+      hex = "#000000";
+      rgb = {
+        r = 0;
+        g = 0;
+        b = 0;
+      };
+      hsl = {
+        h = 0;
+        s = 0.0;
+        l = 0.0;
+      };
+      oklch = {
+        l = 0.0;
+        c = 0.0;
+        h = 0.0;
+      };
+    };
+    mantle = {
+      hex = "#010101";
+      rgb = {
+        r = 1;
+        g = 1;
+        b = 1;
+      };
+      hsl = {
+        h = 0;
+        s = 0.0;
+        l = 0.00392156862745098;
+      };
+      oklch = {
+        l = 0.06720461569746487;
+        c = 0.0;
+        h = 0.0;
+      };
+    };
+    crust = {
+      hex = "#020202";
+      rgb = {
+        r = 2;
+        g = 2;
+        b = 2;
+      };
+      hsl = {
+        h = 0;
+        s = 0.0;
+        l = 0.00784313725490196;
+      };
+      oklch = {
+        l = 0.0846725099673314;
+        c = 0.0;
+        h = 0.0;
+      };
+    };
+  };
 in
 {
   config = {
+    assertions = [
+      {
+        assertion = config.desktop.theme.oled -> config.desktop.theme.flavor == "mocha";
+        message = "desktop.theme.oled only supports the mocha flavour, but desktop.theme.flavor is '${config.desktop.theme.flavor}'.";
+      }
+    ];
+
     # We use nix-catppuccin to style some apps. Notably not GTK.
     catppuccin = {
       accent = config.desktop.theme.accent;
@@ -74,10 +138,22 @@ in
     flavor = lib.mkOption {
       type = lib.types.str;
     };
+    oled = lib.mkOption {
+      default = true;
+      description = "Darken the palette's backgrounds for OLED panels.";
+      type = lib.types.bool;
+    };
     palette = lib.mkOption {
       default =
-        (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json"))
-        .${config.desktop.theme.flavor}.colors;
+        let
+          upstream =
+            (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json"))
+            .${config.desktop.theme.flavor}.colors;
+        in
+        if config.desktop.theme.oled then
+          upstream // lib.mapAttrs (name: override: upstream.${name} // override) oledOverrides
+        else
+          upstream;
       description = "Palette of colours for the selected Catppuccin theme.";
       readOnly = true;
       type = lib.types.attrs;
