@@ -68,6 +68,13 @@ let
       After = [ "graphical-session.target" ];
       Description = humanName;
       BindsTo = [ "graphical-session.target" ];
+      # Restart when the QML or the generated config.js changes. The unit is
+      # otherwise byte-identical across config edits, so home-manager's
+      # sd-switch sees nothing to do and leaves a process running with the
+      # colours and sizes it read at startup; quickshell cannot notice either,
+      # since its config is a store symlink swapped out from under it rather
+      # than a file edited in place.
+      X-Restart-Triggers = [ configDir ];
     };
   };
   shellServer = pkgs.callPackage ./quickshell/shell-server/shell-server.nix { };
