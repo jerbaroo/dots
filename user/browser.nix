@@ -29,13 +29,15 @@ let
       chromiumId = "ddkjiahejlhfcafbddmgiahcphecmpfh";
     }
   ];
-  firefoxExtension = { name, firefoxId, ... }: {
-    name = firefoxId;
-    value = {
-      install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${name}/latest.xpi";
-      installation_mode = "normal_installed";
+  firefoxExtension =
+    { name, firefoxId, ... }:
+    {
+      name = firefoxId;
+      value = {
+        install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/${name}/latest.xpi";
+        installation_mode = "normal_installed";
+      };
     };
-  };
 in
 {
   config = {
@@ -108,9 +110,17 @@ in
           "browser.newtabpage.activity-stream.showSponsored" = false;
           "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
           "browser.newtabpage.activity-stream.showWeather" = false;
+          # Firefox's profile group backend (SelectableProfileService) rewrites
+          # `profiles.ini` to add `StoreID`/`ShowSelector`, but Home Manager
+          # owns that file as a read-only /nix/store symlink. The failed write
+          # makes Firefox fork onto an unmanaged profile that has none of the
+          # config below, including the Catppuccin theme. Disabling the feature
+          # short-circuits its init (`SelectableProfileService.sys.mjs`, see `if
+          # (!this.isEnabled) return;`) before it touches `profiles.ini`.
+          "browser.profiles.enabled" = false;
           "browser.tabs.warnOnClose" = false;
-          "browser.urlbar.suggest.quicksuggest.sponsored" = false;
           "browser.urlbar.suggest.quicksuggest.nonsponsored" = false;
+          "browser.urlbar.suggest.quicksuggest.sponsored" = false;
           "dom.security.https_only_mode" = true;
           "extensions.autoDisableScopes" = 0;
           "extensions.pocket.enabled" = false;
@@ -135,9 +145,14 @@ in
       ];
       enable = true;
       extensions = [
-        { id = "ebboehhiijjcihmopcggopfgchnfepkn"; }
-      ] # CHROLED Theme
-      ++ map ({ chromiumId, ... }: { id = chromiumId; }) commonExtensions;
+        { id = "ebboehhiijjcihmopcggopfgchnfepkn"; } # CHROLED Theme
+      ]
+      ++ map (
+        { chromiumId, ... }:
+        {
+          id = chromiumId;
+        }
+      ) commonExtensions;
       package = chromiumPkg;
     };
   };
