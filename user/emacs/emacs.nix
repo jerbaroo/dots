@@ -16,6 +16,18 @@ let
     colourLineNumber = config.desktop.theme.palette.subtext0.hex;
     colourLineNumberCurrent = config.desktop.theme.palette.peach.hex;
     flavor = config.desktop.theme.flavor;
+    paletteOverrides =
+      let
+        changes = config.desktop.theme.paletteChanges;
+      in
+      if changes == { } then
+        ""
+      else
+        lib.concatStringsSep "\n" (
+          [ ''(load "catppuccin-theme" nil t)'' ]
+          ++ lib.mapAttrsToList (name: colour: "(catppuccin-set-color '${name} \"${colour.to}\")") changes
+          ++ [ "(catppuccin-reload)" ]
+        );
   };
   doomDir = pkgs.runCommandLocal "doom-config" { } ''
     mkdir -p $out

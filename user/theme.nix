@@ -6,7 +6,7 @@
 }:
 let
   themeName = "Colloid-${pkgs.lib.strings.toSentenceCase config.desktop.theme.accent}-Dark-Catppuccin";
-  themePkg = pkgs.colloid-gtk-theme.override {
+  colloid = pkgs.colloid-gtk-theme.override {
     tweaks = [
       "black"
       "catppuccin"
@@ -16,6 +16,28 @@ let
     ];
     themeVariants = [ config.desktop.theme.accent ];
   };
+  # Colloid compiles the flavour's colours into its stylesheets and SVG assets,
+  # so GTK does not follow desktop.theme.palette (see paletteChanges below).
+  # Rewrite the colours that differ.
+  #
+  # Only regular files are touched: each variant's gtk.css is a relative symlink
+  # into the shared stylesheets, which stays valid inside the copy and picks up
+  # the rewritten content, so editing it too would only turn the link into a
+  # duplicate. Nothing to rewrite means the original package, untouched.
+  themePkg =
+    if config.desktop.theme.paletteChanges == { } then
+      colloid
+    else
+      pkgs.runCommandLocal "${colloid.name}-repalette" { } ''
+        cp -r ${colloid} $out
+        chmod -R u+w $out
+        find $out -type f \( -name '*.css' -o -name '*.svg' -o -name 'gtkrc' \) -print0 \
+          | xargs -0 --no-run-if-empty sed -i ${
+            lib.concatMapStringsSep " " (colour: "-e 's/${colour.from}/${colour.to}/gI'") (
+              lib.attrValues config.desktop.theme.paletteChanges
+            )
+          }
+      '';
   # OLED overrides (mocha only).
   oledOverrides = {
     base = {
@@ -142,6 +164,32 @@ in
       default = true;
       description = "Darken the palette's backgrounds for OLED panels.";
       type = lib.types.bool;
+    };
+    paletteChanges = lib.mkOption {
+      default =
+        let
+          upstream =
+            (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json"))
+            .${config.desktop.theme.flavor}.colors;
+        in
+        lib.filterAttrs (_: colour: colour.from != colour.to) (
+          lib.mapAttrs (name: colour: {
+            from = lib.toLower colour.hex;
+            to = lib.toLower config.desktop.theme.palette.${name}.hex;
+          }) upstream
+        );
+      description = ''
+        Colours where the palette differs from the upstream flavour it is based
+        on, as name -> { from, to } in lowercase hex. Empty when the palette is
+        the stock flavour, so consumers no-op by themselves.
+
+        Anything themed from a prebuilt Catppuccin port rather than from
+        desktop.theme.palette needs this to keep up: the GTK theme above,
+        Firefox (browser.nix) and Emacs (emacs/emacs.nix) each apply it in the
+        way their port allows.
+      '';
+      readOnly = true;
+      type = lib.types.attrs;
     };
     palette = lib.mkOption {
       default =

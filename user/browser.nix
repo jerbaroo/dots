@@ -7,6 +7,40 @@
 }:
 let
   chromiumPkg = config.lib.nixGL.wrap pkgs.chromium;
+
+  # catppuccin-nix hands Firefox Color a theme generated from the flavour, so
+  # unlike everything themed from desktop.theme.palette it does not follow the
+  # palette (see desktop.theme.paletteChanges). Swap any colour still matching
+  # the flavour's for ours of the same name; with nothing to change the
+  # module's own theme is left alone.
+  paletteChanges = config.desktop.theme.paletteChanges;
+  # Firefox Color stores colours as { r, g, b } rather than hex.
+  toHex =
+    colour:
+    "#"
+    + lib.concatMapStrings (n: lib.toLower (lib.fixedWidthString 2 "0" (lib.toHexString n))) [
+      colour.r
+      colour.g
+      colour.b
+    ];
+  toRgb = hex: {
+    r = lib.fromHexString (builtins.substring 1 2 hex);
+    g = lib.fromHexString (builtins.substring 3 2 hex);
+    b = lib.fromHexString (builtins.substring 5 2 hex);
+  };
+  changeByHex = lib.mapAttrs' (_: colour: lib.nameValuePair colour.from colour.to) paletteChanges;
+  flavourTheme =
+    (lib.importJSON "${config.catppuccin.sources.firefox}/themes.json")
+    .${config.desktop.theme.flavor}.${config.desktop.theme.accent};
+  repalettedTheme = flavourTheme // {
+    colors = lib.mapAttrs (
+      _: colour:
+      let
+        hex = toHex colour;
+      in
+      if changeByHex ? ${hex} then toRgb changeByHex.${hex} else colour
+    ) flavourTheme.colors;
+  };
   commonExtensions = [
     {
       name = "darkreader";
@@ -42,6 +76,9 @@ in
 {
   config = {
     catppuccin.firefox.force = true;
+    programs.firefox.profiles.default.extensions.settings."FirefoxColor@mozilla.com".settings.theme =
+      lib.mkIf (paletteChanges != { })
+        (lib.mkForce repalettedTheme);
     # Run Firefox natively on Wayland instead of via XWayland.
     home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
     programs.firefox = {

@@ -40,6 +40,24 @@
   ;; doom-variable-pitch-font (font-spec :family "@codeFontName@" :size @codeFontSize@)
   )
 
+;; Palette overrides (OLED mode), substituted by Nix; empty when the palette
+;; matches the flavour. catppuccin-theme carries the flavour's colours in the
+;; package itself, so unlike the rest of the config it cannot read them from
+;; desktop.theme.palette.
+;;
+;; The theme file is loaded here so the colours can be changed, then reloaded so
+;; the faces are rebuilt from them. The reload is the part that matters:
+;; `doom-init-theme-h' only calls `load-theme' for a theme that is not loaded
+;; yet, and falls back to `enable-theme' otherwise, which replays the face specs
+;; as they were computed when the file was first read -- i.e. the flavour's
+;; colours, before these overrides. Reloading here recomputes them and leaves
+;; the theme enabled, so Doom finds nothing left to do.
+;;
+;; Doing this from a theme load hook instead would recurse: the file ends in
+;; `provide-theme', not `provide', so a hook keyed on it re-fires on the
+;; reload's own `load-theme'.
+@paletteOverrides@
+
 ;; Theme background opacity.
 (add-to-list
   'default-frame-alist
