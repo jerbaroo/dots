@@ -21,7 +21,7 @@
             cmd = "firefox";
             homepage = "http://localhost:${toString config.desktop.ghdashboard.port}";
           };
-          font.code.size = 14;
+          font.code.size = 13;
           genericLinux = {
             enable = true;
             nixGL.packages = inputs.nixgl.packages;

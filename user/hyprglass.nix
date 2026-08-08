@@ -10,6 +10,7 @@ let
     pluginName = "hyprglass";
     # Bumping this requires bumping the hyprland version in flake.nix:
     # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
+    # Also bump the hash and possibly the revision below.
     version = "0.7.0";
     meta = {
       description = "Liquid Glass for Hyprland";
@@ -20,8 +21,9 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "hyprnux";
       repo = "hyprglass";
-      rev = "v${finalAttrs.version}";
-      hash = "sha256-x/584kY+XXlU/OWKtZAFo89VtowjLXs1DiP9PC0o0Os=";
+      # rev = "v${finalAttrs.version}";
+      rev = "chore/hyprland-update-0.56.2";
+      hash = "sha256-lZI0tTFAx+kRCAyfNmFxdSW0krsq6t1ug2tu2hHEstU=";
     };
     installPhase = ''
       mkdir -p $out/lib

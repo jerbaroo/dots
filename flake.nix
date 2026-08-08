@@ -18,7 +18,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       # Required for hyprglasss (bumping this requires a bump in hyprglass.nix):
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.56.0";
+      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.56.2";
     };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
