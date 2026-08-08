@@ -5,7 +5,9 @@
   ...
 }:
 let
-  ghdashboard = pkgs.callPackage ./ghdashboard/default.nix { };
+  ghdashboard = pkgs.callPackage ./ghdashboard/default.nix {
+    palette = lib.mapAttrs (_: colour: colour.hex) config.desktop.theme.palette;
+  };
   ghdashboardWithParams = pkgs.writeShellScriptBin "ghdashboardwithparams" "${ghdashboard}/bin/ghdashboard ${toString config.desktop.ghdashboard.port} ${config.desktop.ghdashboard.readToken} $@";
 in
 {

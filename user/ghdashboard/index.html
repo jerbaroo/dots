@@ -6,25 +6,25 @@
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/25/25231.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- Catppuccin Mocha Palette --- */
+        /* --- Palette, substituted by Nix (defaults to Catppuccin Mocha) --- */
         :root {
-            --ctp-base: #1e1e2e;
-            --ctp-mantle: #181825;
-            --ctp-crust: #11111b;
-            --ctp-text: #cdd6f4;
-            --ctp-subtext0: #a6adc8;
-            --ctp-subtext1: #bac2de;
-            --ctp-surface0: #313244;
-            --ctp-surface1: #45475a;
-            --ctp-overlay0: #6c7086;
-            --ctp-blue: #89b4fa;
-            --ctp-lavender: #b4befe;
-            --ctp-green: #a6e3a1;
-            --ctp-red: #f38ba8;
-            --ctp-maroon: #eba0ac;
-            --ctp-peach: #fab387;
-            --ctp-yellow: #f9e2af;
-            --ctp-teal: #94e2d5;
+            --ctp-base: @base@;
+            --ctp-mantle: @mantle@;
+            --ctp-crust: @crust@;
+            --ctp-text: @text@;
+            --ctp-subtext0: @subtext0@;
+            --ctp-subtext1: @subtext1@;
+            --ctp-surface0: @surface0@;
+            --ctp-surface1: @surface1@;
+            --ctp-overlay0: @overlay0@;
+            --ctp-blue: @blue@;
+            --ctp-lavender: @lavender@;
+            --ctp-green: @green@;
+            --ctp-red: @red@;
+            --ctp-maroon: @maroon@;
+            --ctp-peach: @peach@;
+            --ctp-yellow: @yellow@;
+            --ctp-teal: @teal@;
         }
 
         body { 
@@ -189,21 +189,21 @@
     <script>
         // --- CONFIG ---
         const CTP = {
-            green: '#a6e3a1',
-            red: '#f38ba8',
-            peach: '#fab387',
-            maroon: '#eba0ac',
-            subtext: '#a6adc8',
-            base: '#1e1e2e',
-            yellow: '#f9e2af',
-            lavender: '#b4befe'
+            green: '@green@',
+            red: '@red@',
+            peach: '@peach@',
+            maroon: '@maroon@',
+            subtext: '@subtext0@',
+            base: '@base@',
+            yellow: '@yellow@',
+            lavender: '@lavender@'
         };
 
         const REPO_PALETTE = [
-            '#f5e0dc', '#f2cdcd', '#f5c2e7', '#cba6f7', 
-            '#f38ba8', '#eba0ac', '#fab387', '#f9e2af', 
-            '#a6e3a1', '#94e2d5', '#89dceb', '#74c7ec', 
-            '#89b4fa', '#b4befe'
+            '@rosewater@', '@flamingo@', '@pink@', '@mauve@',
+            '@red@', '@maroon@', '@peach@', '@yellow@',
+            '@green@', '@teal@', '@sky@', '@sapphire@',
+            '@blue@', '@lavender@'
         ];
 
         async function fetchData() {
@@ -275,13 +275,13 @@
 
                 const labels = node.labels && node.labels.nodes ? node.labels.nodes : [];
                 const labelsHtml = labels.map(label => {
-                    const textColor = getContrastColor(label.color) === 'black' ? '#11111b' : '#cdd6f4';
+                    const textColor = getContrastColor(label.color) === 'black' ? '@crust@' : '@text@';
                     return `<span class="gh-label" style="background-color: #${label.color}; color: ${textColor};">${label.name}</span>`
                 }).join('')
                 
                 const repoName = node.repository ? node.repository.name : node.url.split('/')[4];
                 const repoBgColor = getRepoColor(repoName);
-                const repoTextColor = getContrastColor(repoBgColor.replace('#','')) === 'black' ? '#11111b' : '#cdd6f4';
+                const repoTextColor = getContrastColor(repoBgColor.replace('#','')) === 'black' ? '@crust@' : '@text@';
                 const isAuthorViewer = node.author.login === viewerLogin;
                 const authorTooltip = isAuthorViewer ? `You (Author)` : `Author: ${node.author.login}`;
 
