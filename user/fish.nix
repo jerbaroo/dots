@@ -229,6 +229,8 @@ in
         builtins.substring 1 (builtins.stringLength str) str
       } --italics
       set fish_greeting
+      # Prevent failure notifications persisting.
+      set -g __done_notification_urgency_level_failure normal
     '';
   };
   programs.fzf = {
