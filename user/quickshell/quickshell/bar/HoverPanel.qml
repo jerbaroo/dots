@@ -35,8 +35,21 @@ Item {
     // The bar's content item; chips live in its coordinate space.
     required property Item barItem
 
-    // The chip whose panel is shown (null while closing).
-    readonly property Item chip: PanelController.activeChip
+    // The chip whose panel is shown (null while closing, and null when the
+    // active chip belongs to another monitor).
+    //
+    // PanelController is a singleton, so one chip is active across the whole
+    // shell — which is right, only one panel should ever be open. But BarWindow
+    // is instantiated per screen, so every monitor has its own HoverPanel
+    // reading that one global. Each must therefore ignore a chip that is not
+    // its own, or all of them mirror the same popup. It also keeps the
+    // mapToItem below within a single window, where it is meaningful.
+    readonly property Item chip: {
+        const active = PanelController.activeChip;
+        if (!active)
+            return null;
+        return active.Window.window === root.Window.window ? active : null;
+    }
     readonly property bool shown: chip !== null
     // The moving panel. BarWindow's input mask reads this so the rest of the
     // surface stays click-through; its height is the animated one, so the mask
