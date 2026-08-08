@@ -8,6 +8,7 @@ import Quickshell.Widgets
 
 import "../config.js" as Config
 import qs.bar
+import qs.common
 
 // macOS-style on-screen display. A single transient card, bottom-centre, shown
 // when volume or brightness changes *while no menu-bar popup is open* (if a
@@ -153,6 +154,16 @@ Scope {
                         height: parent.height
                         radius: parent.radius
                         width: parent.width * root.level
+
+                        // The level arrives in discrete steps (a scroll notch,
+                        // a brightness key), so easing between them reads as
+                        // the value moving. Travel, not spatial: overshooting
+                        // would show a level that was never set.
+                        Behavior on width {
+                            Anim {
+                                family: Anim.Travel
+                            }
+                        }
                     }
                 }
             }

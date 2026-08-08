@@ -69,6 +69,10 @@ Singleton {
     readonly property color controlBorder: Config.overlay0
     readonly property color sliderTrack: Config.surface1
 
+    // Motion lives in common/Anim.qml, which reads config.js directly — it is
+    // shell-wide, not bar-specific, and the launcher is a separate quickshell
+    // instance that cannot import this module.
+
     // Timings.
     readonly property int hoverMs: Config.bar.timing.hoverMs
     readonly property int pollMs: Config.bar.timing.pollMs

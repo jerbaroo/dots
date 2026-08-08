@@ -1,7 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Shapes
 import Quickshell
 import qs.bar
+import qs.common
 
 // The single shared hover panel (BAR.md: one panel component). There is exactly
 // one of these, instantiated by BarWindow. Unlike a normal popup it is *not* a
@@ -12,10 +14,21 @@ import qs.bar
 // Living in the bar surface makes the blur one continuous region and removes the
 // open delay.
 //
-// The visible panel Rectangle slides and resizes between chips (driven by
-// PanelController.activeChip), so moving from one module to the next is a fluid
-// transition rather than a pop in/out. Wayland cannot smoothly tween a popup's
-// position, so the moving part lives inside this static, full-width item.
+// Three motions, in three separate places, none of which fades the glass:
+//
+//   open/close  — `reveal` grows the panel's height out of the bar strip, with
+//                 the content clipped to it. The compositor only blurs above an
+//                 alpha threshold, so the glass can never fade in; growing it
+//                 from nothing means it is fully opaque (and so fully blurred)
+//                 in every frame it is visible.
+//   chip switch — the panel slides and resizes to the new chip (x, implicitHeight)
+//                 while `swap` cross-fades the content at the midpoint of the
+//                 travel, so the box arrives already showing the new module.
+//   content     — a panel that resizes itself while open (a dropdown expanding)
+//                 animates through the same implicitHeight Behavior.
+//
+// Wayland cannot smoothly tween a popup's position, so the moving part lives
+// inside this static, full-width item.
 Item {
     id: root
 
@@ -25,49 +38,77 @@ Item {
     // The chip whose panel is shown (null while closing).
     readonly property Item chip: PanelController.activeChip
     readonly property bool shown: chip !== null
-    // The moving panel and whether it currently takes input (true while visible
-    // or fading out). BarWindow's input mask reads these to keep the rest of the
-    // surface click-through.
+    // The moving panel. BarWindow's input mask reads this so the rest of the
+    // surface stays click-through; its height is the animated one, so the mask
+    // tracks the reveal rather than jumping ahead of it.
     readonly property alias panelItem: panel
-    // Active while shown or while the content is still fading out. The glass
-    // backdrop keys off this (not off a slow opacity ramp), so the blur is
-    // present the instant content appears and stays until it is gone — no lag
-    // where text shows over an as-yet-unblurred background. See panel below.
-    readonly property bool panelActive: shown || column.opacity > 0.01
-    // Retains the last chip so content/geometry stay put during the fade-out.
+    // Whether any part of the panel is on screen. The mask keys off the reveal
+    // for the same reason the glass does: one property drives what is drawn and
+    // what takes input, so the two cannot disagree.
+    readonly property bool panelActive: panel.reveal > 0.01
+    // Retains the last chip so content and geometry stay put while retracting,
+    // and through the first half of a cross-fade.
     property Item displayChip: null
-    property bool opened: false
     property real targetX: 0
 
     onChipChanged: {
-        if (!chip)
+        if (!chip || chip === displayChip)
             return;
-        displayChip = chip;
-        var centre = chip.mapToItem(barItem, chip.width / 2, 0).x - Style.panelWidth / 2;
+        const centre = chip.mapToItem(barItem, chip.width / 2, 0).x - Style.panelWidth / 2;
         // Keep the panel on screen, allowing for the concave wings that extend
         // Style.panelRadius past the body on each side.
-        var margin = Style.panelGap + Style.panelRadius;
-        var clamped = Math.max(margin, Math.min(barItem.width - Style.panelWidth - margin, centre));
-        if (opened) {
-            targetX = clamped; // switch between chips: animate the slide
+        const margin = Style.panelGap + Style.panelRadius;
+        targetX = Math.max(margin, Math.min(barItem.width - Style.panelWidth - margin, centre));
+        if (panel.reveal > 0) {
+            // Already on screen: slide there and cross-fade to the new content.
+            swap.restart();
         } else {
-            xBehavior.enabled = false; // fresh open: appear in place, no slide-in
-            targetX = clamped;
-            xBehavior.enabled = true;
+            // Fully retracted: adopt the chip now so it is revealed with the
+            // panel. The x and implicitHeight Behaviors are gated on the reveal,
+            // so both snap here rather than animating from the last chip's.
+            swap.stop();
+            column.opacity = 1;
+            displayChip = chip;
         }
-        opened = true;
     }
+    // Abandon an in-flight swap rather than let it commit a null chip, which
+    // would blank the content halfway through the retract.
     onShownChanged: if (!shown)
-        opened = false
+        swap.stop()
 
     function titleCase(s) {
         return s.replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    // Cross-fade between two chips' content, timed so the swap lands mid-slide.
+    SequentialAnimation {
+        id: swap
+
+        Anim {
+            target: column
+            property: "opacity"
+            to: 0
+            family: Anim.EffectFast
+        }
+        ScriptAction {
+            script: if (root.chip)
+                root.displayChip = root.chip
+        }
+        Anim {
+            target: column
+            property: "opacity"
+            to: 1
+        }
     }
 
     Item {
         id: panel
 
         readonly property Item chip: root.displayChip
+        // 0 fully retracted into the bar, 1 fully out. Drives height, so the
+        // panel emerges rather than appearing; see the header comment. Not
+        // readonly: the Behavior below writes it on the way to the bound value.
+        property real reveal: root.shown ? 1 : 0
 
         x: root.targetX
         // Directly below the bar strip, flush against it so the glass is
@@ -75,67 +116,115 @@ Item {
         y: Style.barHeight
         width: Style.panelWidth
         implicitHeight: column.implicitHeight + Style.panelPadding * 2
-        height: implicitHeight
-        // The panel itself never fades: its glass backdrop appears/disappears
-        // with panelActive (so blur is not gated behind a slow ramp) and the
-        // content fades on its own opacity below.
+        // Clamped: the spatial curve overshoots, so a closing panel's reveal
+        // dips below zero on its way to rest.
+        height: Math.max(0, implicitHeight * reveal)
 
-        // The fluid transition: slide and resize between chips.
+        Behavior on reveal {
+            Anim {
+                family: Anim.Spatial
+            }
+        }
+        // Both gated on being fully out: while the panel is emerging or
+        // retracting its target geometry belongs to a chip it is not showing
+        // yet, and animating towards that would overshoot the reveal.
         Behavior on x {
-            id: xBehavior
-            NumberAnimation {
-                duration: 160
-                easing.type: Easing.OutCubic
+            enabled: panel.reveal >= 1
+            Anim {
+                family: Anim.Travel
             }
         }
         Behavior on implicitHeight {
-            NumberAnimation {
-                duration: 160
-                easing.type: Easing.OutCubic
+            enabled: panel.reveal >= 1
+            Anim {
+                family: Anim.Spatial
             }
         }
 
         // Panel background. The top corners scoop inward (concave): the top
         // edge is widest and the sides curve in to the body, so the panel reads
-        // as flowing down out of the bar. Bottom corners round convex. Drawn
-        // with Canvas because a Rectangle/Shape can't do concave corners; the
-        // canvas is wider than the body so the outward "wings" aren't clipped.
-        Canvas {
+        // as flowing down out of the bar. Bottom corners round convex. Drawn as
+        // a Shape because a Rectangle can't do concave corners; unlike the
+        // Canvas this replaced, its path is a set of bindings the scene graph
+        // re-tessellates on the GPU, so it can follow the reveal every frame.
+        Shape {
             id: bg
-            readonly property real rt: Style.panelRadius // top scoop radius (config: bar.panel.radius)
-            readonly property real rb: Style.panelRadius // bottom corner radius
-            readonly property int pad: Math.ceil(rt) + 2 // slack for the wings
 
-            x: -pad
+            // Horizontal slack for the wings, which reach a radius past the
+            // body. Constant, so the item's own geometry never moves as the
+            // drawn radius changes with the reveal.
+            readonly property int slack: Style.panelRadius + 2
+            // Body edges, in this item's coordinates.
+            readonly property real l: slack
+            readonly property real r: slack + panel.width
+            // One radius for every corner, clamped so the top scoops and the
+            // bottom rounds cannot overlap while the panel is still short. The
+            // scoop opening up as the panel emerges is the point, not a
+            // side effect.
+            readonly property real rad: Math.min(Style.panelRadius, panel.height / 2)
+
+            x: -slack
             y: 0
-            width: panel.width + pad * 2
+            width: panel.width + slack * 2
             height: panel.height
-            // On/off with the panel, not faded: the blur is applied by the
-            // compositor only above an alpha threshold, so a slow opacity ramp
-            // would make blur lag the (already visible) text. Snapping it keeps
-            // the glass present the moment content shows and until it is gone.
-            opacity: root.panelActive ? 1 : 0
-            onWidthChanged: requestPaint()
-            onHeightChanged: requestPaint()
+            preferredRendererType: Shape.CurveRenderer
+            visible: height > 0
 
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.reset();
-                ctx.translate(pad, 0);
-                var W = panel.width, H = height, rt = bg.rt, rb = bg.rb;
-                ctx.fillStyle = Style.panelColor;
-                ctx.beginPath();
-                ctx.moveTo(-rt, 0);
-                ctx.lineTo(W + rt, 0);
-                ctx.arc(W + rt, rt, rt, -Math.PI / 2, Math.PI, true);  // top-right concave
-                ctx.lineTo(W, H - rb);
-                ctx.arc(W - rb, H - rb, rb, 0, Math.PI / 2, false);    // bottom-right convex
-                ctx.lineTo(rb, H);
-                ctx.arc(rb, H - rb, rb, Math.PI / 2, Math.PI, false);  // bottom-left convex
-                ctx.lineTo(0, rt);
-                ctx.arc(-rt, rt, rt, 0, -Math.PI / 2, true);           // top-left concave
-                ctx.closePath();
-                ctx.fill();
+            ShapePath {
+                fillColor: Style.panelColor
+                strokeWidth: -1
+
+                startX: bg.l - bg.rad
+                startY: 0
+
+                PathLine {
+                    x: bg.r + bg.rad
+                    y: 0
+                }
+                PathArc {
+                    // Top-right, concave.
+                    x: bg.r
+                    y: bg.rad
+                    radiusX: bg.rad
+                    radiusY: bg.rad
+                    direction: PathArc.Counterclockwise
+                }
+                PathLine {
+                    x: bg.r
+                    y: bg.height - bg.rad
+                }
+                PathArc {
+                    // Bottom-right, convex.
+                    x: bg.r - bg.rad
+                    y: bg.height
+                    radiusX: bg.rad
+                    radiusY: bg.rad
+                    direction: PathArc.Clockwise
+                }
+                PathLine {
+                    x: bg.l + bg.rad
+                    y: bg.height
+                }
+                PathArc {
+                    // Bottom-left, convex.
+                    x: bg.l
+                    y: bg.height - bg.rad
+                    radiusX: bg.rad
+                    radiusY: bg.rad
+                    direction: PathArc.Clockwise
+                }
+                PathLine {
+                    x: bg.l
+                    y: bg.rad
+                }
+                PathArc {
+                    // Top-left, concave.
+                    x: bg.l - bg.rad
+                    y: 0
+                    radiusX: bg.rad
+                    radiusY: bg.rad
+                    direction: PathArc.Counterclockwise
+                }
             }
         }
 
@@ -143,57 +232,59 @@ Item {
             onHoveredChanged: PanelController.setPanelHovered(hovered)
         }
 
-        ColumnLayout {
-            id: column
-            anchors.left: parent.left
-            anchors.margins: Style.panelPadding
-            anchors.right: parent.right
-            anchors.top: parent.top
-            spacing: Style.panelSpacing
-            // The content fades over the (already-blurred) glass backdrop.
-            opacity: root.shown ? 1 : 0
+        // Clipped to the panel body (not the wings, which the content never
+        // reaches): the content is anchored to the top, so the reveal uncovers
+        // it downwards as the panel emerges from the bar.
+        Item {
+            anchors.fill: parent
+            clip: true
 
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 120
-                }
-            }
+            ColumnLayout {
+                id: column
+                anchors.left: parent.left
+                anchors.margins: Style.panelPadding
+                anchors.right: parent.right
+                anchors.top: parent.top
+                spacing: Style.panelSpacing
+                // Only ever touched by the swap animation above; the panel
+                // opening and closing is the reveal's job, not a fade's.
 
-            RowLayout {
-                Layout.fillWidth: true
-
-                Text {
+                RowLayout {
                     Layout.fillWidth: true
-                    color: Style.panelText
-                    elide: Text.ElideRight
-                    font.bold: true
-                    font.family: Style.fontFamily
-                    font.pixelSize: Style.panelFontSize
-                    text: panel.chip?.panelTitle ?? ""
-                }
 
-                Text {
-                    color: (panel.chip?.panelStateGood ?? false) ? Style.good : Style.panelText
-                    font.family: Style.fontFamily
-                    font.pixelSize: Style.panelFontSize
-                    // Hidden (and space-free, being in a Layout) when the chip
-                    // supplies a header control instead — e.g. a toggle.
-                    visible: (panel.chip?.panelStateControl ?? null) === null
-                    text: root.titleCase(panel.chip?.panelState ?? "")
+                    Text {
+                        Layout.fillWidth: true
+                        color: Style.panelText
+                        elide: Text.ElideRight
+                        font.bold: true
+                        font.family: Style.fontFamily
+                        font.pixelSize: Style.panelFontSize
+                        text: panel.chip?.panelTitle ?? ""
+                    }
+
+                    Text {
+                        color: (panel.chip?.panelStateGood ?? false) ? Style.good : Style.panelText
+                        font.family: Style.fontFamily
+                        font.pixelSize: Style.panelFontSize
+                        // Hidden (and space-free, being in a Layout) when the chip
+                        // supplies a header control instead — e.g. a toggle.
+                        visible: (panel.chip?.panelStateControl ?? null) === null
+                        text: root.titleCase(panel.chip?.panelState ?? "")
+                    }
+
+                    Loader {
+                        active: (panel.chip?.panelStateControl ?? null) !== null
+                        sourceComponent: panel.chip?.panelStateControl ?? null
+                        visible: active
+                    }
                 }
 
                 Loader {
-                    active: (panel.chip?.panelStateControl ?? null) !== null
-                    sourceComponent: panel.chip?.panelStateControl ?? null
-                    visible: active
+                    Layout.fillWidth: true
+                    active: panel.chip?.panelControls != null
+                    sourceComponent: panel.chip?.panelControls ?? null
+                    visible: status === Loader.Ready
                 }
-            }
-
-            Loader {
-                Layout.fillWidth: true
-                active: panel.chip?.panelControls != null
-                sourceComponent: panel.chip?.panelControls ?? null
-                visible: status === Loader.Ready
             }
         }
     }

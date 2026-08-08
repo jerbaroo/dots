@@ -9,6 +9,7 @@ import Quickshell.Widgets
 
 import "../config.js" as Config
 import "notifications.js" as Notifications
+import qs.common
 
 Scope {
     id: root
@@ -22,7 +23,7 @@ Scope {
     }
 
     // Re-usable notification card.
-    component NotificationCard: Rectangle {
+    component NotificationCard: StyledRect {
         id: card
 
         required property string appName
@@ -85,13 +86,13 @@ Scope {
                 }
 
                 // Close button.
-                Rectangle {
+                StyledRect {
                     color: closeMouseArea.containsMouse ? Config.red : "transparent"
                     height: 24
                     width: 24
                     radius: 12
 
-                    Text {
+                    StyledText {
                         anchors.centerIn: parent
                         color: closeMouseArea.containsMouse ? Config.crust : Config.accent
                         font.family: Config.font.family
@@ -170,7 +171,7 @@ Scope {
                 Repeater {
                     model: card.actions
 
-                    delegate: Rectangle {
+                    delegate: StyledRect {
                         id: actionButton
 
                         required property var modelData
@@ -180,7 +181,7 @@ Scope {
                         implicitWidth: actionText.implicitWidth + 24
                         radius: Config.notification.radius
 
-                        Text {
+                        StyledText {
                             id: actionText
                             anchors.centerIn: parent
                             color: actionMouseArea.containsMouse ? Config.crust : Config.text
@@ -303,10 +304,29 @@ Scope {
         }
         visible: !root.centerOpen && !root.doNotDisturb
 
-        ColumnLayout {
+        // A Column, not a ColumnLayout: toasts arrive and leave while their
+        // neighbours are on screen, and only a positioner can animate those
+        // neighbours into their new places. (Neither container honours a
+        // `Behavior on y` — layouts and positioners both set geometry from C++,
+        // which bypasses it — so `move` is the only mechanism available.)
+        Column {
             id: popupColumn
             width: parent.width
             spacing: 16
+
+            move: Transition {
+                Anim {
+                    property: "y"
+                    family: Anim.Spatial
+                }
+            }
+            add: Transition {
+                Anim {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                }
+            }
 
             Repeater {
                 // Only notifications "currently" popping up on the screen.
@@ -317,6 +337,11 @@ Scope {
                     id: popupCard
 
                     required property var modelData
+
+                    // A Column does not stretch its children, so the width the
+                    // shared card gets from Layout.fillWidth elsewhere is set
+                    // explicitly here.
+                    width: popupColumn.width
 
                     appName: modelData.appName || "Unknown"
                     // Frosted glass, matching the bar and notification center;
@@ -437,7 +462,7 @@ Scope {
 
                     // Do not disturb toggle. Same icon as the bar's
                     // notifications module.
-                    Rectangle {
+                    StyledRect {
                         color: dndToggleMouseArea.containsMouse ? Config.surface0 : "transparent"
                         implicitHeight: dndToggle.implicitHeight + 16
                         implicitWidth: dndToggle.implicitWidth + 16
@@ -470,14 +495,14 @@ Scope {
                     }
 
                     // Clear all button.
-                    Rectangle {
+                    StyledRect {
                         color: clearAllMouseArea.containsMouse ? Config.red : "transparent"
                         implicitHeight: clearAllText.implicitHeight + 8
                         implicitWidth: clearAllText.implicitWidth + 16
                         radius: Config.notification.radius
                         visible: history.count > 0
 
-                        Text {
+                        StyledText {
                             id: clearAllText
                             anchors.centerIn: parent
                             color: clearAllMouseArea.containsMouse ? Config.crust : Config.accent

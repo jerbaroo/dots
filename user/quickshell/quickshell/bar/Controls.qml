@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.bar
+import qs.common
 
 // The shared control library (BAR.md): each control is implemented once and
 // reused by every panel. Modules may not define one-off controls; extend this
@@ -16,7 +17,7 @@ Item {
     }
 
     // Base for every clickable row: shared size, radius and hover feedback.
-    component ControlRow: Rectangle {
+    component ControlRow: StyledRect {
         id: controlRow
 
         property bool active: false

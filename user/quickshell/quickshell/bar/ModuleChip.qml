@@ -3,10 +3,13 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
 import qs.bar
+import qs.common
 
 // The one module implementation (BAR.md). Every bar element is one of these;
 // modules differ only in the configuration below. Missing fields no-op.
-Rectangle {
+// StyledRect, so a chip going dim or a workspace taking the accent border
+// fades rather than snapping.
+StyledRect {
     id: chip
 
     // Chip contents.

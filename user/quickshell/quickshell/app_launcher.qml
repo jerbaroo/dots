@@ -6,6 +6,7 @@ import Quickshell.Wayland
 import Quickshell.Widgets
 
 import "config.js" as Config
+import qs.common
 
 Scope {
     id: root
@@ -213,11 +214,14 @@ Scope {
                         height: Config.launcher.rowHeight
                         width: resultsList.width - resultsList.leftMargin - resultsList.rightMargin
 
-                        background: Rectangle {
+                        background: StyledRect {
                             readonly property bool isCurrent: resultsList.currentIndex === delegateItem.index
                             color: delegateItem.hovered ? Config.field : "transparent"
                             border.color: isCurrent ? Config.accent : "transparent"
-                            border.width: isCurrent ? 1 : 0
+                            // Kept at a constant width so only the colour
+                            // changes: animating the width would reflow the
+                            // row's contents as the selection moves.
+                            border.width: 1
                             radius: Config.launcher.radius
                         }
 
