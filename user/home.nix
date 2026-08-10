@@ -38,6 +38,7 @@
     ./options.nix
 
     # Personal Home Manager modules.
+    ./animation.nix
     ./audio.nix
     ./btop.nix
     ./bluetooth.nix

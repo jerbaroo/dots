@@ -25,74 +25,88 @@ in
     wayland.windowManager.hyprland = {
       configType = "lua";
       enable = true;
-      # TODO locked submap.
-      # extraConfig = ''
-      #   submap = locked
-      #   bind = , code:255, exec, true
-      #   submap = reset
-      # '';
       package = config.desktop.hyprland.packages.hyprland;
       portalPackage = config.desktop.hyprland.packages.xdg-desktop-portal-hyprland;
       settings = {
         animation =
           let
-            animation = leaf: speed: curve: style: {
+            animation = leaf: curve: style: {
               _args = [
                 (lib.generators.mkLuaInline (
                   let
                     styleStr = if style == null then "" else ", style=\"${style}\"";
-                    # If "animationSpeed" is null we don't apply a modifier to
-                    # "speed".
-                    speedStr = toString (
-                      if config.desktop.hyprland.animationSpeed == null then
-                        speed
+                    # A spring is referenced with spring=, a bezier with bezier=.
+                    field = if config.desktop.animation.curves.${curve}.type == "spring" then "spring" else "bezier";
+                    # Border colour and gradient-angle animations pace on their
+                    # own time; every other leaf is a window/surface motion.
+                    # Hyprland speed is in deciseconds, so seconds * 10.
+                    seconds =
+                      if leaf == "border" || leaf == "borderangle" then
+                        config.desktop.hyprland.animationTime.border
                       else
-                        speed / config.desktop.hyprland.animationSpeed
-                    );
+                        config.desktop.hyprland.animationTime.window;
                   in
-                  "{ leaf=\"${leaf}\", enabled=true, speed=${speedStr}, bezier=\"${curve}\" ${styleStr} }"
+                  "{ leaf=\"${leaf}\", enabled=true, speed=${toString (seconds * 10)}, ${field}=\"${curve}\"${styleStr} }"
+                ))
+              ];
+            };
+            curveOf = name: config.desktop.animation.${name}.curve;
+            drawer = "slidevert"; # the scratchpad sliding down and back
+            gradient = config.desktop.hyprland.border.gradient;
+            pop = "popin 80%"; # a surface scaling into/out of place (windows, layers)
+            slide = "slide"; # lateral travel (window move, workspace switch)
+          in
+          if config.desktop.hyprland.animationTime == null then
+            [ ]
+          else
+            [
+              (animation "border" (curveOf "colorShift") null)
+            ]
+            ++ lib.optional (gradient.animate != "none") (
+              # A decorative rotation of the gradient's angle — not one of the
+              # OS's semantic animations, so it takes a curve straight from the
+              # vocabulary (linear for a constant loop, decelerate for a one-shot
+              # sweep); the style carries the mode.
+              animation "borderangle" (
+                if gradient.animate == "loop" then "linear" else "decelerate"
+              ) gradient.animate
+            )
+            ++ [
+              # Parent of every fade Hyprland does not name below — window switch,
+              # shadow, inactive-dim, DPMS on/off, tooltips. Alphabetically first,
+              # so the specific children after it still win.
+              (animation "fade" (curveOf "fadeIn") null)
+              (animation "fadeIn" (curveOf "fadeIn") null)
+              (animation "fadeOut" (curveOf "fadeOut") null)
+              (animation "fadeLayersIn" (curveOf "fadeIn") null)
+              (animation "fadeLayersOut" (curveOf "fadeOut") null)
+              (animation "layersIn" (curveOf "windowIn") pop)
+              (animation "layersOut" (curveOf "windowOut") pop)
+              (animation "specialWorkspaceIn" (curveOf "transitionY") drawer)
+              (animation "specialWorkspaceOut" (curveOf "windowOut") drawer)
+              (animation "windowsIn" (curveOf "windowIn") pop)
+              (animation "windowsOut" (curveOf "windowOut") pop)
+              (animation "windowsMove" (curveOf "windowMove") slide)
+              (animation "workspacesIn" (curveOf "windowIn") slide)
+              (animation "workspacesOut" (curveOf "windowOut") slide)
+            ];
+        # Emit curves from animation.nix, the animations above reference them.
+        # Each is tagged bezier or spring (Hyprland understands both).
+        curve =
+          let
+            toCurve = name: c: {
+              _args = [
+                name
+                (lib.generators.mkLuaInline (
+                  if c.type == "spring" then
+                    "{ type=\"spring\", mass=${c.mass}, stiffness=${c.stiffness}, dampening=${c.dampening} }"
+                  else
+                    "{ type=\"bezier\", points={ { ${builtins.elemAt c.points 0}, ${builtins.elemAt c.points 1} }, { ${builtins.elemAt c.points 2}, ${builtins.elemAt c.points 3} } } }"
                 ))
               ];
             };
           in
-          if config.desktop.hyprland.animationSpeed == null then
-            [ ]
-          else
-            [
-              (animation "windowsIn" 3.0 "emphasizedDecel" "popin 80%")
-              (animation "fadeIn" 3.0 "emphasizedDecel" null)
-              (animation "windowsOut" 2.0 "emphasizedDecel" "popin 90%")
-              (animation "fadeOut" 2.0 "emphasizedDecel" null)
-              (animation "windowsMove" 3.0 "emphasizedDecel" "slide")
-              (animation "border" 10.0 "emphasizedDecel" null)
-              (animation "layersIn" 1.2 "emphasizedDecel" "popin 93%")
-              (animation "layersOut" 1.0 "menu_accel" "popin 94%")
-              (animation "fadeLayersIn" 0.5 "menu_decel" null)
-              (animation "fadeLayersOut" 1.0 "menu_accel" null)
-              (animation "workspaces" 7.0 "menu_decel" "slide")
-              (animation "specialWorkspaceIn" 2.8 "emphasizedDecel" "slidevert")
-              (animation "specialWorkspaceOut" 1.2 "emphasizedAccel" "slidevert")
-            ];
-        curve =
-          let
-            bezier = name: x0: x1: y0: y1: {
-              _args = [
-                name
-                (lib.generators.mkLuaInline "{ type=\"bezier\", points={ { ${x0}, ${x1} }, { ${y0}, ${y1} } } }")
-              ];
-            };
-          in
-          [
-            (bezier "expressiveFastSpatial" "0.42" "1.67" "0.21" "0.90")
-            (bezier "expressiveSlowSpatial" "0.39" "1.29" "0.35" "0.98")
-            (bezier "expressiveDefaultSpatial" "0.38" "1.21" "0.22" "1.00")
-            (bezier "emphasizedDecel" "0.05" "0.7" "0.1" "1")
-            (bezier "emphasizedAccel" "0.3" "0" "0.8" "0.15")
-            (bezier "standardDecel" "0" "0" "0" "1")
-            (bezier "menu_decel" "0.1" "1" "0" "1")
-            (bezier "menu_accel" "0.52" "0.03" "0.72" "0.08")
-            (bezier "stall" "1" "-0.1" "0.7" "0.85")
-          ];
+          lib.mapAttrsToList toCurve config.desktop.animation.curves;
         config = {
           # cursor.no_hardware_cursors = true;
           debug.disable_logs = false;
@@ -111,9 +125,12 @@ in
           dwindle.preserve_split = true;
           general = {
             border_size = config.desktop.hyprland.border.size;
-            "col.active_border" = "rgb(${
-              pkgs.lib.strings.removePrefix "#" config.desktop.theme.palette.${config.desktop.theme.accent}.hex
-            })";
+            "col.active_border" =
+              let
+                g = config.desktop.hyprland.border.gradient;
+                rgb = name: "\"rgb(${lib.strings.removePrefix "#" config.desktop.theme.palette.${name}.hex})\"";
+              in
+              lib.generators.mkLuaInline "{ colors = { ${lib.concatStringsSep ", " (map rgb g.colors)} }, angle = ${toString g.angle} }";
             "col.inactive_border" =
               "rgb(${pkgs.lib.strings.removePrefix "#" config.desktop.theme.palette.base.hex})";
             gaps_in = config.desktop.hyprland.gap;
@@ -366,13 +383,62 @@ in
     };
   };
   options.desktop.hyprland = {
-    animationSpeed = lib.mkOption {
-      default = 0.5;
-      description = "Multiplication factor of base animation speed.";
-      type = lib.types.nullOr (lib.types.addCheck lib.types.float (x: x > 0));
+    animationTime = lib.mkOption {
+      default = { };
+      description = ''
+        Hyprland animation time in seconds, split by category so window motion
+        and border effects pace independently. null disables all animations.
+      '';
+      type = lib.types.nullOr (
+        lib.types.submodule {
+          options = {
+            border = lib.mkOption {
+              default = 3 * config.desktop.hyprland.animationTime.window;
+              description = "Time for the border colour and gradient-angle animations.";
+              type = lib.types.addCheck lib.types.float (x: x > 0);
+            };
+            window = lib.mkOption {
+              default = 0.3;
+              description = "Time for window, layer, workspace and fade animations.";
+              type = lib.types.addCheck lib.types.float (x: x > 0);
+            };
+          };
+        }
+      );
+    };
+    border.gradient = {
+      angle = lib.mkOption {
+        default = 45;
+        description = "Angle of the active window border's gradient, in degrees.";
+        type = lib.types.ints.unsigned;
+      };
+      animate = lib.mkOption {
+        default = "once";
+        description = ''
+          Animate the active border's gradient angle: "none", "once" (a single
+          sweep when a window gains focus, no idle cost), or "loop" (a constant
+          spin, which forces a new frame every refresh — high GPU/battery cost).
+        '';
+        type = lib.types.enum [
+          "none"
+          "once"
+          "loop"
+        ];
+      };
+      colors = lib.mkOption {
+        default = [
+          config.desktop.theme.accent
+          "lavender"
+        ];
+        description = ''
+          Palette colour names forming the active border's gradient, in order.
+          A single name gives a solid border.
+        '';
+        type = lib.types.listOf lib.types.str;
+      };
     };
     border.size = lib.mkOption {
-      default = 2;
+      default = 3;
       description = "Size of window borders.";
       type = lib.types.ints.unsigned;
     };

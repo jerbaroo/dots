@@ -38,33 +38,36 @@ const iconSize = {
 };
 
 // Motion. Every animation belongs to one of three families (see bar/Anim.qml).
-// The split between the two geometric families is the important one: they are
-// different kinds of movement and want opposite curves.
+// The values are not chosen here: each family is one of the OS's semantic
+// animations, substituted from Nix (animation.nix -> quickshell.nix). What the
+// families are for, and which OS animation feeds each:
 //
 //   spatial — geometry that materialises: the panel's reveal and its resize.
-//             Overshoots, so the panel reads as arriving with some mass.
-//   travel  — geometry that tracks the cursor: the panel sliding between
-//             chips. Decelerates onto its target with no overshoot — you are
-//             already looking at the destination chip, so a bounce past it
-//             reads as imprecision rather than momentum.
-//   effect  — opacity and colour. Short and monotonic; an overshooting fade
-//             would flash past full opacity.
+//             Fed by growY, which overshoots slightly, so the panel reads as
+//             arriving with a little mass — gentle enough not to bounce.
+//   travel  — geometry that tracks the cursor: the panel sliding between chips.
+//             Fed by transitionX, which decelerates onto its target with no
+//             overshoot — you are already looking at the destination chip, so a
+//             bounce past it reads as imprecision rather than momentum.
+//   effect  — opacity. Short and monotonic; fed by fadeIn (and the fade-out leg
+//             takes fadeOut's shorter duration with the same curve).
 //
-// Curves are cubic bezier control points in QML's easing.bezierCurve form,
-// [x1, y1, x2, y2, 1, 1]. These are Material 3's "expressive" curves; the
-// y > 1 in the spatial curve is the overshoot. Durations are shorter than M3's
-// because the bar's popups travel a chip's width, not a screen's.
+// Curves arrive as the four bezier control points [x1, y1, x2, y2]; the
+// trailing 1, 1 below completes QML's easing.bezierCurve form.
+// Curve points and durations are substituted from Nix (see animation.nix and
+// quickshell.nix): spatial <- growY, travel <- transitionX, effect <- fadeIn.
+// The trailing 1, 1 completes QML's easing.bezierCurve form.
 const anim = {
-    spatialMs: 280,
-    spatialCurve: [0.38, 1.21, 0.22, 1, 1, 1],
-    travelMs: 200,
-    travelCurve: [0.05, 0.7, 0.1, 1, 1, 1],
-    effectMs: 150,
-    effectCurve: [0.34, 0.8, 0.34, 1, 1, 1],
+    spatialMs: @spatialMs@,
+    spatialCurve: [@spatialCurve@, 1, 1],
+    travelMs: @travelMs@,
+    travelCurve: [@travelCurve@, 1, 1],
+    effectMs: @effectMs@,
+    effectCurve: [@effectCurve@, 1, 1],
     // The leading half of a two-part transition, e.g. the fade-out of a
-    // content swap: quicker than the fade-in, so the panel is never empty for
-    // long.
-    effectFastMs: 100,
+    // content swap: quicker than the fade-in (it reuses effectCurve), so the
+    // panel is never empty for long. Sourced from the fadeOut animation.
+    effectFastMs: @effectFastMs@,
 };
 
 // Colours (Catppuccin palette, substituted by Nix).

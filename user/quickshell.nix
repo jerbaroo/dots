@@ -5,6 +5,21 @@
   ...
 }:
 let
+  # The menu bar (Anim.qml / config.js) has three motion families, each fed by
+  # one OS animation below. What each family is — so the mappings read on their
+  # own, without tracing how the QML consumes them:
+  #
+  #   spatial — the panel's geometry: growing out of the bar on open and
+  #             resizing while open. Its curve/duration come from growY.
+  #   travel  — the panel sliding sideways from one chip to the next. From
+  #             transitionX.
+  #   effect  — the content cross-fade's opacity. effectCurve/effectMs time the
+  #             fade-in (from fadeIn); effectFastMs is the quicker fade-out leg
+  #             (from fadeOut's duration — it reuses the fade-in curve).
+  anim = config.desktop.animation;
+  # Only bezier curves reach QML — it has no spring type.
+  animCurve = name: builtins.concatStringsSep ", " anim.curves.${anim.${name}.curve}.points;
+  animMs = name: toString anim.${name}.durationMs;
   configJs = pkgs.replaceVars ./quickshell/quickshell/config.js (
     {
       accent = config.desktop.theme.palette.${config.desktop.theme.accent}.hex;
@@ -14,6 +29,13 @@ let
       inhibitLockPath = config.desktop.lock.inhibitPath;
       shellFontName = config.desktop.font.shell.name;
       shellFontSize = toString config.desktop.font.shell.size;
+      spatialCurve = animCurve "growY";
+      spatialMs = animMs "growY";
+      travelCurve = animCurve "transitionX";
+      travelMs = animMs "transitionX";
+      effectCurve = animCurve "fadeIn";
+      effectMs = animMs "fadeIn";
+      effectFastMs = animMs "fadeOut";
     }
     // builtins.listToAttrs paletteHexColours
   );
