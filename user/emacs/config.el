@@ -82,6 +82,13 @@
 
 ;; vi keys for pane navigation.
 (map!
+   :leader
+   :desc "Open global org file"
+   "o g"
+   (cmd! (find-file (expand-file-name "global.org" org-directory))))
+
+;; vi keys for pane navigation.
+(map!
   "C-h" #'evil-window-left
   "C-j" #'evil-window-down
   "C-k" #'evil-window-up

@@ -428,7 +428,7 @@ in
       colors = lib.mkOption {
         default = [
           config.desktop.theme.accent
-          "lavender"
+          "mauve"
         ];
         description = ''
           Palette colour names forming the active border's gradient, in order.
@@ -438,7 +438,7 @@ in
       };
     };
     border.size = lib.mkOption {
-      default = 3;
+      default = 2;
       description = "Size of window borders.";
       type = lib.types.ints.unsigned;
     };

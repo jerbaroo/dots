@@ -110,8 +110,12 @@ Singleton {
             echo l $(cut -d' ' -f1 /proc/loadavg) $(nproc)
             echo m $(awk '/MemTotal|MemAvailable/ {print $2}' /proc/meminfo | tr '\\n' ' ')
             echo t $(cat /sys/class/hwmon/hwmon*/temp1_input 2>/dev/null | sort -nr | head -1)
-            ps -eo %cpu,args -ww --sort=-%cpu --no-headers | head -3 | sed 's/^/c /'
-            ps -eo %mem,args -ww --sort=-%mem --no-headers | head -3 | sed 's/^/M /'
+            # Drop this poller's own children (ps, awk, ...): short-lived processes
+            # report a nonsensical %cpu, since that is CPU time over a tiny lifetime.
+            ps -eo ppid,%cpu,args -ww --sort=-%cpu --no-headers |
+                awk -v p=$$ '$1 != p { $1 = "c"; print }' | head -3
+            ps -eo ppid,%mem,args -ww --sort=-%mem --no-headers |
+                awk -v p=$$ '$1 != p { $1 = "M"; print }' | head -3
         `]
 
         stdout: StdioCollector {

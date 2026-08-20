@@ -17,10 +17,7 @@
               ];
             in
             pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
-          browser = {
-            cmd = "firefox";
-            homepage = "http://localhost:${toString config.desktop.ghdashboard.port}";
-          };
+          browser.homepage = "http://localhost:${toString config.desktop.ghdashboard.port}";
           font.code.size = 13;
           genericLinux = {
             enable = true;
