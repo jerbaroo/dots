@@ -11,7 +11,6 @@ in
     ghc # Glorious Haskell Compiler.
     ghcidPoll # Ol' reliable.
     gcc # GNU Compiler Collection.
-    idasen # Desk control.
     jq # JSON processor.
     niv # Nix dependency manager.
     nix # Nix package manager.
