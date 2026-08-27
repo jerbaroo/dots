@@ -43,6 +43,20 @@ in
     enable = true;
     doomDir = doomDir;
     emacs = pkgs.emacs-pgtk;
+    # ghostel and evil-ghostel are the same upstream repo, but they reach us by
+    # different routes and drift apart. ghostel is a hand-written nixpkgs
+    # package held at a release tag, because building its Zig module needs a
+    # fixed-output hash that has to be updated by hand; evil-ghostel is an
+    # unpinned MELPA snapshot, so it tracks the repo's default branch. The
+    # newer half then calls into functions the older half does not have yet
+    # (e.g. `ghostel-alt-screen-p', added after 0.44.0), which surfaces as
+    # "Symbol's function definition is void" from ghostel's process filter.
+    # Build evil-ghostel out of ghostel's own source so the two always match.
+    emacsPackageOverrides = eself: esuper: {
+      evil-ghostel = esuper.evil-ghostel.overrideAttrs (_: {
+        inherit (esuper.ghostel) src version;
+      });
+    };
   };
   programs.ripgrep.enable = true;
 }
