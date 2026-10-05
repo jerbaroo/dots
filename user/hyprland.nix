@@ -460,12 +460,12 @@ in
           type = lib.types.bool;
         };
         iterations = lib.mkOption {
-          default = 2;
+          default = 1;
           description = "Amount of liquid glass blurring iterations.";
           type = lib.types.ints.unsigned;
         };
         size = lib.mkOption {
-          default = 2.0;
+          default = 1.5;
           description = "Liquid glass blur size.";
           type = lib.types.float;
         };
