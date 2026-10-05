@@ -16,14 +16,52 @@
   };
   programs.delta = {
     enable = true;
-    enableGitIntegration = false;
-    options.line-numbers = true;
+    enableGitIntegration = true;
+    options = {
+      line-numbers = true;
+      navigate = true;
+    };
   };
   programs.git = {
     enable = true;
     settings = {
-      push.autoSetupRemote = true;
-      rebase.autoSquash = false;
+      branch.sort = "committerdate";
+      column = {
+        ui = "auto";
+        verbose = true;
+      };
+      core.excludesfile = "~/.gitignore";
+      diff = {
+        algorithm = "histogram";
+        colorMoved = "plain";
+        colorWords = true;
+        mnemonicPrefix = true;
+        renames = true;
+        wordRegex = ''\w+|.'';
+      };
+      fetch = {
+        all = true;
+        prune = true;
+        pruneTags = true;
+      };
+      help.autocorrect = "prompt";
+      init.defaultBranch = "main";
+      merge.conflictstyle = "zdiff3";
+      pull.rebase = true;
+      push = {
+        autoSetupRemote = true;
+        followTags = true;
+      };
+      rebase = {
+        autoSquash = false;
+        autoStash = true;
+        updateRefs = true;
+      };
+      rerere = {
+        enabled = true;
+        autoupdate = true;
+      };
+      tag.sort = "version:refname";
       user = {
         name = "jerbaroo";
         email = "jerbaroo.work@pm.me";
