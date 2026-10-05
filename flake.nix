@@ -15,6 +15,7 @@
       url = "github:nix-community/home-manager/master";
     };
     hyprland = {
+      # Important to follow nixpkgs to ensure graphics match.
       inputs.nixpkgs.follows = "nixpkgs";
       # Required for hyprglasss (bumping this requires a bump in hyprglass.nix):
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
@@ -33,7 +34,7 @@
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
       pkgs = import inputs.nixpkgs {
         system = "x86_64-linux";
-        overlays = [ inputs.hyprland.overlays.hyprland-packages ];
+       #  overlays = [ inputs.hyprland.overlays.hyprland-packages ];
       };
       pkgs_latest = import inputs.nixpkgs_latest { system = "x86_64-linux"; };
       sharedArgs = {
@@ -43,7 +44,7 @@
         doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;
         flavor = "mocha";
         hyprland = inputs.hyprland;
-				inherit pkgs_latest;
+        inherit pkgs_latest;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
         system = "x86_64-linux";
