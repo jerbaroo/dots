@@ -3,8 +3,8 @@
 
 ;; Timing variables in milliseconds.
 (defvar
-  tap-time 200
-  hold-time 200
+  tap-time 100
+  hold-time 100
 )
 
 ;; Tap for letter, hold for modifier.
