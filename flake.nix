@@ -22,6 +22,8 @@
     };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs_stable.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs_latest.url = "github:NixOS/nixpkgs/nixos-unstable";
     spicetify.url = "github:Gerg-L/spicetify-nix";
   };
   outputs =
@@ -33,6 +35,7 @@
         system = "x86_64-linux";
         overlays = [ inputs.hyprland.overlays.hyprland-packages ];
       };
+      pkgs_latest = import inputs.nixpkgs_latest { system = "x86_64-linux"; };
       sharedArgs = {
         accent = "pink";
         catppuccin = inputs.catppuccin;
@@ -40,6 +43,7 @@
         doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;
         flavor = "mocha";
         hyprland = inputs.hyprland;
+				inherit pkgs_latest;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
         system = "x86_64-linux";

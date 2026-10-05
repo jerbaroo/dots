@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  pkgs_latest,
   lib,
   doomModule,
   ...
@@ -42,7 +43,7 @@ in
   programs.doom-emacs = {
     enable = true;
     doomDir = doomDir;
-    emacs = pkgs.emacs-pgtk;
+    emacs = pkgs_latest.emacs-pgtk;
     # ghostel and evil-ghostel are the same upstream repo, but they reach us by
     # different routes and drift apart. ghostel is a hand-written nixpkgs
     # package held at a release tag, because building its Zig module needs a

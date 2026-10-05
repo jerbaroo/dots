@@ -11,6 +11,7 @@
   hyprland,
   lib,
   pkgs,
+  pkgs_latest,
   spicetify,
   stateVersion,
   system,
@@ -28,6 +29,7 @@
         flavor
         hostname
         hyprland
+        pkgs_latest
         spicetify
         stateVersion
         system
