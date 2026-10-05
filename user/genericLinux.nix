@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   config.nix = lib.mkIf config.desktop.genericLinux.enable {
     package = pkgs.nix;

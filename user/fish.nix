@@ -5,7 +5,12 @@
   ...
 }:
 let
-  neo-color = if config.desktop.theme.accent == "blue" then "cyan" else config.desktop.theme.accent;
+  neo-color =
+    {
+      blue = "cyan";
+      sapphire = "gold";
+    }
+    .${config.desktop.theme.accent} or config.desktop.theme.accent;
   os-neo = pkgs.writeShellScriptBin "os-neo" "${pkgs.neo}/bin/neo -D -f 120 -F -c ${neo-color}";
   plugin = x: {
     name = x;

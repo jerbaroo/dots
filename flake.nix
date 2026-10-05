@@ -34,11 +34,11 @@
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
       pkgs = import inputs.nixpkgs {
         system = "x86_64-linux";
-       #  overlays = [ inputs.hyprland.overlays.hyprland-packages ];
+        #  overlays = [ inputs.hyprland.overlays.hyprland-packages ];
       };
       pkgs_latest = import inputs.nixpkgs_latest { system = "x86_64-linux"; };
       sharedArgs = {
-        accent = "pink";
+        accent = "sapphire";
         catppuccin = inputs.catppuccin;
         colorSchemes = inputs.color-schemes;
         doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;

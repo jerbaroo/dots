@@ -5,7 +5,8 @@
   ...
 }:
 let
-  themeName = "Colloid-${pkgs.lib.strings.toSentenceCase config.desktop.theme.accent}-Dark-Catppuccin";
+  themeAccent = { sapphire = "teal"; }.${config.desktop.theme.accent} or config.desktop.theme.accent;
+  themeName = "Colloid-${pkgs.lib.strings.toSentenceCase themeAccent}-Dark-Catppuccin";
   colloid = pkgs.colloid-gtk-theme.override {
     tweaks = [
       "black"
@@ -14,7 +15,7 @@ let
       "float"
       "rimless"
     ];
-    themeVariants = [ config.desktop.theme.accent ];
+    themeVariants = [ themeAccent ];
   };
   # Colloid compiles the flavour's colours into its stylesheets and SVG assets,
   # so GTK does not follow desktop.theme.palette (see paletteChanges below).

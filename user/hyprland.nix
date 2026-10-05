@@ -413,7 +413,7 @@ in
         type = lib.types.ints.unsigned;
       };
       animate = lib.mkOption {
-        default = "once";
+        default = "none";
         description = ''
           Animate the active border's gradient angle: "none", "once" (a single
           sweep when a window gains focus, no idle cost), or "loop" (a constant
@@ -438,7 +438,7 @@ in
       };
     };
     border.size = lib.mkOption {
-      default = 2;
+      default = 3;
       description = "Size of window borders.";
       type = lib.types.ints.unsigned;
     };
@@ -460,7 +460,7 @@ in
           type = lib.types.bool;
         };
         iterations = lib.mkOption {
-          default = 1;
+          default = 2;
           description = "Amount of liquid glass blurring iterations.";
           type = lib.types.ints.unsigned;
         };

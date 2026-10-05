@@ -21,7 +21,7 @@ in
     type = lib.types.str;
   };
   options.desktop.wallpaperName = lib.mkOption {
-    default = "jellyfish-purple.jpg";
+    default = "jellyfish-blue.jpg";
     description = "The filename of the wallpaper.";
     type = lib.types.str;
   };
