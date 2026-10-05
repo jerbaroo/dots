@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgs_latest,
   system,
   ...
 }:
@@ -83,6 +84,7 @@ in
     home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
     programs.firefox = {
       enable = true;
+      package = pkgs_latest.firefox;
       policies = {
         DisableTelemetry = true;
         DisableFirefoxStudies = true;

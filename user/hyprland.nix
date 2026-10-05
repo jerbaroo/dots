@@ -298,21 +298,19 @@ in
 
             ##### Resizing and zooming #####
 
-            # Resize splits.
-            # (bind "${mod} + ALT + L" (dispatch "window.resize" "40 0"))
-            # (bind "${mod} + ALT + H" (dispatch "window.resize" "-40 0"))
-            # (bind "${mod} + ALT + K" (dispatch "window.resize" "0 -40"))
-            # (bind "${mod} + ALT + J" (dispatch "window.resize" "0 40"))
-
             # Resize column width
-            (bind "${mod} + ALT + 1" (dispatch "layout" "\"colresize 1\""))
-            (bind "${mod} + ALT + 2" (dispatch "layout" "\"colresize 0.5\""))
-            (bind "${mod} + ALT + 3" (dispatch "layout" "\"colresize 0.333333\""))
-            (bind "${mod} + ALT + 4" (dispatch "layout" "\"colresize 0.25\""))
-            (bind "${mod} + ALT + 5" (dispatch "layout" "\"colresize 0.2\""))
-            (bind "${mod} + ALT + 6" (dispatch "layout" "\"colresize 0.666666\""))
-            (bind "${mod} + ALT + 9" (dispatch "layout" "\"colresize -conf\""))
-            (bind "${mod} + ALT + 0" (dispatch "layout" "\"colresize +conf\""))
+            (bind "${mod} +         ALT + 1" (dispatch "layout" "\"colresize 0.1\""))
+            (bind "${mod} +         ALT + 2" (dispatch "layout" "\"colresize 0.25\""))
+            (bind "${mod} +         ALT + 3" (dispatch "layout" "\"colresize 0.333333\""))
+            (bind "${mod} + SHIFT + ALT + 3" (dispatch "layout" "\"colresize 0.3\""))
+            (bind "${mod} +         ALT + 4" (dispatch "layout" "\"colresize 0.4\""))
+            (bind "${mod} +         ALT + 5" (dispatch "layout" "\"colresize 0.5\""))
+            (bind "${mod} +         ALT + 6" (dispatch "layout" "\"colresize 0.666666\""))
+            (bind "${mod} + SHIFT + ALT + 6" (dispatch "layout" "\"colresize 0.6\""))
+            (bind "${mod} +         ALT + 7" (dispatch "layout" "\"colresize 0.75\""))
+            (bind "${mod} +         ALT + 8" (dispatch "layout" "\"colresize 0.8\""))
+            (bind "${mod} +         ALT + 9" (dispatch "layout" "\"colresize 0.9\""))
+            (bind "${mod} +         ALT + 0" (dispatch "layout" "\"colresize 1.0\""))
 
             # Zoom
             (bind "${mod} + SHIFT + U" (

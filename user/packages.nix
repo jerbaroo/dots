@@ -27,6 +27,7 @@ in
     shellcheck # Shell script analyser.
     shfmt # Shell parser and formatter.
     unzip # Unzip zip files.
+    watchexec # exec on file-change.
     wev # Wayland event viewer.
     wl-clipboard # Wayland command-line copy and paste.
   ];

@@ -8,6 +8,9 @@ let
   hyprglass = pkgs.hyprlandPlugins.mkHyprlandPlugin (finalAttrs: {
     hyprland = config.desktop.hyprland.packages.hyprland;
     pluginName = "hyprglass";
+    # Bumping this requires bumping the hyprland version in flake.nix:
+    # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
+    # Also bump the hash and possibly the revision below.
     version = "0.9.1";
     meta = {
       description = "Liquid Glass for Hyprland";

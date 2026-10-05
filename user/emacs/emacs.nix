@@ -17,6 +17,7 @@ let
     colourLineNumber = config.desktop.theme.palette.subtext0.hex;
     colourLineNumberCurrent = config.desktop.theme.palette.peach.hex;
     flavor = config.desktop.theme.flavor;
+    ghostElShell = "${pkgs.writeShellScriptBin "__ghostel-tmux" "${config.desktop.tmux.start.command}"}/bin/__ghostel-tmux";
     paletteOverrides =
       let
         changes = config.desktop.theme.paletteChanges;

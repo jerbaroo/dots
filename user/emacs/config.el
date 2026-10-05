@@ -114,6 +114,9 @@
 ;; Optional: If you use LSP and want to use the Qt Language Server (qmlls)
 (add-hook 'qml-mode-hook #'lsp!)
 
+(after! ghostel
+  (setq ghostel-shell "@ghostElShell@"))
+
 ;; The exceptions to this rule:
 ;;
 ;;   - Setting file/directory variables (like `org-directory')

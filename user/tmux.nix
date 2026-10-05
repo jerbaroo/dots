@@ -16,7 +16,7 @@ let
       exit 0
     end
 
-    set git_cmd '${pkgs.gitu}/bin/gitu'
+    set git_cmd '${pkgs.gitu}/bin/gitu -k j'
     if test -n "$before_tmux_git_open"
       set cmd "$before_tmux_git_open; $git_cmd"
     else

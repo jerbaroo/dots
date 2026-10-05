@@ -5,29 +5,41 @@
     username = "jeremy-barisch-rooney";
 
     homeConfig =
-      { config, pkgs, ... }:
+      {
+        config,
+        pkgs,
+        pkgs_latest,
+        ...
+      }:
       {
         desktop = {
           inherit hostname username;
           allowUnfreePredicate =
             let
               whitelist = map pkgs.lib.getName [
-                pkgs.github-copilot-cli
+                pkgs_latest.github-copilot-cli # FIXME
                 pkgs.spotify
               ];
             in
             pkg: builtins.elem (pkgs.lib.getName pkg) whitelist;
           browser.homepage = "http://localhost:${toString config.desktop.ghdashboard.port}";
-          font.code.size = 13;
+          font.code.size = 14;
           genericLinux = {
             enable = true;
             nixGL.packages = inputs.nixgl.packages;
           };
           hyprland = {
+            blur.liquidGlass = {
+              iterations = 1;
+              size = 1.0;
+            };
             defaultColumnWidth = 0.333333;
-            gap = 4;
+            gap = 8;
           };
         };
+        home.packages = [
+          pkgs_latest.github-copilot-cli
+        ];
       };
   }
 ]

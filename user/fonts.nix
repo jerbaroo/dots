@@ -63,7 +63,7 @@ in
           type = lib.types.package;
         };
         size = lib.mkOption {
-          default = 16;
+          default = 18;
           description = "Size of (Quick)shell font.";
           type = lib.types.ints.unsigned;
         };
@@ -80,7 +80,7 @@ in
           type = lib.types.package;
         };
         size = lib.mkOption {
-          default = 16;
+          default = 18;
           description = "Size of system font.";
           type = lib.types.ints.unsigned;
         };
