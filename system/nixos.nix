@@ -67,13 +67,11 @@
     ./transmission.nix
   ];
   nixpkgs.config.allowUnfreePredicate = allowUnfreePredicate;
-  nix.settings = {
+  nix.settings = (import ../nix-settings.nix) // {
     experimental-features = [
       "flakes"
       "nix-command"
     ];
-    substituters = [ ];
-    trusted-public-keys = [ ];
   };
   system.stateVersion = stateVersion;
   users.users.${username} = {

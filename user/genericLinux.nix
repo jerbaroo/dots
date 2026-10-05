@@ -1,5 +1,9 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 {
+  config.nix = lib.mkIf config.desktop.genericLinux.enable {
+    package = pkgs.nix;
+    settings = import ../nix-settings.nix;
+  };
   config.targets.genericLinux = {
     enable = config.desktop.genericLinux.enable;
     nixGL.packages = config.desktop.genericLinux.nixGL.packages;
