@@ -30,8 +30,8 @@
           };
           hyprland = {
             blur.liquidGlass = {
-              iterations = 1;
-              size = 1.0;
+              # iterations = 1;
+              # size = 1.5;
             };
             defaultColumnWidth = 0.333333;
             gap = 8;

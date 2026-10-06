@@ -47,7 +47,7 @@ in
         if test -n "$TMUX"
           # tmux display-popup defaults to the directory of the tmux session
           # base or the client attachment point.
-          tmux display-popup -E -d "$wd" -w '80%' -h '80%' "$argv"
+          tmux display-popup -E -d "$wd" -w '90%' -h '90%' "$argv"
         else
           eval "$argv"
         end

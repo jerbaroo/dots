@@ -436,7 +436,7 @@ in
       };
     };
     border.size = lib.mkOption {
-      default = 3;
+      default = 2;
       description = "Size of window borders.";
       type = lib.types.ints.unsigned;
     };
