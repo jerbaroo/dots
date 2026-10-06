@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  pkgs_latest,
   system,
   ...
 }:
@@ -84,7 +83,8 @@ in
     home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
     programs.firefox = {
       enable = true;
-      package = pkgs_latest.firefox;
+      # Avoid using 'pkgs_latest' as it can break xdg-portal.
+      package = pkgs.firefox;
       policies = {
         DisableTelemetry = true;
         DisableFirefoxStudies = true;
@@ -165,6 +165,8 @@ in
           "extensions.pocket.enabled" = false;
           "gfx.webrender.all" = true;
           "media.ffmpeg.vaapi.enabled" = true;
+          "widget.use-xdg-desktop-portal.mime-handler" = 1;
+          "widget.use-xdg-desktop-portal.open-uri" = 1;
         };
       };
     };

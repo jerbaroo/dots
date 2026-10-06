@@ -71,6 +71,7 @@
     ./startup.nix
     ./swaync.nix
     ./terminal.nix
+    ./portal.nix
     ./theme.nix
     ./tmux.nix
     ./wallpaper.nix
