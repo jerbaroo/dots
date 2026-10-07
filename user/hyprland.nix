@@ -247,10 +247,10 @@ in
             ##### Focus #####
 
             # Move focus in direction.
-            (bind "${mod} + H" (dispatchFocusMoveInDirection "l"))
+            (bind "${mod} + H" (dispatch "layout" "\"focus l\""))
             (bind "${mod} + J" (dispatchFocusMoveInDirection "d"))
             (bind "${mod} + K" (dispatchFocusMoveInDirection "u"))
-            (bind "${mod} + L" (dispatchFocusMoveInDirection "r"))
+            (bind "${mod} + L" (dispatch "layout" "\"focus r\""))
 
             # Move focus to workspace.
             (bind "${mod} + 0" (dispatchFocusMoveToWorkspace "0"))
