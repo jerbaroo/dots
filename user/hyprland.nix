@@ -22,6 +22,14 @@ let
 in
 {
   config = {
+    assertions = [
+      {
+        assertion =
+          (config.desktop.hyprland.border.gradient.animate != "none")
+          -> builtins.length (config.desktop.hyprland.border.gradient.colors >= 2);
+        message = "To animate border gradient at least two colours are needed.";
+      }
+    ];
     wayland.windowManager.hyprland = {
       configType = "lua";
       enable = true;
@@ -30,68 +38,56 @@ in
       settings = {
         animation =
           let
-            animation = leaf: curve: style: {
+            # Convert an animation to Hyprland syntax.
+            animation = animationName: isBorderAnimation: curve: style: {
               _args = [
                 (lib.generators.mkLuaInline (
                   let
                     styleStr = if style == null then "" else ", style=\"${style}\"";
-                    # A spring is referenced with spring=, a bezier with bezier=.
                     field = if config.desktop.animation.curves.${curve}.type == "spring" then "spring" else "bezier";
-                    # Border colour and gradient-angle animations pace on their
-                    # own time; every other leaf is a window/surface motion.
-                    # Hyprland speed is in deciseconds, so seconds * 10.
                     seconds =
-                      if leaf == "border" || leaf == "borderangle" then
+                      if isBorderAnimation then
                         config.desktop.hyprland.animationTime.border
                       else
                         config.desktop.hyprland.animationTime.window;
                   in
-                  "{ leaf=\"${leaf}\", enabled=true, speed=${toString (seconds * 10)}, ${field}=\"${curve}\"${styleStr} }"
+                  "{ leaf=\"${animationName}\", enabled=true, speed=${toString (seconds * 10)}, ${field}=\"${curve}\"${styleStr} }"
                 ))
               ];
             };
             curveOf = name: config.desktop.animation.${name}.curve;
-            drawer = "slidevert"; # the scratchpad sliding down and back
             gradient = config.desktop.hyprland.border.gradient;
-            pop = "popin 80%"; # a surface scaling into/out of place (windows, layers)
-            slide = "slide"; # lateral travel (window move, workspace switch)
+            # Styles of animation.
+            drawer = "slidevert";
+            pop = "popin 80%"; # Scaling in/out of place.
+            slide = "slide"; # Lateral travel.
           in
           if config.desktop.hyprland.animationTime == null then
             [ ]
           else
-            [
-              (animation "border" (curveOf "colorShift") null)
-            ]
+            [ (animation "border" true (curveOf "colorShift") null) ]
             ++ lib.optional (gradient.animate != "none") (
-              # A decorative rotation of the gradient's angle — not one of the
-              # OS's semantic animations, so it takes a curve straight from the
-              # vocabulary (linear for a constant loop, decelerate for a one-shot
-              # sweep); the style carries the mode.
-              animation "borderangle" (
+              animation "borderangle" true (
                 if gradient.animate == "loop" then "linear" else "decelerate"
               ) gradient.animate
             )
             ++ [
-              # Parent of every fade Hyprland does not name below — window switch,
-              # shadow, inactive-dim, DPMS on/off, tooltips. Alphabetically first,
-              # so the specific children after it still win.
-              (animation "fade" (curveOf "fadeIn") null)
-              (animation "fadeIn" (curveOf "fadeIn") null)
-              (animation "fadeOut" (curveOf "fadeOut") null)
-              (animation "fadeLayersIn" (curveOf "fadeIn") null)
-              (animation "fadeLayersOut" (curveOf "fadeOut") null)
-              (animation "layersIn" (curveOf "windowIn") pop)
-              (animation "layersOut" (curveOf "windowOut") pop)
-              (animation "specialWorkspaceIn" (curveOf "transitionY") drawer)
-              (animation "specialWorkspaceOut" (curveOf "windowOut") drawer)
-              (animation "windowsIn" (curveOf "windowIn") pop)
-              (animation "windowsOut" (curveOf "windowOut") pop)
-              (animation "windowsMove" (curveOf "windowMove") slide)
-              (animation "workspacesIn" (curveOf "windowIn") slide)
-              (animation "workspacesOut" (curveOf "windowOut") slide)
+              (animation "fade" false (curveOf "fadeIn") null)
+              (animation "fadeIn" false (curveOf "fadeIn") null)
+              (animation "fadeOut" false (curveOf "fadeOut") null)
+              (animation "fadeLayersIn" false (curveOf "fadeIn") null)
+              (animation "fadeLayersOut" false (curveOf "fadeOut") null)
+              (animation "layersIn" false (curveOf "windowIn") pop)
+              (animation "layersOut" false (curveOf "windowOut") pop)
+              (animation "specialWorkspaceIn" false (curveOf "transitionY") drawer)
+              (animation "specialWorkspaceOut" false (curveOf "windowOut") drawer)
+              (animation "windowsIn" false (curveOf "windowIn") pop)
+              (animation "windowsOut" false (curveOf "windowOut") pop)
+              (animation "windowsMove" false (curveOf "windowMove") slide)
+              (animation "workspacesIn" false (curveOf "windowIn") slide)
+              (animation "workspacesOut" false (curveOf "windowOut") slide)
             ];
-        # Emit curves from animation.nix, the animations above reference them.
-        # Each is tagged bezier or spring (Hyprland understands both).
+        # Map each curve from 'animation.nix' to Hyprland syntax.
         curve =
           let
             toCurve = name: c: {
@@ -339,10 +335,7 @@ in
             match.namespace = "^(quickshell-bar|quickshell-launcher|quickshell-notifications|quickshell-osd)$";
           }
           {
-            # Fade the transient popups in/out in place. The global default
-            # layer style is "popin", which scales out from the centre and
-            # reads as the launcher/notifications "growing" from the middle
-            # rather than appearing where they sit; "fade" keeps them put.
+            # Fade the transient popups in/out in place.
             animation = "fade";
             match.namespace = "^(quickshell-launcher|quickshell-notifications|quickshell-osd)$";
           }
@@ -424,10 +417,7 @@ in
         ];
       };
       colors = lib.mkOption {
-        default = [
-          config.desktop.theme.accent
-          "mauve"
-        ];
+        default = [ config.desktop.theme.accent ];
         description = ''
           Palette colour names forming the active border's gradient, in order.
           A single name gives a solid border.
