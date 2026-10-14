@@ -31,7 +31,7 @@ in
     font = {
       code = {
         backgroundOpacity = lib.mkOption {
-          default = 0.7;
+          default = 0.6;
           description = "Background opacity of coding environments.";
           type = floatBetween0And1;
         };

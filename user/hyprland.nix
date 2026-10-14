@@ -447,13 +447,18 @@ in
           description = "Apply liquid glass effect for blurred windows.";
           type = lib.types.bool;
         };
+        grain = lib.mkOption {
+          default = 0.3;
+          description = "Amount of frosted grain.";
+          type = lib.types.addCheck lib.types.float (x: x >= 0 && x <= 1);
+        };
         iterations = lib.mkOption {
           default = 2;
           description = "Amount of liquid glass blurring iterations.";
           type = lib.types.ints.unsigned;
         };
         size = lib.mkOption {
-          default = 1.5;
+          default = 2.0;
           description = "Liquid glass blur size.";
           type = lib.types.float;
         };

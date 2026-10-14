@@ -11,7 +11,7 @@ let
     # Bumping this requires bumping the hyprland version in flake.nix:
     # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
     # Also bump the hash and possibly the revision below.
-    version = "0.9.1";
+    version = "0.10.0";
     meta = {
       description = "Liquid Glass for Hyprland";
       homepage = "https://github.com/hyprnux/hyprglass";
@@ -22,7 +22,7 @@ let
       owner = "hyprnux";
       repo = "hyprglass";
       rev = "v${finalAttrs.version}";
-      hash = "sha256-V8w1SLd9u2wfMh0kvFkHbhV9I5wDQey0S2SyfvGo2LM=";
+      hash = "sha256-60nDpYUgPXue7iSWHb05goz95j0cNmBYAyhlpviu7K4=";
     };
     installPhase = ''
       mkdir -p $out/lib
@@ -44,6 +44,8 @@ in
         hg.preset("glass",
           { blur_strength = ${toString config.desktop.hyprland.blur.liquidGlass.size}
           , blur_iterations = ${toString config.desktop.hyprland.blur.liquidGlass.iterations}
+          , noise_strength = ${toString config.desktop.hyprland.blur.liquidGlass.grain}
+          , xray = true
           })
       end
     '';
