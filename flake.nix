@@ -38,7 +38,7 @@
       };
       pkgs_latest = import inputs.nixpkgs_latest { system = "x86_64-linux"; };
       sharedArgs = {
-        accent = "sapphire";
+        accent = "lavender";
         catppuccin = inputs.catppuccin;
         colorSchemes = inputs.color-schemes;
         doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;

@@ -33,3 +33,10 @@ a different display manager, or just start hyprland from the TTY.
 pre-commit install # Only once.
 pre-commit run --all-files
 ```
+
+### Evaluating
+
+``` bash
+NIXPKGS_ALLOW_UNFREE=1 nix eval --impure --show-trace --raw \
+  '.#homeConfigurations."user@host".activationPackage.drvPath'
+```

@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  pkgs_latest,
   system,
   ...
 }:
@@ -84,7 +85,7 @@ in
     programs.firefox = {
       enable = true;
       # Avoid using 'pkgs_latest' as it can break xdg-portal.
-      package = pkgs.firefox;
+      package = pkgs_latest.firefox;
       policies = {
         DisableTelemetry = true;
         DisableFirefoxStudies = true;

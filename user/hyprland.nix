@@ -25,8 +25,8 @@ in
     assertions = [
       {
         assertion =
-          (config.desktop.hyprland.border.gradient.animate != "none")
-          -> builtins.length (config.desktop.hyprland.border.gradient.colors >= 2);
+          config.desktop.hyprland.border.gradient.animate != "none"
+          -> builtins.length config.desktop.hyprland.border.gradient.colors >= 2;
         message = "To animate border gradient at least two colours are needed.";
       }
     ];

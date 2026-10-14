@@ -21,7 +21,7 @@ in
     type = lib.types.str;
   };
   options.desktop.wallpaperName = lib.mkOption {
-    default = "beach.jpg";
+    default = "monterey-dark.jpg";
     description = "The filename of the wallpaper.";
     type = lib.types.str;
   };

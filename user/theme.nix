@@ -5,7 +5,7 @@
   ...
 }:
 let
-  themeAccent = { sapphire = "teal"; }.${config.desktop.theme.accent} or config.desktop.theme.accent;
+  themeAccent = { peach = "orange"; lavender = "purple"; sapphire = "teal"; }.${config.desktop.theme.accent} or config.desktop.theme.accent;
   themeName = "Colloid-${pkgs.lib.strings.toSentenceCase themeAccent}-Dark-Catppuccin";
   colloid = pkgs.colloid-gtk-theme.override {
     tweaks = [
