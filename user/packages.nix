@@ -21,7 +21,6 @@ in
     pandoc # Document converter.
     pgcli # PG CLI.
     pre-commit # House cleaning.
-    pulseaudio # pavucontrol.
     python3 # For quick scripts.
     python3Packages.black # Python formatter.
     shellcheck # Shell script analyser.

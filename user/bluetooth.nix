@@ -4,14 +4,17 @@
   pkgs,
   ...
 }:
+let
+  package = pkgs.overskride;
+in
 {
   config = {
     desktop.bluetooth = {
-      guiCmd = "${pkgs.blueman}/bin/blueman-manager";
+      guiCmd = lib.getExe package;
       guiTitle = "Bluetooth Manager";
     };
-    home.packages = with pkgs; [ blueman ];
-    services.blueman-applet.enable = true;
+    home.packages = [ package ];
+    # services.blueman-applet.enable = true;
   };
   options.desktop.bluetooth = {
     guiCmd = lib.mkOption {

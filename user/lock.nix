@@ -75,7 +75,11 @@ in
       type = lib.types.functionTo lib.types.str;
     };
     timeout = lib.mkOption {
-      default = let oneMinute = 60; in 5 * oneMinute;
+      default =
+        let
+          oneMinute = 60;
+        in
+        5 * oneMinute;
       description = "Time until system locks.";
       type = lib.types.ints.unsigned;
     };

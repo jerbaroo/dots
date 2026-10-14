@@ -8,7 +8,7 @@
 {
   config = {
     desktop.audio = {
-      guiCmd = "${pkgs.pavucontrol}/bin/pavucontrol";
+      guiCmd = lib.getExe pkgs.pwvucontrol;
       guiTitle = "Volume Control";
     };
     home.packages = [
