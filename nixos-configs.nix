@@ -12,6 +12,7 @@
             enable = false;
             nixGL.packages = inputs.nixgl.packages;
           };
+          neo.colour = "gold";
           startup.extraCommands = [
             {
               cmd = config.desktop.openrgb.command;

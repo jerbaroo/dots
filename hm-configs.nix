@@ -36,6 +36,7 @@
             defaultColumnWidth = 0.333333;
             gap = 8;
           };
+          neo.colour = "gold";
         };
         home.packages = [
           pkgs_latest.github-copilot-cli
