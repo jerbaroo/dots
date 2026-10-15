@@ -114,8 +114,56 @@
 ;; Optional: If you use LSP and want to use the Qt Language Server (qmlls)
 (add-hook 'qml-mode-hook #'lsp!)
 
+(defvar-local my/ghostel-tmux-session nil)
+
+(defun my/tmux-move (direction)
+  "Move to a tmux pane in DIRECTION, returning non-nil if moved."
+  (when (and (derived-mode-p 'ghostel-mode) my/ghostel-tmux-session)
+    (let ((target (concat "=" my/ghostel-tmux-session ":"))
+          (flag (alist-get direction '((left . "-L") (down . "-D")
+                                      (up . "-U") (right . "-R"))))
+          (edge (alist-get direction '((left . "left") (down . "bottom")
+                                      (up . "top") (right . "right")))))
+      (with-temp-buffer
+        ;; At an edge, print a marker; otherwise select the adjacent pane.
+        (and (zerop (call-process "tmux" nil t nil "if-shell" "-F" "-t" target
+                                 (format "#{pane_at_%s}" edge)
+                                 "display-message -p edge"
+                                 (concat "select-pane " flag)))
+             (zerop (buffer-size)))))))
+
+(defun my/navigate (direction)
+  "Move through tmux panes, then Emacs windows, in DIRECTION."
+  (unless (my/tmux-move direction)
+    (funcall (alist-get direction
+      '((left . evil-window-left)
+        (down . evil-window-down)
+        (up . evil-window-up)
+        (right . evil-window-right)))
+    1)))
+
+(map! "M-h" (cmd! (my/navigate 'left))
+      "M-j" (cmd! (my/navigate 'down))
+      "M-k" (cmd! (my/navigate 'up))
+      "M-l" (cmd! (my/navigate 'right)))
+
 (after! ghostel
-  (setq ghostel-shell "@ghostElShell@"))
+  (defun my/ghostel-with-project-shell (orig-fn &rest args)
+    (let* ((session (replace-regexp-in-string "[.:]" "_" (projectile-project-name)))
+           (ghostel-shell (list "tmux" "new-session" "-A" "-s" session))
+           (buffer (apply orig-fn args)))
+      (with-current-buffer buffer
+        (unless my/ghostel-tmux-session
+          (setq my/ghostel-tmux-session session)))
+      buffer))
+  (advice-add 'ghostel :around #'my/ghostel-with-project-shell)
+
+  (defun my/ghostel-navigation-keys (&rest _)
+    (dolist (map (list ghostel-mode-map ghostel-semi-char-mode-map ghostel-char-mode-map))
+      (dolist (key '("M-h" "M-j" "M-k" "M-l"))
+        (define-key map (kbd key) (lookup-key global-map (kbd key))))))
+  (my/ghostel-navigation-keys)
+  (advice-add 'ghostel--rebuild-semi-char-keymap :after #'my/ghostel-navigation-keys))
 
 ;; The exceptions to this rule:
 ;;
