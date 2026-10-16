@@ -81,9 +81,7 @@ in
 
         # Theming.
         set -as terminal-features ",*:RGB" # True color.
-        set -g pane-active-border-style fg=${
-          config.desktop.theme.palette.${config.desktop.theme.accent}.hex
-        }
+        set -g pane-active-border-style fg=${config.desktop.theme.palette.${config.desktop.theme.accent}.hex}
         set -g pane-border-lines single
         set -g pane-border-style fg=${config.desktop.theme.palette.base.hex}
         set -g message-command-style bg=${config.desktop.theme.palette.base.hex},fg=${config.desktop.theme.palette.text.hex}

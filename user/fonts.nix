@@ -8,9 +8,23 @@ let
   floatBetween0And1 = lib.types.addCheck lib.types.float (x: x >= 0.0 && x <= 1.0) // {
     description = "Floating point number in [0 1].";
   };
+  iosevka-custom = pkgs.iosevka.override {
+    # https://github.com/be5invis/Iosevka/blob/main/doc/custom-build.md
+    privateBuildPlan = {
+      family = "Iosevka Custom";
+      ligations = {
+        inherits = "haskell";
+        enables = [ "llggeq" ];
+      };
+      serifs = "sans";
+      spacing = "term";
+    };
+    set = "custom";
+  };
 in
 {
   config = {
+    # Required so fontconfig discovers fonts in ~/.nix-profile/share/fonts
     fonts.fontconfig.enable = true;
     gtk.font = {
       name = config.desktop.font.system.name;
@@ -21,11 +35,9 @@ in
       config.desktop.font.code.package
       config.desktop.font.shell.package
       config.desktop.font.system.package
-    ]
-    ++ (with pkgs; [
-      nerd-fonts.symbols-only
-      noto-fonts
-    ]);
+      pkgs.nerd-fonts.symbols-only
+      pkgs.noto-fonts
+    ];
   };
   options.desktop = {
     font = {
@@ -36,12 +48,12 @@ in
           type = floatBetween0And1;
         };
         name = lib.mkOption {
-          default = "Iosevka Nerd Font Mono";
+          default = "Iosevka Custom";
           description = "Name of font for coding environments.";
           type = lib.types.str;
         };
         package = lib.mkOption {
-          default = pkgs.nerd-fonts.iosevka;
+          default = iosevka-custom;
           description = "Package providing the coding-environment font.";
           type = lib.types.package;
         };

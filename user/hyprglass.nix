@@ -38,12 +38,12 @@ in
         hg.config({
           default_preset = "glass",
           default_theme = "dark",
-          -- We only use hyprglass for windows, not layers (e.g. Quickshell components).
-          layers = { enabled = 0 },
+          -- Disable hyprglass for layers (e.g. Quickshell components).
+          -- layers = { enabled = 0 },
         })
         hg.preset("glass",
-          { blur_strength = ${toString config.desktop.hyprland.blur.liquidGlass.size}
-          , blur_iterations = ${toString config.desktop.hyprland.blur.liquidGlass.iterations}
+          { blur_iterations = ${toString config.desktop.hyprland.blur.liquidGlass.iterations}
+          , blur_strength = ${toString config.desktop.hyprland.blur.liquidGlass.size}
           , noise_strength = ${toString config.desktop.hyprland.blur.liquidGlass.grain}
           , xray = true
           })

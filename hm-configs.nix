@@ -29,10 +29,6 @@
             nixGL.packages = inputs.nixgl.packages;
           };
           hyprland = {
-            blur.liquidGlass = {
-              # iterations = 1;
-              # size = 1.5;
-            };
             defaultColumnWidth = 0.333333;
             gap = 8;
           };
