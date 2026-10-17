@@ -38,6 +38,7 @@
     ./options.nix
 
     # Personal Home Manager modules.
+    ./agents.nix
     ./animation.nix
     ./audio.nix
     ./btop.nix

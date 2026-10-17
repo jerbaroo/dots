@@ -3,6 +3,9 @@
 (package! catppuccin-theme)
 (package! eca :recipe (:host github :repo "editor-code-assistant/eca-emacs" :files ("*.el")))
 (package! zoom)
+(package! persp-mode-tab-bar
+  :recipe (:host github :repo "Jotham-LEC/persp-mode-tab-bar")
+  :pin "9b3ea4b8d3e35de402991a3a7f4171bf17e1ba6a")
 
 ;; To install a package:
 ;;
