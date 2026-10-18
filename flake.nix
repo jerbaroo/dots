@@ -12,7 +12,7 @@
     };
     foyer = {
       inputs.nixpkgs.follows = "nixpkgs";
-      url = "path:./foyer";
+      url = "github:jerbaroo/foyer";
     };
     home-manager = {
       inputs.nixpkgs.follows = "nixpkgs";

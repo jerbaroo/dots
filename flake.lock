@@ -180,14 +180,18 @@
         ]
       },
       "locked": {
-        "path": "./foyer",
-        "type": "path"
+        "lastModified": 1792340510,
+        "narHash": "sha256-BffBiYLN/WOxL4vrRDEiwwoU7zIv0TxnxZY087DmP+E=",
+        "owner": "jerbaroo",
+        "repo": "foyer",
+        "rev": "9efd19c246e46edde3bfbfb7ac13ced0f0b63913",
+        "type": "github"
       },
       "original": {
-        "path": "./foyer",
-        "type": "path"
-      },
-      "parent": []
+        "owner": "jerbaroo",
+        "repo": "foyer",
+        "type": "github"
+      }
     },
     "home-manager": {
       "inputs": {
