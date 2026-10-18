@@ -16,7 +16,7 @@ in
         before_sleep_cmd = "loginctl lock-session";
         # Lock if not already locked.
         # TODO ${pkgs.playerctl}/bin/playerctl pause
-        lock_cmd = "pidof os-lock || os-lock "; # TODO
+        lock_cmd = config.desktop.lock.cmd;
       };
       listener = [
         # Locking notification.

@@ -219,7 +219,7 @@ in
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
 
             # Other keys
-            (bind "${mod} + DELETE" (execCmd "systemctl suspend"))
+            (bind "${mod} + DELETE" (execCmd config.desktop.lock.cmd))
             (bind "${mod} + RETURN" (execCmd "kitty"))
             (bind "${mod} + SHIFT + RETURN" (execCmd "konsole")) # Backup terminal.
             (bind "${mod} + SLASH" (execCmd "${lib.getExe config.programs.foyer.package} launcher toggle"))
