@@ -121,8 +121,22 @@ fn log(level: Level, message: &str) -> () {
     }
 }
 
+fn parse_port(args: &[String]) -> Result<u16, String> {
+    match args {
+        [] => Ok(1235),
+        [flag, value] if flag == "--port" => value
+            .parse::<u16>()
+            .map_err(|_| format!("Invalid port {value:?}: expected an integer from 0 to 65535")),
+        _ => Err("Usage: foyer-server [--port PORT]".to_string()),
+    }
+}
+
 #[tokio::main]
 async fn main() {
+    let port = parse_port(&env::args().skip(1).collect::<Vec<_>>()).unwrap_or_else(|error| {
+        eprintln!("{error}");
+        std::process::exit(2);
+    });
     let cache: Arc<Mutex<Option<Vec<Desktop::Section>>>> = Arc::new(Mutex::new(None));
     background_refresh(Arc::clone(&cache));
     let app = Router::new().route(
@@ -136,7 +150,7 @@ async fn main() {
             }
         }).with_state(cache)
     );
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:1235").await.unwrap();
+    let listener = tokio::net::TcpListener::bind((std::net::Ipv4Addr::LOCALHOST, port)).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
 
@@ -150,4 +164,30 @@ pub fn serialize_sections(sections: Vec<Desktop::Section>) -> Result<String, Str
         apps.push(App { name: name.to_string(), exec: exec.to_string(), comment: comment.cloned(), icon: icon.cloned() });
     }
     serde_json::to_string(&apps).map_err(|err| err.to_string())
+}
+
+#[cfg(test)]
+mod endpoint_tests {
+    use super::parse_port;
+
+    #[test]
+    fn default_and_custom_ports() {
+        assert_eq!(parse_port(&[]).unwrap(), 1235);
+        assert_eq!(parse_port(&["--port".into(), "4321".into()]).unwrap(), 4321);
+    }
+
+    #[test]
+    fn rejects_invalid_ports_and_arguments() {
+        for args in [
+            vec!["--port", "65536"],
+            vec!["--port", "-1"],
+            vec!["--port", "abc"],
+            vec!["--port"],
+            vec!["--host", "0.0.0.0"],
+            vec!["--port", "4321", "extra"],
+        ] {
+            let args: Vec<String> = args.into_iter().map(String::from).collect();
+            assert!(parse_port(&args).is_err(), "{args:?}");
+        }
+    }
 }

@@ -10,6 +10,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "git+https://github.com/marienz/nix-doom-emacs-unstraightened";
     };
+    foyer = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "path:./foyer";
+    };
     home-manager = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/home-manager/master";
@@ -43,6 +47,7 @@
         colorSchemes = inputs.color-schemes;
         doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;
         flavor = "mocha";
+        foyer = inputs.foyer;
         hyprland = inputs.hyprland;
         inherit pkgs_latest;
         spicetify = inputs.spicetify;

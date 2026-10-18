@@ -179,18 +179,6 @@ def toggle():
 
 
 @ui.group()
-def logout_menu():
-    pass
-
-
-@logout_menu.command()
-def toggle():
-    subprocess.run(
-        [IGNIS, "toggle-window", f"ignis-logout-menu-{monitor_current()[0]}"]
-    )
-
-
-@ui.group()
 def menu_bar():
     pass
 

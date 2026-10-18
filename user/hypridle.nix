@@ -9,6 +9,7 @@ in
     enable = true;
     settings = {
       general = {
+        ignore_systemd_inhibit = false;
         # Screen off after entering sleep.
         after_sleep_cmd = "hyprctl dispatch dpms on";
         # Lock before entering sleeping.
@@ -21,18 +22,18 @@ in
         # Locking notification.
         {
           on-resume = "rm ${lockingPath}";
-          on-timeout = config.desktop.lock.unlessNoLock ("touch ${lockingPath}; " + lockingCountdown 10);
+          on-timeout = "touch ${lockingPath}; " + lockingCountdown 10;
           timeout = config.desktop.lock.timeout - 10;
         }
         # Lock.
         {
-          on-timeout = config.desktop.lock.unlessNoLock "loginctl lock-session";
+          on-timeout = "loginctl lock-session";
           timeout = config.desktop.lock.timeout;
         }
         # Screen off.
         {
           on-resume = "hyprctl dispatch dpms on";
-          on-timeout = config.desktop.lock.unlessNoLock "hyprctl dispatch dpms off";
+          on-timeout = "hyprctl dispatch dpms off";
           timeout = config.desktop.lock.timeout + 60;
         }
         # Sleep.

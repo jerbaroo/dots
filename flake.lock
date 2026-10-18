@@ -173,6 +173,22 @@
         "type": "github"
       }
     },
+    "foyer": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./foyer",
+        "type": "path"
+      },
+      "original": {
+        "path": "./foyer",
+        "type": "path"
+      },
+      "parent": []
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -674,6 +690,7 @@
       "inputs": {
         "catppuccin": "catppuccin",
         "color-schemes": "color-schemes",
+        "foyer": "foyer",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
         "nix-doom-emacs-unstraightened": "nix-doom-emacs-unstraightened",

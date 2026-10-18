@@ -1,10 +1,9 @@
 import QtQuick
-import "../config.js" as Config
+import FoyerConfig 1.0
 
-// Colour counterpart to Anim. Always the effect family: a colour has no
-// position, so the spatial/travel distinction is meaningless for it.
+// Colour counterpart to Anim. Uses the enter timing and easing.
 ColorAnimation {
-    duration: Config.anim.effectMs
-    easing.bezierCurve: Config.anim.effectCurve
+    duration: Config.anim.enterMs
+    easing.bezierCurve: Config.anim.enterCurve
     easing.type: Easing.Bezier
 }

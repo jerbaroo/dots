@@ -6,7 +6,7 @@ import Quickshell.Services.Pipewire
 import Quickshell.Wayland
 import Quickshell.Widgets
 
-import "../config.js" as Config
+import FoyerConfig 1.0
 import qs.bar
 import qs.common
 
@@ -96,7 +96,7 @@ Scope {
 
     PanelWindow {
         // Own blur namespace, faded in place, like the other popups (hyprland.nix).
-        WlrLayershell.namespace: "quickshell-osd"
+        WlrLayershell.namespace: Config.layers.osd
 
         anchors {
             left: true
@@ -143,7 +143,7 @@ Scope {
                 // Level bar.
                 Rectangle {
                     Layout.alignment: Qt.AlignHCenter
-                    color: Config.surface0
+                    color: Config.controlActive
                     implicitHeight: Config.osd.barHeight
                     // Span the (now wider) card, inset by a comfortable margin.
                     implicitWidth: Config.osd.width - 2 * Config.spacing.large
@@ -157,11 +157,11 @@ Scope {
 
                         // The level arrives in discrete steps (a scroll notch,
                         // a brightness key), so easing between them reads as
-                        // the value moving. Travel, not spatial: overshooting
+                        // the value moving. Slide, not spatial: overshooting
                         // would show a level that was never set.
                         Behavior on width {
                             Anim {
-                                family: Anim.Travel
+                                family: Anim.Slide
                             }
                         }
                     }

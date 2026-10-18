@@ -1,10 +1,10 @@
 pragma Singleton
 import QtQuick
 import Quickshell
-import "../config.js" as Config
+import FoyerConfig 1.0
 
 // The bar's visual constants (BAR.md: one variables block). All sizes, gaps,
-// timings and colors come from config.js.
+// timings and colors come from FoyerConfig.
 Singleton {
     // Bar.
     readonly property color barColor: Config.glass
@@ -47,7 +47,7 @@ Singleton {
     readonly property int panelFontSize: Config.font.pixelSize.small
     readonly property color panelColor: Config.panelGlass
     readonly property color panelText: Config.text
-    readonly property color panelTextDim: Config.subtext0
+    readonly property color panelTextDim: Config.textMuted
 
     // Controls.
     readonly property int controlHeight: Config.bar.control.height
@@ -61,15 +61,15 @@ Singleton {
     readonly property int togglePillHeight: Config.bar.toggle.pillHeight
     readonly property int toggleKnobSize: Config.bar.toggle.knobSize
     readonly property int toggleKnobMargin: Config.bar.toggle.knobMargin
-    // Resting input/field background, shared with the app launcher (Config.field).
+    // Resting input/field background, shared with the app launcher (Config.fieldBackground).
     // Active/hover step up the palette ramp from it for subtle feedback.
-    readonly property color controlColor: Config.field
-    readonly property color controlActiveColor: Config.surface0
-    readonly property color controlHoverColor: Config.surface1
-    readonly property color controlBorder: Config.overlay0
-    readonly property color sliderTrack: Config.surface1
+    readonly property color controlColor: Config.fieldBackground
+    readonly property color controlActiveColor: Config.controlActive
+    readonly property color controlHoverColor: Config.controlHover
+    readonly property color controlBorder: Config.controlBorder
+    readonly property color sliderTrack: Config.controlHover
 
-    // Motion lives in common/Anim.qml, which reads config.js directly — it is
+    // Motion lives in common/Anim.qml, which reads FoyerConfig directly — it is
     // shell-wide, not bar-specific, and the launcher is a separate quickshell
     // instance that cannot import this module.
 

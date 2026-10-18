@@ -59,21 +59,6 @@ in
       default = "${swaylock_}/bin/swaylock_";
       type = lib.types.str;
     };
-    inhibitPath = lib.mkOption {
-      default = "/tmp/inhibit_lock";
-      description = "Flag file to tell idling programs (e.g. hypridle) to skip locking.";
-      type = lib.types.str;
-    };
-    unlessNoLock = lib.mkOption {
-      default = cmd: "[ -e ${config.desktop.lock.inhibitPath} ] || { ${cmd}; }";
-      description = ''
-        Wraps a shell command (run via `sh -c`) so it is skipped while
-        `inhibitPath` exists.
-      '';
-      internal = true;
-      readOnly = true;
-      type = lib.types.functionTo lib.types.str;
-    };
     timeout = lib.mkOption {
       default =
         let

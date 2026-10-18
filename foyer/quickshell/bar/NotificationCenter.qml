@@ -7,7 +7,7 @@ import Quickshell.Services.Notifications
 import Quickshell.Wayland
 import Quickshell.Widgets
 
-import "../config.js" as Config
+import FoyerConfig 1.0
 import "notifications.js" as Notifications
 import qs.common
 
@@ -40,11 +40,11 @@ Scope {
         // Card background. Opaque by default (floating popup toasts, which have
         // no blur behind them); the notification center overrides it to
         // transparent so its cards read as part of the frosted glass panel.
-        property color background: Config.crust
+        property color background: Config.background
 
         Layout.fillWidth: true
         implicitHeight: mainLayout.implicitHeight + 32
-        border.color: urgency === NotificationUrgency.Critical ? Config.red : Config.accent
+        border.color: urgency === NotificationUrgency.Critical ? Config.danger : Config.accent
         border.width: borderEnabled ? Config.borderSize : 0
         color: background
         radius: Config.notification.radius
@@ -70,7 +70,7 @@ Scope {
                 // App name.
                 Text {
                     Layout.fillWidth: true
-                    color: card.urgency === NotificationUrgency.Critical ? Config.red : Config.accent
+                    color: card.urgency === NotificationUrgency.Critical ? Config.danger : Config.accent
                     font.family: Config.font.family
                     font.pixelSize: Config.font.pixelSize.small
                     font.bold: true
@@ -87,14 +87,14 @@ Scope {
 
                 // Close button.
                 StyledRect {
-                    color: closeMouseArea.containsMouse ? Config.red : "transparent"
+                    color: closeMouseArea.containsMouse ? Config.danger : "transparent"
                     height: 24
                     width: 24
                     radius: 12
 
                     StyledText {
                         anchors.centerIn: parent
-                        color: closeMouseArea.containsMouse ? Config.crust : Config.accent
+                        color: closeMouseArea.containsMouse ? Config.background : Config.accent
                         font.family: Config.font.family
                         font.pixelSize: Config.font.pixelSize.small
                         font.bold: true
@@ -132,7 +132,7 @@ Scope {
                     // Notification title.
                     Text {
                         Layout.fillWidth: true
-                        color: Config.yellow
+                        color: Config.notificationBody
                         font.bold: true
                         font.family: Config.font.family
                         font.pixelSize: Config.font.pixelSize.medium
@@ -176,7 +176,7 @@ Scope {
 
                         required property var modelData
 
-                        color: actionMouseArea.containsMouse ? Config.accent : Config.surface0
+                        color: actionMouseArea.containsMouse ? Config.accent : Config.controlActive
                         implicitHeight: actionText.implicitHeight + 12
                         implicitWidth: actionText.implicitWidth + 24
                         radius: Config.notification.radius
@@ -184,7 +184,7 @@ Scope {
                         StyledText {
                             id: actionText
                             anchors.centerIn: parent
-                            color: actionMouseArea.containsMouse ? Config.crust : Config.text
+                            color: actionMouseArea.containsMouse ? Config.background : Config.text
                             font.family: Config.font.family
                             font.pixelSize: Config.font.pixelSize.small
                             text: actionButton.modelData.text
@@ -287,7 +287,7 @@ Scope {
     PanelWindow {
         // Same blur namespace as the notification center, so the popup toasts
         // get the same liquid-glass blur (see hyprland.nix).
-        WlrLayershell.namespace: "quickshell-notifications"
+        WlrLayershell.namespace: Config.layers.notifications
 
         anchors {
             right: true
@@ -299,7 +299,7 @@ Scope {
         implicitWidth: 512
         margins {
             right: Config.notification.right
-            // Clear the menu bar (see config.js), rather than overlapping it.
+            // Clear the menu bar (see FoyerConfig), rather than overlapping it.
             top: Config.notification.top
         }
         visible: !root.centerOpen && !root.doNotDisturb
@@ -317,7 +317,7 @@ Scope {
             move: Transition {
                 Anim {
                     property: "y"
-                    family: Anim.Spatial
+                    family: Anim.Resize
                 }
             }
             add: Transition {
@@ -392,7 +392,7 @@ Scope {
     PanelWindow {
         // Own layer namespace so Hyprland's blur rule (see hyprland.nix) applies
         // the same liquid-glass blur as the menu bar and launcher.
-        WlrLayershell.namespace: "quickshell-notifications"
+        WlrLayershell.namespace: Config.layers.notifications
 
         anchors {
             bottom: true
@@ -423,7 +423,7 @@ Scope {
                 right: parent.right
                 rightMargin: Config.notification.right
                 top: parent.top
-                // Clear the menu bar (see config.js), rather than overlapping it.
+                // Clear the menu bar (see FoyerConfig), rather than overlapping it.
                 topMargin: Config.notification.top
             }
             border.color: Config.accent
@@ -463,7 +463,7 @@ Scope {
                     // Do not disturb toggle. Same icon as the bar's
                     // notifications module.
                     StyledRect {
-                        color: dndToggleMouseArea.containsMouse ? Config.surface0 : "transparent"
+                        color: dndToggleMouseArea.containsMouse ? Config.controlActive : "transparent"
                         implicitHeight: dndToggle.implicitHeight + 16
                         implicitWidth: dndToggle.implicitWidth + 16
                         radius: Config.notification.radius
@@ -496,7 +496,7 @@ Scope {
 
                     // Clear all button.
                     StyledRect {
-                        color: clearAllMouseArea.containsMouse ? Config.red : "transparent"
+                        color: clearAllMouseArea.containsMouse ? Config.danger : "transparent"
                         implicitHeight: clearAllText.implicitHeight + 8
                         implicitWidth: clearAllText.implicitWidth + 16
                         radius: Config.notification.radius
@@ -505,7 +505,7 @@ Scope {
                         StyledText {
                             id: clearAllText
                             anchors.centerIn: parent
-                            color: clearAllMouseArea.containsMouse ? Config.crust : Config.accent
+                            color: clearAllMouseArea.containsMouse ? Config.background : Config.accent
                             font.family: Config.font.family
                             font.pixelSize: Config.font.pixelSize.small
                             text: "Clear all"

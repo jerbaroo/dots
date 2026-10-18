@@ -101,7 +101,7 @@ Item {
             target: column
             property: "opacity"
             to: 0
-            family: Anim.EffectFast
+            family: Anim.Exit
         }
         ScriptAction {
             script: if (root.chip)
@@ -135,7 +135,7 @@ Item {
 
         Behavior on reveal {
             Anim {
-                family: Anim.Spatial
+                family: Anim.Resize
             }
         }
         // Both gated on being fully out: while the panel is emerging or
@@ -144,13 +144,13 @@ Item {
         Behavior on x {
             enabled: panel.reveal >= 1
             Anim {
-                family: Anim.Travel
+                family: Anim.Slide
             }
         }
         Behavior on implicitHeight {
             enabled: panel.reveal >= 1
             Anim {
-                family: Anim.Spatial
+                family: Anim.Resize
             }
         }
 

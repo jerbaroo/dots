@@ -196,7 +196,7 @@ in
 
             # Alphabet keys.
             (bind "${mod} + B" (execCmd "${floatCenter 0} ${config.desktop.bluetooth.guiCmd}"))
-            (bind "${mod} + SHIFT + B" (execCmd config.desktop.cli.ui.menuBar.toggle))
+            (bind "${mod} + SHIFT + B" (execCmd "${lib.getExe config.programs.foyer.package} bar toggle"))
             (bind "${mod} + D" (execCmd "kitty ${pkgs.yazi}/bin/yazi"))
             (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
             (bind "${mod} + E" (execCmd "${config.programs.doom-emacs.finalEmacsPackage}/bin/emacs"))
@@ -204,10 +204,7 @@ in
             # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
             (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))
             (bind "${mod} + M" (execCmd "spotify"))
-            # TODO read command from quickshell.nix
-            (bind "${mod} + N" (
-              execCmd "${config.programs.quickshell.package}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/bar.qml ipc call notifications toggleNotificationCenter"
-            ))
+            (bind "${mod} + N" (execCmd "${lib.getExe config.programs.foyer.package} notifications toggle"))
             (bind "${mod} + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy"))
             (bind "${mod} + SHIFT + R" (
               execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
@@ -222,14 +219,10 @@ in
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
 
             # Other keys
-            (bind "${mod} + BACKSPACE" (execCmd config.desktop.cli.ui.logoutMenu.toggle))
             (bind "${mod} + DELETE" (execCmd "systemctl suspend"))
             (bind "${mod} + RETURN" (execCmd "kitty"))
             (bind "${mod} + SHIFT + RETURN" (execCmd "konsole")) # Backup terminal.
-            # TODO read command from quickshell.nix
-            (bind "${mod} + SLASH" (
-              execCmd "${config.programs.quickshell.package}/bin/quickshell -p /home/${config.desktop.username}/.config/quickshell/app_launcher.qml ipc call app-launcher toggle"
-            ))
+            (bind "${mod} + SLASH" (execCmd "${lib.getExe config.programs.foyer.package} launcher toggle"))
             (bind "${mod} + SPACE" (
               if config.desktop.hyprland.layout == "dwindle" then
                 dispatch "togglesplit" ""
@@ -332,12 +325,21 @@ in
             blur = config.desktop.hyprland.blur.enabled;
             # Necessary for how the Quickshell menu bar is built.
             ignore_alpha = config.desktop.hyprland.blur.threshold;
-            match.namespace = "^(quickshell-bar|quickshell-launcher|quickshell-notifications|quickshell-osd)$";
+            match.namespace = "^(${lib.concatStringsSep "|" (builtins.attrValues config.programs.foyer.layers)})$";
           }
           {
             # Fade the transient popups in/out in place.
             animation = "fade";
-            match.namespace = "^(quickshell-launcher|quickshell-notifications|quickshell-osd)$";
+            match.namespace = "^(${
+              lib.concatStringsSep "|" (
+                with config.programs.foyer.layers;
+                [
+                  launcher
+                  notifications
+                  osd
+                ]
+              )
+            })$";
           }
         ];
         window_rule =

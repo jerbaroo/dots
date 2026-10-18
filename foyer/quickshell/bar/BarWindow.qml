@@ -7,6 +7,7 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.SystemTray
 import Quickshell.Services.UPower
 import Quickshell.Wayland
+import FoyerConfig 1.0
 import Cmds 0.1
 import qs.bar
 
@@ -78,7 +79,7 @@ PanelWindow {
 
     // Hyprglass applies the liquid glass effect by layer namespace (see the
     // layer_rule in hyprland.nix).
-    WlrLayershell.namespace: "quickshell-bar"
+    WlrLayershell.namespace: Config.layers.bar
 
     anchors {
         left: true

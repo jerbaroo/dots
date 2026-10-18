@@ -86,12 +86,6 @@ in
                 readOnly = true;
                 type = lib.types.str;
               };
-              logoutMenu.toggle = lib.mkOption {
-                default = mkCmd "ui logout-menu toggle";
-                description = "Toggle the power/logout menu.";
-                readOnly = true;
-                type = lib.types.str;
-              };
               menuBar.toggle = lib.mkOption {
                 default = mkCmd "ui menu-bar toggle";
                 description = "Toggle the menu bar.";

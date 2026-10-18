@@ -5,7 +5,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Widgets
 
-import "config.js" as Config
+import FoyerConfig 1.0
 import qs.common
 
 Scope {
@@ -25,6 +25,12 @@ Scope {
 
     IpcHandler {
         target: "app-launcher"
+        function setShown(): void {
+            root.appLauncherOpen = true;
+        }
+        function setHidden(): void {
+            root.appLauncherOpen = false;
+        }
         function toggle(): void {
             root.appLauncherOpen = !root.appLauncherOpen;
         }
@@ -55,7 +61,7 @@ Scope {
                 console.log("HTTP exception: ", exception);
             }
         };
-        var url = "http://localhost:1235/apps/search/" + encodeURIComponent(query);
+        var url = Config.searchUrl + "/apps/search/" + encodeURIComponent(query);
         xhr.open("GET", url, true);
         xhr.send();
     }
@@ -77,7 +83,7 @@ Scope {
 
         // Own layer namespace so Hyprland's blur rule (see hyprland.nix) applies
         // the same liquid-glass blur as the menu bar.
-        WlrLayershell.namespace: "quickshell-launcher"
+        WlrLayershell.namespace: Config.layers.launcher
 
         anchors {
             bottom: true
@@ -127,7 +133,7 @@ Scope {
 
                         anchors.fill: parent
                         anchors.margins: Config.launcher.padding // Padding around the search box
-                        color: Config.field
+                        color: Config.fieldBackground
                         radius: Config.launcher.radius
 
                         Row {
@@ -216,7 +222,7 @@ Scope {
 
                         background: StyledRect {
                             readonly property bool isCurrent: resultsList.currentIndex === delegateItem.index
-                            color: delegateItem.hovered ? Config.field : "transparent"
+                            color: delegateItem.hovered ? Config.fieldBackground : "transparent"
                             border.color: isCurrent ? Config.accent : "transparent"
                             // Kept at a constant width so only the colour
                             // changes: animating the width would reflow the

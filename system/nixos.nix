@@ -6,6 +6,7 @@
   config,
   doomModule,
   flavor,
+  foyer,
   homeConfig,
   hostname,
   hyprland,
@@ -27,6 +28,7 @@
         colorSchemes
         doomModule
         flavor
+        foyer
         hostname
         hyprland
         pkgs_latest

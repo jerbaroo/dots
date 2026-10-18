@@ -1,0 +1,173 @@
+pragma Singleton
+import QtQuick
+
+QtObject {
+    readonly property string searchUrl: @searchUrl@
+
+    // Read-only layer namespaces exported by the Home Manager module.
+    readonly property var layers: @layers@
+
+    // Shell appearance and integration settings supplied by the host.
+    readonly property int borderSize: @borderSize@
+    readonly property int gap: @gap@
+    readonly property int rounding: @rounding@
+
+    // Standard logind inhibitors are held by child processes owned by the shell.
+    readonly property string inhibitCommand: @inhibitCommand@
+    readonly property string sleepCommand: @sleepCommand@
+
+    readonly property real shellFontSize: @shellFontSize@
+    readonly property var font: ({
+        family: @shellFontName@,
+        pixelSize: {
+            xlarge: shellFontSize + 6,
+            large: shellFontSize + 4,
+            medium: shellFontSize + 2,
+            small: shellFontSize,
+            xsmall: shellFontSize - 2,
+        },
+    })
+    readonly property var spacing: ({
+        large: 32,
+        medium: 16,
+    })
+
+    readonly property var iconSize: ({
+        small: 16,
+        medium: 32,
+        large: 64,
+    })
+
+    // Timing and easing for content entry/exit, panel resize, and movement.
+    // QML chooses the animated property; these settings do not select transitions.
+    // The trailing 1, 1 completes QML's easing.bezierCurve form.
+    readonly property var anim: ({
+        enterMs: @enterMs@,
+        enterCurve: [@enterCurve@, 1, 1],
+        exitMs: @exitMs@,
+        exitCurve: [@exitCurve@, 1, 1],
+        resizeMs: @resizeMs@,
+        resizeCurve: [@resizeCurve@, 1, 1],
+        slideMs: @slideMs@,
+        slideCurve: [@slideCurve@, 1, 1],
+    })
+
+    // Semantic palette colours, supplied by Nix.
+    readonly property color accent: "@accent@"
+    readonly property color background: "@background@"
+    readonly property color controlActive: "@controlActive@"
+    readonly property color controlBorder: "@controlBorder@"
+    readonly property color controlHover: "@controlHover@"
+    readonly property color danger: "@danger@"
+    readonly property color fieldBackground: "@fieldBackground@"
+    readonly property color notificationBody: "@notificationBody@"
+    readonly property color panelBackground: "@panelBackground@"
+    readonly property color text: "@text@"
+    readonly property color textMuted: "@textMuted@"
+
+    // Translucent variants of the configured background colours.
+    readonly property real backgroundOpacity: @backgroundOpacity@
+    readonly property color glass: Qt.alpha(background, backgroundOpacity)
+    readonly property color panelGlass: Qt.alpha(panelBackground, backgroundOpacity)
+
+    // Menu bar.
+    //
+    // Geometry invariant: chips are centred vertically, so the margin above/below
+    // a chip is (barHeight − chipHeight) / 2. We keep the gap between chips equal
+    // to that margin by deriving chipGap from it. Increasing chipHeight pads the
+    // buttons more (bar height fixed).
+    readonly property int barHeight: 42
+    readonly property int chipHeight: 30
+    readonly property int chipGap: (barHeight - chipHeight) / 2
+
+    readonly property var bar: ({
+        height: barHeight,
+        padding: 10,
+        iconSize: iconSize.small,
+        chip: {
+            height: chipHeight,
+            paddingH: 14,
+            radius: rounding,
+            gap: chipGap,
+            contentGap: 5,
+        },
+        workspace: {
+            gap: 5,
+            minWidth: 40,
+        },
+        tray: {
+            // System tray icons to hide, matched case-insensitively as a
+            // substring of the item's tray id. Used to drop duplicates of modules
+            // the bar already provides (e.g. blueman's bluetooth icon).
+            exclude: ["blueman"],
+        },
+        dot: {
+            size: 4,
+            gap: 3,
+        },
+        panel: {
+            width: 260,
+            gap: 6,
+            padding: 12,
+            radius: rounding,
+            spacing: 8,
+            // Height of the shared, full-width popup container the visible panel
+            // slides within. Generous so no panel is clipped; the empty area is
+            // transparent and click-through.
+            maxHeight: 600,
+        },
+        control: {
+            height: 26,
+            radius: rounding,
+            spacing: 4,
+            padding: 8,
+            infoSpacing: 3,
+        },
+        slider: {
+            height: 16,
+            trackHeight: 6,
+        },
+        toggle: {
+            pillWidth: 22,
+            pillHeight: 12,
+            knobSize: 8,
+            knobMargin: 2,
+        },
+        timing: {
+            hoverMs: 100,
+            pollMs: 3000,
+            wifiPollMs: 10000,
+            brightnessDebounceMs: 300,
+        },
+    })
+
+    // App launcher.
+    readonly property var launcher: ({
+        widthFraction: 0.4,
+        maxWidth: 640,
+        heightFraction: 0.7,
+        maxHeight: 960,
+        padding: 16,
+        radius: rounding,
+        iconSize: iconSize.large,
+        searchHeight: 128,
+        rowHeight: 96,
+        textSpacing: 8,
+    })
+
+    // Notifications (individual and notification center).
+    readonly property var notification: ({
+        top: barHeight + 2 * gap,
+        right: 2 * gap,
+        radius: rounding,
+    })
+
+    // On-screen display: the transient volume/brightness card.
+    readonly property var osd: ({
+        barHeight: 6,
+        height: 128,
+        margin: 96,
+        hideMs: 1200,
+        width: 256,
+    })
+}
