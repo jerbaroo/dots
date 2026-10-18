@@ -20,7 +20,7 @@ let
   # Only bezier curves reach QML — it has no spring type.
   animCurve = name: builtins.concatStringsSep ", " anim.curves.${anim.${name}.curve}.points;
   animMs = name: toString anim.${name}.durationMs;
-  configJs = pkgs.replaceVars ./quickshell/quickshell/config.js (
+  configJs = pkgs.replaceVars ../quickshell/config.js (
     {
       accent = config.desktop.theme.palette.${config.desktop.theme.accent}.hex;
       hyprlandBorderSize = toString config.desktop.hyprland.border.size;
@@ -63,7 +63,7 @@ let
       ];
   configDir = pkgs.runCommandLocal "quickshell-config" { } ''
     mkdir $out
-    cp -r ${./quickshell/quickshell}/. $out/
+    cp -r ${../quickshell}/. $out/
     chmod -R u+w $out # Needed to copy the file.
     cp ${configJs} $out/config.js
   '';
@@ -99,7 +99,7 @@ let
       X-Restart-Triggers = [ configDir ];
     };
   };
-  shellServer = pkgs.callPackage ./quickshell/shell-server/shell-server.nix { };
+  shellServer = pkgs.callPackage ../shell-server/shell-server.nix { };
 in
 {
   home.packages = [

@@ -475,7 +475,7 @@ in
       };
     };
     defaultColumnWidth = lib.mkOption {
-      default = 0.25;
+      default = 0.333333;
       description = "Default size of hyprland scrolling layout columns.";
       type = lib.types.float;
     };

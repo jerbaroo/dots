@@ -66,7 +66,7 @@
     ./neovim.nix
     ./packages.nix
     ./qt.nix
-    ./quickshell.nix
+    ../foyer/nix/home-manager.nix
     ./spicetify.nix
     ./starship.nix
     ./startup.nix
