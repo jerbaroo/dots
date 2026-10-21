@@ -44,14 +44,6 @@ in
     enable = true;
     doomDir = doomDir;
     emacs = pkgs_latest.emacs-pgtk;
-    # ghostel and evil-ghostel are the same upstream repo, but they reach us by
-    # different routes and drift apart. Build evil-ghostel out of ghostel's own
-    # source so the two always match.
-    emacsPackageOverrides = eself: esuper: {
-      evil-ghostel = esuper.evil-ghostel.overrideAttrs (_: {
-        inherit (esuper.ghostel) src version;
-      });
-    };
   };
   programs.ripgrep.enable = true;
 }
