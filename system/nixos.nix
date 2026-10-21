@@ -9,7 +9,7 @@
   foyer,
   homeConfig,
   hostname,
-  hyprland,
+  hyprlandPackages,
   lib,
   pkgs,
   pkgs_latest,
@@ -30,7 +30,7 @@
         flavor
         foyer
         hostname
-        hyprland
+        hyprlandPackages
         pkgs_latest
         spicetify
         stateVersion

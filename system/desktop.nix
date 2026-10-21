@@ -1,12 +1,11 @@
 {
-  hyprland,
-  system,
+  hyprlandPackages,
   ...
 }:
 {
   programs.hyprland = {
     enable = true;
-    package = hyprland.packages.${system}.hyprland;
+    package = hyprlandPackages.hyprland;
   };
   services.desktopManager.gnome.enable = true;
   services.displayManager.gdm.enable = true;

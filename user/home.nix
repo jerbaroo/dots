@@ -4,7 +4,7 @@
   colorSchemes,
   config,
   flavor,
-  hyprland,
+  hyprlandPackages,
   lib,
   pkgs,
   spicetify,
@@ -18,7 +18,7 @@
     inherit
       system
       ;
-    hyprland.packages = hyprland.packages.${system};
+    hyprland.packages = hyprlandPackages;
     spicetify.packages = spicetify.legacyPackages.${system};
     # Theme options taken as parameters because, either they are shared with
     # NixOS, or they come from "inputs".

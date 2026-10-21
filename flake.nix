@@ -41,6 +41,26 @@
         #  overlays = [ inputs.hyprland.overlays.hyprland-packages ];
       };
       pkgs_latest = import inputs.nixpkgs_latest { system = "x86_64-linux"; };
+      pkgs_stable = import inputs.nixpkgs_stable { system = "x86_64-linux"; };
+      hyprlandPkgs = import inputs.nixpkgs {
+        system = "x86_64-linux";
+        overlays = [
+          inputs.hyprland.overlays.hyprland-packages
+          # The pinned Hyprland overlay omits its locked toolkit. The newer
+          # nixpkgs toolkit requires a newer hyprutils than this Hyprland uses.
+          inputs.hyprland.inputs.hyprland-guiutils.inputs.hyprtoolkit.overlays.default
+          inputs.hyprland.overlays.hyprland-extras
+          (final: prev: {
+            # Hyprland 0.56 requires Glaze 7; unstable now provides Glaze 8.
+            glaze-hyprland = pkgs_stable.glaze.override {
+              enableSSL = false;
+              enableInterop = false;
+            };
+            # NixOS requires an ELF executable for its capability wrapper.
+            hyprland = prev.hyprland.override { makeWrapper = final.makeBinaryWrapper; };
+          })
+        ];
+      };
       sharedArgs = {
         accent = "lavender";
         catppuccin = inputs.catppuccin;
@@ -48,7 +68,9 @@
         doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;
         flavor = "mocha";
         foyer = inputs.foyer;
-        hyprland = inputs.hyprland;
+        hyprlandPackages = {
+          inherit (hyprlandPkgs) hyprland xdg-desktop-portal-hyprland;
+        };
         inherit pkgs_latest;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";

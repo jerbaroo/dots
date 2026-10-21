@@ -5,14 +5,8 @@
   ...
 }:
 let
-  # catppuccin-nix themes kitty by including a prebuilt conf from nixpkgs'
-  # kitty-themes, so kitty does not follow desktop.theme.palette. Home Manager
-  # emits `settings` after that include and kitty takes the last definition of a
-  # key, so restating the affected ones is enough -- nothing to rewrite.
-  #
-  # These are the keys the Catppuccin theme sets to base, mantle or crust. The
-  # foreground ones are text drawn on top of an accent; they follow their colour
-  # too, so they cannot end up a not-quite-black sitting next to a true black.
+  # catppuccin-nix themes kitty by including a prebuilt theme from nixpkgs'
+  # kitty-themes, so kitty does not follow desktop.theme.palette.
   paletteSettings = lib.mapAttrs (_: name: config.desktop.theme.palette.${name}.hex) {
     active_tab_foreground = "crust";
     background = "base";
@@ -40,6 +34,8 @@ in
       confirm_os_window_close = 0;
       enable_audio_bell = false;
       hide_window_decorations = false;
+      # Let Hyprland size new windows, avoid restoring a cached maximized state.
+      remember_window_size = false;
       shell = config.desktop.tmux.start.command;
       update_check_interval = 0;
     }
