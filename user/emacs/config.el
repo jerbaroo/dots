@@ -74,75 +74,31 @@
 
 ;; Navigation
 
-(defvar-local my/ghostel-tmux-session nil)
-
-(defun my/tmux-move (direction)
-  "Move to a tmux pane in DIRECTION, returning non-nil if moved."
-  (when (and (derived-mode-p 'ghostel-mode) my/ghostel-tmux-session)
-    (let ((target (concat "=" my/ghostel-tmux-session ":"))
-          (flag (alist-get direction '((left . "-L") (down . "-D")
-                                      (up . "-U") (right . "-R"))))
-          (edge (alist-get direction '((left . "left") (down . "bottom")
-                                      (up . "top") (right . "right")))))
-      (with-temp-buffer
-        ;; At an edge, print a marker; otherwise select the adjacent pane.
-        (and (zerop (call-process "tmux" nil t nil "if-shell" "-F" "-t" target
-                                 (format "#{pane_at_%s}" edge)
-                                 "display-message -p edge"
-                                 (concat "select-pane " flag)))
-             (zerop (buffer-size)))))))
-
-(defun my/navigate (direction)
-  "Move through tmux panes, then Emacs windows, in DIRECTION."
-  (unless (my/tmux-move direction)
-    (funcall (alist-get direction
-      '((left . evil-window-left)
-        (down . evil-window-down)
-        (up . evil-window-up)
-        (right . evil-window-right)))
-    1)))
-
-(map! "M-h" (cmd! (my/navigate 'left))
-      "M-j" (cmd! (my/navigate 'down))
-      "M-k" (cmd! (my/navigate 'up))
-      "M-l" (cmd! (my/navigate 'right)))
-
-(map! "M-;" #'evil-window-vsplit
+(map! "M-h" #'evil-window-left
+      "M-j" #'evil-window-down
+      "M-k" #'evil-window-up
+      "M-l" #'evil-window-right
+      "M-;" #'evil-window-vsplit
       "M-/" #'evil-window-split)
 
-(after! ghostel
-  (defun my/ghostel-insert-cursor ()
-    (if (and ghostel--term (ghostel--mode-enabled ghostel--term 1049))
-        (ghostel--apply-cursor-style)
-      (setq cursor-type 'bar)))
-  (add-hook 'ghostel-mode-hook
-            (lambda ()
-              (setq-local evil-insert-state-cursor #'my/ghostel-insert-cursor)))
-  (add-hook 'evil-normal-state-entry-hook
-            (lambda ()
-              (when (derived-mode-p 'ghostel-mode)
-                (setq-local ghostel-ignore-cursor-change t))))
-  (add-hook 'evil-insert-state-entry-hook
-            (lambda ()
-              (when (derived-mode-p 'ghostel-mode)
-                (setq-local ghostel-ignore-cursor-change nil))))
+(defun my/project-kitty ()
+  "Open Kitty below Emacs, attached to the project's tmux session."
+  (interactive)
+  (let* ((default-directory (or (projectile-project-root) default-directory))
+         (session (replace-regexp-in-string
+                   "[.:]" "_" (projectile-project-name))))
+    ;; Share the focused-window height calculation used by Super+Shift+Return.
+    (call-process "hyprctl" nil nil nil "eval"
+                  "local w = hl.get_active_window(); _G.kitty_below_height = w and w.size.y or nil")
+    (start-process "project-kitty" nil
+                   "kitty" "--class" "kitty-below"
+                   "--directory" default-directory
+                   "tmux" "new-session" "-A" "-s" session
+                   "-c" default-directory)))
 
-  (defun my/ghostel-with-project-shell (orig-fn &rest args)
-    (let* ((session (replace-regexp-in-string "[.:]" "_" (projectile-project-name)))
-           (ghostel-shell (list "tmux" "new-session" "-A" "-s" session))
-           (buffer (apply orig-fn args)))
-      (with-current-buffer buffer
-        (unless my/ghostel-tmux-session
-          (setq my/ghostel-tmux-session session)))
-      buffer))
-  (advice-add 'ghostel :around #'my/ghostel-with-project-shell)
-
-  (defun my/ghostel-navigation-keys (&rest _)
-    (dolist (map (list ghostel-mode-map ghostel-semi-char-mode-map ghostel-char-mode-map))
-      (dolist (key '("M-h" "M-j" "M-k" "M-l"))
-        (define-key map (kbd key) (lookup-key global-map (kbd key))))))
-  (my/ghostel-navigation-keys)
-  (advice-add 'ghostel--rebuild-semi-char-keymap :after #'my/ghostel-navigation-keys))
+(map! :leader
+      :desc "Project terminal in Kitty"
+      "o k" #'my/project-kitty)
 
 (after! projectile
   (setq projectile-enable-caching nil))

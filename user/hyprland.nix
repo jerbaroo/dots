@@ -159,7 +159,30 @@ in
               ];
             };
           in
-          map execOnStart (config.desktop.startup.allCommands ++ [ "${monitorListener}" ]);
+          map execOnStart (config.desktop.startup.allCommands ++ [ "${monitorListener}" ])
+          ++ lib.optionals (config.desktop.hyprland.layout == "scrolling") [
+            {
+              _args = [
+                "window.open"
+                (lib.generators.mkLuaInline ''
+                  function(w)
+                    if w.class == "kitty-below" then
+                      local height = _G.kitty_below_height
+                      _G.kitty_below_height = nil
+                      hl.dispatch(hl.dsp.layout("consume_or_expel prev"))
+                      if height then
+                        hl.dispatch(hl.dsp.window.resize({
+                          window = w,
+                          x = w.size.x,
+                          y = math.floor(height * 0.3),
+                        }))
+                      end
+                    end
+                  end
+                '')
+              ];
+            }
+          ];
         bind =
           let
             bind = keys: action: {
@@ -221,7 +244,13 @@ in
             # Other keys
             (bind "${mod} + DELETE" (execCmd config.desktop.lock.cmd))
             (bind "${mod} + RETURN" (execCmd "kitty"))
-            (bind "${mod} + SHIFT + RETURN" (execCmd "konsole")) # Backup terminal.
+            (bind "${mod} + SHIFT + RETURN" ''
+              function()
+                local w = hl.get_active_window()
+                _G.kitty_below_height = w and w.size.y or nil
+                hl.exec_cmd("kitty --class kitty-below")
+              end
+            '')
             (bind "${mod} + SLASH" (execCmd "${lib.getExe config.programs.foyer.package} launcher toggle"))
             (bind "${mod} + SPACE" (
               if config.desktop.hyprland.layout == "dwindle" then
@@ -371,6 +400,10 @@ in
           ++ [
             noBorderIfSoleTile
             noBlur
+            {
+              match.class = "^kitty-below$";
+              animation = "slide bottom";
+            }
           ];
       };
     };
