@@ -81,6 +81,15 @@ in
 
         # Theming.
         set -as terminal-features ",*:RGB" # True color.
+        # Keep copy-mode highlights on the desktop palette instead of tmux's theme.
+        set -g mode-style bg=${
+          config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+        },fg=${config.desktop.theme.palette.base.hex}
+        set -g copy-mode-match-style bg=${config.desktop.theme.palette.yellow.hex},fg=${config.desktop.theme.palette.base.hex}
+        set -g copy-mode-current-match-style bg=${config.desktop.theme.palette.peach.hex},fg=${config.desktop.theme.palette.base.hex}
+        set -g copy-mode-mark-style bg=${
+          config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+        },fg=${config.desktop.theme.palette.base.hex}
         # tmux 3.8 defaults to opaque themed popup and border backgrounds.
         set -g popup-style bg=default
         set -ag popup-border-style bg=default
