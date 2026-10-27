@@ -148,6 +148,12 @@ in
           };
           xwayland.force_zero_scaling = true;
         };
+        monitor = [
+          {
+            output = "DP-1";
+            bitdepth = 10;
+          }
+        ];
         env = map (tuple: { _args = tuple; }) [ ];
         # Hyprland hooks.
         on =
