@@ -1,5 +1,5 @@
 ;; Physical keys to intercept.
-(defsrc a s d f j k l ;)
+(defsrc a s d f j k l ; vold volu)
 
 ;; Timing variables in milliseconds.
 (defvar
@@ -20,5 +20,9 @@
   ; (tap-hold $tap-time $hold-time ; ralt) ;; Right Alt
 )
 
-;; Map the aliases to the intercepted keys.
-(deflayer base @a @s @d @f @j @k @l @;)
+;; The knob sends volume keys; turn it into a scroll wheel.
+;; This also remaps other volume down/up keys. The knob press is untouched.
+(deflayer base
+  @a @s @d @f @j @k @l @;
+  (mwheel-up 50 120) (mwheel-down 50 120)
+)

@@ -276,6 +276,10 @@ in
             (bind "${mod} + K" (dispatchFocusMoveInDirection "u"))
             (bind "${mod} + L" (dispatch "layout" "\"focus r\""))
 
+            # Navigate columns with the mouse wheel or remapped keyboard knob.
+            (bind "${mod} + mouse_up" (dispatch "layout" "\"focus l\""))
+            (bind "${mod} + mouse_down" (dispatch "layout" "\"focus r\""))
+
             # Move focus to workspace.
             (bind "${mod} + 0" (dispatchFocusMoveToWorkspace "0"))
             (bind "${mod} + 1" (dispatchFocusMoveToWorkspace "1"))
