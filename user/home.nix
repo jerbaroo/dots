@@ -29,6 +29,11 @@
     stateVersion = stateVersion;
     username = "${config.desktop.username}";
   };
+  # Keep clockwise knob rotation increasing volume after Kanata maps it to wheel-down.
+  xdg.configFile."mpv/input.conf".text = ''
+    WHEEL_UP add volume -2
+    WHEEL_DOWN add volume 2
+  '';
   imports = [
     # 3rd-party Home Manager modules.
     catppuccin.homeModules.catppuccin
