@@ -185,16 +185,7 @@ in
             to = lib.toLower config.desktop.theme.palette.${name}.hex;
           }) upstream
         );
-      description = ''
-        Colours where the palette differs from the upstream flavour it is based
-        on, as name -> { from, to } in lowercase hex. Empty when the palette is
-        the stock flavour, so consumers no-op by themselves.
-
-        Anything themed from a prebuilt Catppuccin port rather than from
-        desktop.theme.palette needs this to keep up: the GTK theme above,
-        Qt (qt.nix), Firefox (browser.nix) and Emacs (emacs/emacs.nix) each apply
-        it in the way their port allows.
-      '';
+      description = "Calculated list of changes to apply to the palette";
       readOnly = true;
       type = lib.types.attrs;
     };
