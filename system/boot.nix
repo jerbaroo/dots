@@ -3,7 +3,6 @@
   boot = {
     # Keep boot diagnostics in the journal rather than on the splash/console.
     consoleLogLevel = 0;
-    initrd.verbose = false;
     kernelParams = [
       "quiet"
       "udev.log_level=3"
@@ -19,7 +18,7 @@
       systemd-boot.configurationLimit = 5;
       systemd-boot.enable = true;
     };
-    plymouth.enable = true;
+    plymouth.enable = false;
     supportedFilesystems = [ "ntfs" ];
   };
 }
