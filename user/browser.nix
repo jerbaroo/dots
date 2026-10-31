@@ -76,6 +76,15 @@ let
 in
 {
   config = {
+    xdg.mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "x-scheme-handler/http" = [ "firefox.desktop" ];
+        "x-scheme-handler/https" = [ "firefox.desktop" ];
+        "text/html" = [ "firefox.desktop" ];
+        "application/xhtml+xml" = [ "firefox.desktop" ];
+      };
+    };
     catppuccin.firefox.force = true;
     programs.firefox.profiles.default.extensions.settings."FirefoxColor@mozilla.com".settings.theme =
       lib.mkIf (paletteChanges != { })

@@ -241,7 +241,7 @@ in
             (bind "${mod} + SHIFT + R" (
               execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
             ))
-            (bind "${mod} + P" (dispatch "layout" "\"promote\""))
+            (bind "${mod} + P" (execCmd "${lib.getExe pkgs.proton-pass}"))
             (bind "${mod} + Q" (dispatch "window.close" ""))
             (bind "${mod} + SHIFT + Q" (execCmd "${pkgs.hyprshutdown}/bin/hyprshutdown"))
             (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
@@ -249,6 +249,7 @@ in
             (bind "${mod} + T" (execCmd (floatCenter "kitty ${config.desktop.btop.attach}")))
             (bind "${mod} + V" (execCmd (floatCenter config.desktop.audio.guiCmd)))
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
+            (bind "${mod} + equal" (dispatch "layout" "\"promote\""))
 
             # Other keys
             (bind "${mod} + DELETE" (execCmd config.desktop.lock.cmd))

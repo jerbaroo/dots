@@ -15,8 +15,8 @@
     kernelPackages = pkgs.linuxPackages;
     loader = {
       efi.canTouchEfiVariables = true;
-      grub.configurationLimit = 10;
-      systemd-boot.configurationLimit = 10;
+      grub.configurationLimit = 5;
+      systemd-boot.configurationLimit = 5;
       systemd-boot.enable = true;
     };
     plymouth.enable = true;

@@ -6,9 +6,13 @@ let
 in
 {
   home.packages = with pkgs; [
+    bacon # mmmmm
     brightnessctl # 🔆🔆🔆
+    chatgpt
+    codex # skynet
     ddcutil # Monitor brightness over DDC (menu bar).
     ghc # Glorious Haskell Compiler.
+    ghciwatch # Mercury's ghcid.
     ghcidPoll # Ol' reliable.
     gcc # GNU Compiler Collection.
     jq # JSON processor.
@@ -21,6 +25,7 @@ in
     pandoc # Document converter.
     pgcli # PG CLI.
     pre-commit # House cleaning.
+    proton-pass # Say friend and enter.
     python3 # For quick scripts.
     python3Packages.black # Python formatter.
     shellcheck # Shell script analyser.
