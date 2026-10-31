@@ -29,6 +29,12 @@
     stateVersion = stateVersion;
     username = "${config.desktop.username}";
   };
+  xdg.configFile."mpv/mpv.conf".text = ''
+    vo=gpu-next
+    target-colorspace-hint=auto
+    # Let Hyprland's auto HDR detect HDR content with mpv 0.41 and later.
+    target-colorspace-hint-mode=source
+  '';
   # Keep clockwise knob rotation increasing volume after Kanata maps it to wheel-down.
   xdg.configFile."mpv/input.conf".text = ''
     WHEEL_UP add volume -2
