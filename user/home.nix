@@ -29,17 +29,6 @@
     stateVersion = stateVersion;
     username = "${config.desktop.username}";
   };
-  xdg.configFile."mpv/mpv.conf".text = ''
-    vo=gpu-next
-    target-colorspace-hint=auto
-    # Let Hyprland's auto HDR detect HDR content with mpv 0.41 and later.
-    target-colorspace-hint-mode=source
-  '';
-  # Keep clockwise knob rotation increasing volume after Kanata maps it to wheel-down.
-  xdg.configFile."mpv/input.conf".text = ''
-    WHEEL_UP add volume -2
-    WHEEL_DOWN add volume 2
-  '';
   imports = [
     # 3rd-party Home Manager modules.
     catppuccin.homeModules.catppuccin
@@ -96,4 +85,27 @@
     allowUnfreePredicate = config.desktop.allowUnfreePredicate;
   };
   programs.home-manager.enable = true;
+  # Keep clockwise knob rotation increasing volume after Kanata maps it to wheel-down.
+  xdg.configFile."mpv/input.conf".text = ''
+    WHEEL_UP add volume -2
+    WHEEL_DOWN add volume 2
+  '';
+  xdg.configFile."mpv/mpv.conf".text = ''
+    vo=gpu-next
+    target-colorspace-hint=auto
+    # Let Hyprland's auto HDR detect HDR content with mpv 0.41 and later.
+    target-colorspace-hint-mode=source
+  '';
+  xdg.configFile."yazi/yazi.toml".text = ''
+    [mgr]
+    sort_by = "alphabetical"
+    sort_dir_first = false
+    sort_sensitive = false
+  '';
+  xdg.mimeApps.defaultApplications = {
+    "video/matroska" = [ "mpv.desktop" ];
+    "video/mp4" = [ "mpv.desktop" ];
+    "video/webm" = [ "mpv.desktop" ];
+    "video/x-matroska" = [ "mpv.desktop" ];
+  };
 }

@@ -1,3 +1,9 @@
+# Field ordering
+
+Keep attribute fields in alphabetical order when adding or editing
+configuration. Place new fields in their alphabetical position rather than
+appending them.
+
 # Emacs project context
 
 When working on code, use the running Emacs session as an additional source
