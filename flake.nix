@@ -23,7 +23,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       # Required for hyprglasss (bumping this requires a bump in hyprglass.nix):
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.56.2";
+      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.57.0";
     };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -46,18 +46,13 @@
         system = "x86_64-linux";
         overlays = [
           inputs.hyprland.overlays.hyprland-packages
-          # The pinned Hyprland overlay omits its locked toolkit. The newer
-          # nixpkgs toolkit requires a newer hyprutils than this Hyprland uses.
-          inputs.hyprland.inputs.hyprland-guiutils.inputs.hyprtoolkit.overlays.default
           inputs.hyprland.overlays.hyprland-extras
           (final: prev: {
-            # Hyprland 0.56 requires Glaze 7; unstable now provides Glaze 8.
+            # The pinned Hyprland uses Glaze 7; unstable now provides Glaze 8.
             glaze-hyprland = pkgs_stable.glaze.override {
               enableSSL = false;
               enableInterop = false;
             };
-            # NixOS requires an ELF executable for its capability wrapper.
-            hyprland = prev.hyprland.override { makeWrapper = final.makeBinaryWrapper; };
           })
         ];
       };
