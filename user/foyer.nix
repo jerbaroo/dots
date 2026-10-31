@@ -11,7 +11,10 @@ let
     durationMs = desktop.animation.${name}.durationMs;
   };
   desktop = config.desktop;
-  floatCenter = "[float;center;size (monitor_w*${fraction}) (monitor_h*${fraction})]";
+  floatCenter =
+    cmd:
+    lib.optionalString desktop.hyprland.float.center "[float;center;size (monitor_w*${fraction}) (monitor_h*${fraction})] "
+    + cmd;
   fraction = toString desktop.hyprland.float.size.default;
 in
 {
@@ -20,10 +23,10 @@ in
   programs.foyer = {
     accent = desktop.theme.palette.${desktop.theme.accent}.hex;
     actions = {
-      audioSettings = "${floatCenter} ${desktop.audio.guiCmd}";
-      bluetoothSettings = "${floatCenter} ${desktop.bluetooth.guiCmd}";
+      audioSettings = floatCenter desktop.audio.guiCmd;
+      bluetoothSettings = floatCenter desktop.bluetooth.guiCmd;
       lockScreen = desktop.lock.cmd;
-      systemMonitor = "${floatCenter} ${lib.getExe pkgs.kitty} ${desktop.btop.attach}";
+      systemMonitor = floatCenter "${lib.getExe pkgs.kitty} ${desktop.btop.attach}";
     };
     animation = {
       enter = animation "fadeIn";

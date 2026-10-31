@@ -6,7 +6,10 @@
   ...
 }:
 let
-  floatCenter = _: "[float;center;${floatSize config.desktop.hyprland.float.size.default}]";
+  floatCenter =
+    cmd:
+    lib.optionalString config.desktop.hyprland.float.center "[float;center;${floatSize config.desktop.hyprland.float.size.default}] "
+    + cmd;
   floatSize = fraction: "size (monitor_w*${toString fraction}) (monitor_h*${toString fraction})";
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
     ${pkgs.socat}/bin/socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
@@ -224,7 +227,7 @@ in
             ))
 
             # Alphabet keys.
-            (bind "${mod} + B" (execCmd "${floatCenter 0} ${config.desktop.bluetooth.guiCmd}"))
+            (bind "${mod} + B" (execCmd (floatCenter config.desktop.bluetooth.guiCmd)))
             (bind "${mod} + SHIFT + B" (execCmd "${lib.getExe config.programs.foyer.package} bar toggle"))
             (bind "${mod} + D" (execCmd "kitty ${pkgs.yazi}/bin/yazi"))
             (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
@@ -243,8 +246,8 @@ in
             (bind "${mod} + SHIFT + Q" (execCmd "${pkgs.hyprshutdown}/bin/hyprshutdown"))
             (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
             (bind "${mod} + SHIFT + S" (execCmd "kitty ${config.desktop.cli.home.switch}"))
-            (bind "${mod} + T" (execCmd "${floatCenter 0} kitty ${config.desktop.btop.attach}"))
-            (bind "${mod} + V" (execCmd "${floatCenter 0} ${config.desktop.audio.guiCmd}"))
+            (bind "${mod} + T" (execCmd (floatCenter "kitty ${config.desktop.btop.attach}")))
+            (bind "${mod} + V" (execCmd (floatCenter config.desktop.audio.guiCmd)))
             (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
 
             # Other keys
@@ -529,6 +532,11 @@ in
       default = 0.333333;
       description = "Default size of hyprland scrolling layout columns.";
       type = lib.types.float;
+    };
+    float.center = lib.mkOption {
+      default = false;
+      description = "Float, center and resize apps launched through the floatCenter helper.";
+      type = lib.types.bool;
     };
     float.size.default = lib.mkOption {
       default = 0.85;
