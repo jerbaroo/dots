@@ -414,6 +414,12 @@ in
             noBorderIfSoleTile
             noBlur
             {
+              # The portal picker has no app ID, so match its initial title.
+              match.title = "^(Select what to share)$";
+              float = true;
+              center = true;
+            }
+            {
               match.class = "^kitty-below$";
               animation = "slide bottom";
             }

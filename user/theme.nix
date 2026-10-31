@@ -192,8 +192,8 @@ in
 
         Anything themed from a prebuilt Catppuccin port rather than from
         desktop.theme.palette needs this to keep up: the GTK theme above,
-        Firefox (browser.nix) and Emacs (emacs/emacs.nix) each apply it in the
-        way their port allows.
+        Qt (qt.nix), Firefox (browser.nix) and Emacs (emacs/emacs.nix) each apply
+        it in the way their port allows.
       '';
       readOnly = true;
       type = lib.types.attrs;
