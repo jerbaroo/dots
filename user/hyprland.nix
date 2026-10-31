@@ -87,8 +87,9 @@ in
               (animation "windowsIn" false (curveOf "windowIn") pop)
               (animation "windowsOut" false (curveOf "windowOut") pop)
               (animation "windowsMove" false (curveOf "windowMove") slide)
-              (animation "workspacesIn" false (curveOf "windowIn") slide)
-              (animation "workspacesOut" false (curveOf "windowOut") slide)
+              # Keep both workspaces moving together throughout the transition.
+              (animation "workspacesIn" false (curveOf "transitionY") drawer)
+              (animation "workspacesOut" false (curveOf "transitionY") drawer)
             ];
         # Map each curve from 'animation.nix' to Hyprland syntax.
         curve =
@@ -235,6 +236,7 @@ in
             (bind "${mod} + F" (dispatch "window.fullscreen" "{ mode = \"fullscreen\" }"))
             # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
             (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))
+            (bind "${mod} + G" ''function() hl.plugin.scrolloverview.overview("toggle all") end'')
             (bind "${mod} + M" (execCmd "spotify"))
             (bind "${mod} + N" (execCmd "${lib.getExe config.programs.foyer.package} notifications toggle"))
             (bind "${mod} + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy"))

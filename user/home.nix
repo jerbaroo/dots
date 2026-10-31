@@ -54,6 +54,7 @@
     ./ghdashboard.nix
     ./git.nix
     ./hypridle.nix
+    ./hyprland-scroll-overview.nix
     ./hyprland.nix
     ./hyprglass.nix
     ./hyprsunset.nix
