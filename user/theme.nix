@@ -124,6 +124,7 @@ in
     # ls /etc/profiles/per-user/jer/share/icons
     catppuccin.cursors.enable = false;
     home.pointerCursor = {
+      enable = true;
       gtk.enable = true;
       name = "catppuccin-${config.desktop.theme.flavor}-${config.desktop.theme.accent}-cursors";
       package =

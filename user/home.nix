@@ -91,11 +91,17 @@
     WHEEL_DOWN add volume 2
   '';
   xdg.configFile."mpv/mpv.conf".text = ''
-    vo=gpu-next
+    panscan=0
+    script-opts-append=dynamic_crop-mode=4
     target-colorspace-hint=auto
     # Let Hyprland's auto HDR detect HDR content with mpv 0.41 and later.
     target-colorspace-hint-mode=source
+    vo=gpu-next
   '';
+  xdg.configFile."mpv/scripts/dynamic-crop.lua".source = pkgs.fetchurl {
+    hash = "sha256-My8xSzJGF9cDjADDraCNJXFg4QdmyAGADb3qMl/hECI=";
+    url = "https://raw.githubusercontent.com/Ashyni/mpv-scripts/d3f5685f5209ae548f8398b21d4dcbbea766d076/dynamic-crop.lua";
+  };
   xdg.configFile."yazi/yazi.toml".text = ''
     [mgr]
     sort_by = "alphabetical"
