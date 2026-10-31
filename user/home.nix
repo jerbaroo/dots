@@ -85,11 +85,6 @@
     allowUnfreePredicate = config.desktop.allowUnfreePredicate;
   };
   programs.home-manager.enable = true;
-  # Keep clockwise knob rotation increasing volume after Kanata maps it to wheel-down.
-  xdg.configFile."mpv/input.conf".text = ''
-    WHEEL_UP add volume -2
-    WHEEL_DOWN add volume 2
-  '';
   xdg.configFile."mpv/mpv.conf".text = ''
     panscan=0
     script-opts-append=dynamic_crop-mode=4

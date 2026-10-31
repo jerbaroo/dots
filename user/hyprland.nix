@@ -280,7 +280,7 @@ in
             (bind "${mod} + K" (dispatchFocusMoveInDirection "u"))
             (bind "${mod} + L" (dispatch "layout" "\"focus r\""))
 
-            # Navigate columns with the mouse wheel or remapped keyboard knob.
+            # Navigate columns with the mouse wheel.
             (bind "${mod} + mouse_up" (dispatch "layout" "\"focus l\""))
             (bind "${mod} + mouse_down" (dispatch "layout" "\"focus r\""))
 
