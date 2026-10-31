@@ -519,6 +519,12 @@ in
         type = lib.types.float;
       };
     };
+    buttonRounding = lib.mkOption {
+      default = config.desktop.hyprland.rounding / 2.0;
+      defaultText = lib.literalExpression "config.desktop.hyprland.rounding / 2.0";
+      description = "Corner radius of desktop buttons in pixels.";
+      type = lib.types.addCheck lib.types.number (x: x >= 0);
+    };
     defaultColumnWidth = lib.mkOption {
       default = 0.333333;
       description = "Default size of hyprland scrolling layout columns.";
@@ -547,7 +553,7 @@ in
       type = lib.types.attrs;
     };
     rounding = lib.mkOption {
-      default = 8;
+      default = 12;
       description = "Rounding of borders.";
       type = lib.types.ints.unsigned;
     };

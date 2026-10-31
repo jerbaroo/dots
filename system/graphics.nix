@@ -1,4 +1,6 @@
 {
+  # Enable native-resolution graphics during boot.
+  hardware.amdgpu.initrd.enable = true;
   hardware.graphics = {
     enable = true;
     enable32Bit = true;

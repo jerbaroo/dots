@@ -46,6 +46,7 @@ in
     layout = {
       borderWidthPx = desktop.hyprland.border.size;
       cornerRadiusPx = desktop.hyprland.rounding;
+      workspaceCornerRadiusPx = desktop.hyprland.rounding;
       gapPx = 2 * desktop.hyprland.gap;
     };
     palette = {
