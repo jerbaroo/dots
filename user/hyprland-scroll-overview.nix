@@ -24,14 +24,13 @@ let
     };
     patches = [ ./patches/scrolloverview-hyprglass.patch ];
     pluginName = "scrolloverview";
-    # Pin jakeleveroni's hyprland-0.57-port branch.
     src = pkgs.fetchFromGitHub {
-      hash = "sha256-6IQ57nXyFfNanl6RJRTnIn8P2W1yHo4E82SsgErE2Eo=";
-      owner = "jakeleveroni";
+      hash = "sha256-684XIZXg/MPkFClgTJGUAVB/bEc4C2aTdD/nfQEt81o=";
+      owner = "yayuuu";
       repo = "hyprland-scroll-overview";
-      rev = "82f03826ed2b424c4cfdac06a88241dd18679d8b";
+      rev = "a8dcca6fe3ddc2164774cb6925bc67c0b974a78f";
     };
-    version = "0-unstable-82f0382";
+    version = "0-unstable-a8dcca6";
   });
 in
 {
@@ -39,8 +38,10 @@ in
     extraConfig = ''
       hl.define_submap("scrolloverview", function()
         for key, direction in pairs({
-          ["SUPER + J"] = "down",
-          ["SUPER + K"] = "up",
+          ["H"] = "left",
+          ["J"] = "down",
+          ["K"] = "up",
+          ["L"] = "right",
         }) do
           hl.bind(key, function() hl.plugin.scrolloverview.navigate(direction) end)
         end

@@ -18,7 +18,7 @@
 +            return;
 +
 +        // Finish the backdrop before sampling it; this bridge draws the bottom decoration immediately.
-+        OverviewRender::flushPass(params.monitor);
++        OverviewRender::flushPass(g_pHyprRenderer->context(), params.monitor);
 +        render(g_pHyprRenderer->context(), params.monitor, params.window, params.windowBox, metrics.targetOpacity, metrics.renderScale);
 +        return;
 +    }
