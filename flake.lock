@@ -180,11 +180,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793559321,
-        "narHash": "sha256-xxSwjjHuLvCaw0x/MhrlZo2zkGwGQmEL5IaV5qEZ9SE=",
+        "lastModified": 1793562867,
+        "narHash": "sha256-ASuuIygF++8xKL9oX192DL3ga+zDWUKWSCXTAMdFrjc=",
         "owner": "jerbaroo",
         "repo": "foyer",
-        "rev": "28fe4400c54e48c7bc6c20c4d0765f29389dc808",
+        "rev": "45e052627a7bdb3e43bdbf62d367b62692aecbb3",
         "type": "github"
       },
       "original": {

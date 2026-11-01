@@ -239,9 +239,9 @@ in
             (bind "${mod} + F" (dispatch "window.fullscreen" "{ mode = \"fullscreen\" }"))
             # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
             (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))
-            (bind "${mod} + G" ''function() hl.plugin.scrolloverview.overview("toggle all") end'')
             (bind "${mod} + M" (execCmd "spotify"))
             (bind "${mod} + N" (execCmd "${lib.getExe config.programs.foyer.package} notifications toggle"))
+            (bind "${mod} + O" ''function() hl.plugin.scrolloverview.overview("toggle all") end'')
             (bind "${mod} + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy"))
             (bind "${mod} + SHIFT + R" (
               execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
