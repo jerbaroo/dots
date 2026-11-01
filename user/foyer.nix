@@ -55,6 +55,10 @@ in
       workspaceCornerRadiusPx = desktop.hyprland.rounding;
       gapPx = 2 * desktop.hyprland.gap;
     };
+    lockScreen = {
+      borderWidthPx = desktop.hyprland.border.size;
+      disabledColor = desktop.theme.palette.subtext0.hex;
+    };
     palette = {
       background = desktop.theme.palette.crust.hex;
       controlActive = desktop.theme.palette.surface0.hex;
