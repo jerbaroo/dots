@@ -72,18 +72,19 @@ in
             end
           end
           play_sound
-          set id (notify-send -e --print-id (make_message $_flag_time))
+          set -l id (notify-send -e --print-id (make_message $_flag_time))
+          or return
           for i in (seq (math $_flag_time - 1) -1 1)
-            # Check if the file flag was passed, and if the file no longer exists
+            sleep 1
             if set -q _flag_file
               if not test -e $_flag_file
                 break
               end
             end
 
-            sleep 1
             play_sound
-            notify-send -e --expire-time=1100 --replace-id=$id (make_message $i)
+            set id (notify-send -e --print-id --expire-time=1100 --replace-id=$id (make_message $i))
+            or return
           end
         '';
         # Select projects from home directory. Project format: '~/foo'.
