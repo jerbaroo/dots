@@ -4,19 +4,14 @@ Keep attribute fields in alphabetical order when adding or editing
 configuration. Place new fields in their alphabetical position rather than
 appending them.
 
-# Emacs project context
+# Code style
 
-When working on code, use the running Emacs session as an additional source
-of project context when available. Query it through `emacsclient --eval`,
-using `--alternate-editor=false` so an unavailable session fails promptly.
-Limit queries to buffers belonging to the project being worked on.
+Organize code around domain concepts and clear responsibilities.
+Separate high-level orchestration from implementation details.
 
-Check live Flymake or Flycheck diagnostics before relevant changes and after
-edits have reached the existing Eglot session. Reuse Eglot's connection for
-types, definitions, and references when useful; do not start another language
-server just to obtain this information.
+Prefer self-explanatory code. Add documentation only when it conveys
+something non-obvious, and keep it to one or two short sentences.
+Use longer explanations only when necessary for correct use.
 
-Account for unsaved buffers when comparing diagnostics with files on disk.
-Do not save, revert, or overwrite the user's buffers merely to obtain context.
-Diagnostics may be incomplete or delayed and do not replace required builds
-or tests. If Emacs or Eglot is unavailable, continue with normal project tools.
+Keep function documentation independent of particular callers.
+Explain caller-specific intent at the call site.

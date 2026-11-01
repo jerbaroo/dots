@@ -18,7 +18,16 @@
       systemd-boot.configurationLimit = 5;
       systemd-boot.enable = true;
     };
-    plymouth.enable = false;
+    plymouth = {
+      enable = true;
+      theme = "circle";
+      themePackages = [
+        (pkgs.adi1090x-plymouth-themes.override {
+          selected_themes = [ "circle" ];
+        })
+      ];
+    };
     supportedFilesystems = [ "ntfs" ];
   };
+  catppuccin.plymouth.enable = false;
 }
