@@ -32,6 +32,7 @@
             defaultColumnWidth = 0.333333;
             gap = 8;
           };
+          lock.cmd = "swaylock";
           neo.colour = "gold";
         };
         home.packages = [

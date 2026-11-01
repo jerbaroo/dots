@@ -264,7 +264,7 @@ in
       type = lib.types.str;
     };
     firefox.theme = lib.mkOption {
-      default = "alpenglow";
+      default = "theme";
       description = ''
         Firefox UI theme. "theme" follows desktop.theme.flavor and accent,
         applying desktop.theme.paletteChanges (including OLED backgrounds).
