@@ -1,0 +1,38 @@
+--- a/Window.cpp
++++ b/Window.cpp
+@@ -949,6 +949,26 @@
+     return state;
+ }
+
++// Resolve on every draw so unloading or replacing Hyprglass cannot leave a stale callback.
++static void renderOverviewGlass(const SRenderParams& params, const SOverviewWindowMetrics& metrics) {
++    if (!g_pPluginSystem)
++        return;
++
++    using RenderGlass = void (*)(Render::CRenderContext&, PHLMONITOR, PHLWINDOW, const CBox&, float, float);
++    for (const auto* plugin : g_pPluginSystem->getAllPlugins()) {
++        if (!plugin || plugin->m_name != "hyprglass")
++            continue;
++        const auto render = reinterpret_cast<RenderGlass>(dlsym(plugin->m_handle, "hyprglass_render_overview_v1"));
++        if (!render)
++            return;
++
++        // Finish the backdrop before sampling it; this bridge draws the bottom decoration immediately.
++        OverviewRender::flushPass(params.monitor);
++        render(g_pHyprRenderer->context(), params.monitor, params.window, params.windowBox, metrics.targetOpacity, metrics.renderScale);
++        return;
++    }
++}
++
+ } // namespace
+
+ bool shouldBlurBackground(const PHLWINDOW& window) {
+@@ -1006,6 +1026,8 @@
+
+     if (!fullscreen)
+         renderOverviewWindowShadow(params.monitor, params.window, params.windowBox, metrics, params.selected);
++
++    renderOverviewGlass(params, metrics);
+
+     const auto underDecos =
+         renderOverviewCustomDecorations(params.monitor, params.window, params.workspaceBox ? *params.workspaceBox : CBox{}, params.windowBox, metrics, DECORATION_LAYER_UNDER);

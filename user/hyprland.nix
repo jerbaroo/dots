@@ -195,10 +195,13 @@ in
           ];
         bind =
           let
-            bind = keys: action: {
+            bind = bindWithOptions "{ submap_universal = true }";
+            bindDefault = bindWithOptions "{}";
+            bindWithOptions = options: keys: action: {
               _args = [
                 keys
                 (lib.generators.mkLuaInline action)
+                (lib.generators.mkLuaInline options)
               ];
             };
             dispatch = action: arg: hl "dsp.${action}" arg;
@@ -278,8 +281,8 @@ in
 
             # Move focus in direction.
             (bind "${mod} + H" (dispatch "layout" "\"focus l\""))
-            (bind "${mod} + J" (dispatchFocusMoveInDirection "d"))
-            (bind "${mod} + K" (dispatchFocusMoveInDirection "u"))
+            (bindDefault "${mod} + J" (dispatchFocusMoveInDirection "d"))
+            (bindDefault "${mod} + K" (dispatchFocusMoveInDirection "u"))
             (bind "${mod} + L" (dispatch "layout" "\"focus r\""))
 
             # Navigate columns with the mouse wheel.
@@ -360,7 +363,10 @@ in
               _args = [
                 "switch:on:Lid Switch"
                 (lib.generators.mkLuaInline (execCmd "systemctl suspend"))
-                { locked = true; } # Suspend system even if locked.
+                {
+                  locked = true; # Suspend system even if locked.
+                  submap_universal = true;
+                }
               ];
             }
           ];

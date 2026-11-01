@@ -1,0 +1,83 @@
+--- a/src/GlassDecoration.hpp
++++ b/src/GlassDecoration.hpp
+@@ -28,6 +28,7 @@
+
+     [[nodiscard]] PHLWINDOW getOwner();
+     void                    renderPass(Render::CRenderContext& ctx, PHLMONITOR monitor, const float& alpha, bool xray);
++    void                    renderOverview(Render::CRenderContext& ctx, PHLMONITOR monitor, const CBox& box, float alpha, float scale);
+     void                    onFullscreenStateChanged();
+
+     // Content below committed damage in our sample region — resample next frame.
+--- a/src/GlassDecoration.cpp
++++ b/src/GlassDecoration.cpp
+@@ -680,6 +680,47 @@
+                                      frostInput.copy ? &frostInput : nullptr);
+ }
+
++// Overview boxes are already in framebuffer pixels; use fresh buffers and no desktop x-ray snapshot.
++void CGlassDecoration::renderOverview(Render::CRenderContext& ctx, PHLMONITOR monitor, const CBox& box, float alpha, float scale) {
++    if (!g_pGlobalState || !monitor || box.empty() || alpha <= 0.0f || scale <= 0.0f || !isGlassEnabled())
++        return;
++
++    const auto window = m_window.lock();
++    const auto target = ctx.m_data.currentFB;
++    if (!window || !target)
++        return;
++
++    auto& shaders = g_pGlobalState->shaderManager;
++    shaders.initializeIfNeeded();
++    if (!shaders.isInitialized())
++        return;
++
++    const std::string preset = resolvePresetName();
++    const SResolveContext resolveContext{preset, resolveThemeIsDark(), g_pGlobalState->config, g_pGlobalState->customPresets};
++    const float strength = std::max(0.0f, resolvePresetFloat(resolveContext, &SPresetValues::blurStrength, &SOverridableConfig::blurStrength)) * scale;
++    const int downscale = strength >= GlassRenderer::BLUR_DOWNSCALE_THRESHOLD ? GlassRenderer::BLUR_DOWNSCALE_MAX : 1;
++    float radius = strength * 12.0f / downscale;
++    int iterations = std::clamp(static_cast<int>(resolvePresetInt(resolveContext, &SPresetValues::blurIterations, &SOverridableConfig::blurIterations)), 1, 5);
++    if (resolveContext.config.blurFold && **resolveContext.config.blurFold) {
++        const auto folded = GlassRenderer::foldBlurPasses(radius, iterations);
++        radius = folded.radius;
++        iterations = folded.iterations;
++    }
++
++    SP<Render::IFramebuffer> sample;
++    SP<Render::IFramebuffer> temporary;
++    Vector2D padding;
++    GlassRenderer::sampleBackground(ctx, sample, target, box, padding, downscale);
++    if (!sample || !sample->isAllocated() || !sample->getTexture())
++        return;
++    GlassRenderer::blurBackground(ctx, sample, radius, iterations, target, &temporary);
++
++    const bool fullscreen = Fullscreen::controller()->getFullscreenModes(window).internal == Fullscreen::FSMODE_FULLSCREEN;
++    const float rounding = fullscreen ? 0.0f : window->presentation().rounding() * monitor->m_scale * scale;
++    GlassRenderer::applyGlassEffect(ctx, sample, target, box, alpha,
++                                   {rounding, rounding, rounding, rounding}, window->presentation().roundingPower(), padding, resolveContext);
++}
++
+ eDecorationType CGlassDecoration::getDecorationType() {
+     return DECORATION_CUSTOM;
+ }
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -770,6 +770,20 @@
+ // Read by a later copy's LoadGuard::otherActiveCopyPath() through dlsym.
+ APICALL EXPORT bool hyprglass_instance_active() {
+     return s_instanceActive;
++}
++
++// Local, versioned bridge: the caller supplies the overview's physical window box.
++APICALL EXPORT void hyprglass_render_overview_v1(Render::CRenderContext& ctx, PHLMONITOR monitor, PHLWINDOW window,
++                                                const CBox& box, float alpha, float scale) {
++    if (!s_instanceActive || !g_pGlobalState || !window)
++        return;
++
++    for (const auto& decoration : window->presentation().decorations()) {
++        if (auto* glass = dynamic_cast<CGlassDecoration*>(decoration.get())) {
++            glass->renderOverview(ctx, monitor, box, alpha, scale);
++            return;
++        }
++    }
+ }
+
+ // Returning normally keeps Hyprland from reporting a failed load: the copy

@@ -7,27 +7,27 @@
 let
   hyprglass = pkgs.hyprlandPlugins.mkHyprlandPlugin (finalAttrs: {
     hyprland = config.desktop.hyprland.packages.hyprland;
-    pluginName = "hyprglass";
-    # Bumping this requires bumping the hyprland version in flake.nix:
-    # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-    # Also bump the hash and possibly the revision below.
-    version = "1.1.0";
+    installPhase = ''
+      mkdir -p $out/lib
+      cp hyprglass.so $out/lib/libhyprglass.so
+    '';
     meta = {
       description = "Liquid Glass for Hyprland";
       homepage = "https://github.com/hyprnux/hyprglass";
       license = lib.licenses.bsd3;
       platforms = lib.platforms.linux;
     };
+    patches = [ ./patches/hyprglass-overview.patch ];
+    pluginName = "hyprglass";
     src = pkgs.fetchFromGitHub {
+      hash = "sha256-Jq47p3kJ3N/qw8E83lIewjg9hp7oJw9iIYzMT+YPXic=";
       owner = "hyprnux";
       repo = "hyprglass";
       rev = "v${finalAttrs.version}";
-      hash = "sha256-Jq47p3kJ3N/qw8E83lIewjg9hp7oJw9iIYzMT+YPXic=";
     };
-    installPhase = ''
-      mkdir -p $out/lib
-      cp hyprglass.so $out/lib/libhyprglass.so
-    '';
+    # Bumping this requires bumping Hyprland in flake.nix and refreshing the local patch.
+    # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
+    version = "1.1.0";
   });
 in
 {

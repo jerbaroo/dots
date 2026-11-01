@@ -22,6 +22,7 @@ let
       license = lib.licenses.bsd3;
       platforms = lib.platforms.linux;
     };
+    patches = [ ./patches/scrolloverview-hyprglass.patch ];
     pluginName = "scrolloverview";
     # Pin jakeleveroni's hyprland-0.57-port branch.
     src = pkgs.fetchFromGitHub {
@@ -34,5 +35,24 @@ let
   });
 in
 {
-  wayland.windowManager.hyprland.plugins = [ scrolloverview ];
+  wayland.windowManager.hyprland = {
+    extraConfig = ''
+      hl.define_submap("scrolloverview", function()
+        for key, direction in pairs({
+          ["SUPER + J"] = "down",
+          ["SUPER + K"] = "up",
+        }) do
+          hl.bind(key, function() hl.plugin.scrolloverview.navigate(direction) end)
+        end
+        hl.bind("RETURN", function() hl.plugin.scrolloverview.overview("off") end)
+        hl.bind("ESCAPE", function() hl.plugin.scrolloverview.overview("off") end)
+        hl.bind("mouse:272", function()
+          hl.plugin.scrolloverview.overview("select")
+          hl.plugin.scrolloverview.window("select")
+          hl.plugin.scrolloverview.overview("off")
+        end, { mouse = true })
+      end)
+    '';
+    plugins = [ scrolloverview ];
+  };
 }
