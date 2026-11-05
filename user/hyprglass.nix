@@ -20,14 +20,14 @@ let
     patches = [ ./patches/hyprglass-overview.patch ];
     pluginName = "hyprglass";
     src = pkgs.fetchFromGitHub {
-      hash = "sha256-Jq47p3kJ3N/qw8E83lIewjg9hp7oJw9iIYzMT+YPXic=";
+      hash = "sha256-cQmVmmdaITss2hO6aidKOtq6GtEe85fmgrPcrn1eIUg=";
       owner = "hyprnux";
       repo = "hyprglass";
       rev = "v${finalAttrs.version}";
     };
-    # Bumping this requires bumping Hyprland in flake.nix and refreshing the local patch.
+    # Recheck Hyprland compatibility and refresh the local patch when bumping.
     # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-    version = "1.1.0";
+    version = "1.1.1";
   });
 in
 {

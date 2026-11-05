@@ -21,9 +21,9 @@
     hyprland = {
       # Important to follow nixpkgs to ensure graphics match.
       inputs.nixpkgs.follows = "nixpkgs";
-      # Required for hyprglasss (bumping this requires a bump in hyprglass.nix):
+      # Build Hyprglass against this version and recheck its compatibility when bumping:
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.57.0";
+      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.57.1";
     };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

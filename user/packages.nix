@@ -11,6 +11,7 @@ in
     chatgpt
     codex # skynet
     ddcutil # Monitor brightness over DDC (menu bar).
+    gh # Slob Hub.
     ghc # Glorious Haskell Compiler.
     ghciwatch # Mercury's ghcid.
     ghcidPoll # Ol' reliable.
