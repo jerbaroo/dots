@@ -6,11 +6,6 @@
   ...
 }:
 let
-  floatCenter =
-    cmd:
-    lib.optionalString config.desktop.hyprland.float.center "[float;center;${floatSize config.desktop.hyprland.float.size.default}] "
-    + cmd;
-  floatSize = fraction: "size (monitor_w*${toString fraction}) (monitor_h*${toString fraction})";
   monitorListener = pkgs.writeShellScript "hyprland-monitor-listener" ''
     ${pkgs.socat}/bin/socat -U - UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do
       case "$line" in
@@ -21,7 +16,6 @@ let
       esac
     done
   '';
-  zoomFactor = 0.2;
 in
 {
   config = {
@@ -195,181 +189,63 @@ in
           ];
         bind =
           let
-            bind = bindWithOptions "{ submap_universal = true }";
-            bindDefault = bindWithOptions "{}";
-            bindWithOptions = options: keys: action: {
-              _args = [
-                keys
-                (lib.generators.mkLuaInline action)
-                (lib.generators.mkLuaInline options)
-              ];
+            keybindings = import ./keybindings.nix {
+              inherit
+                config
+                lib
+                pkgs
+                showKeybindings
+                ;
             };
-            dispatch = action: arg: hl "dsp.${action}" arg;
-            dispatchFocusMoveInDirection = direction: dispatch "focus" "{ direction = \"${direction}\" }";
-            dispatchFocusMoveToWorkspace = workspace: dispatch "focus" "{ workspace = \"${workspace}\" }";
-            dispatchLayoutSwapCol = direction: dispatch "layout" "\"swapcol ${direction}\"";
-            dispatchWindowMoveInDirection =
-              direction: dispatch "window.move" "{ direction = \"${direction}\" }";
-            dispatchWindowMoveToWorkspace =
-              workspace: dispatch "window.move" "{ workspace = \"${workspace}\" }";
-            dispatchWorkspaceMoveInDirection =
-              direction: dispatch "workspace.move" "{ monitor = \"${direction}\" }";
-            execCmd = cmd: "hl.dsp.exec_cmd(\"${cmd}\")";
-            hl = action: arg: "hl.${action}(${arg})";
-            mod = "SUPER";
+            keybindingsHelp =
+              let
+                rows = map (binding: {
+                  description = builtins.elemAt binding 1;
+                  keys = lib.concatStringsSep " " (
+                    lib.filter (part: part != "") (lib.splitString " " (builtins.elemAt binding 0))
+                  );
+                }) keybindings;
+                width = lib.foldl' (width: row: lib.max width (builtins.stringLength row.keys)) 0 rows;
+                format =
+                  row:
+                  row.keys
+                  + lib.concatStrings (lib.replicate (width - builtins.stringLength row.keys + 2) " ")
+                  + row.description;
+              in
+              pkgs.writeText "keybindings-help.txt" (
+                "Keybindings\n\n" + lib.concatMapStringsSep "\n" format rows + "\n"
+              );
+            # Overview submaps handle vertical focus; lid suspend also works while locked.
+            options = {
+              "SUPER + J".submap_universal = false;
+              "SUPER + K".submap_universal = false;
+              "switch:on:Lid Switch".locked = true;
+            };
+            showKeybindings = pkgs.writeShellScript "show-keybindings" ''
+              exec ${lib.getExe config.programs.foyer.package} text < ${keybindingsHelp}
+            '';
           in
-          [
-            # Function keys
-            (bind "XF86MonBrightnessDown" (execCmd "${pkgs.brightnessctl}/bin/brightnessctl s 10%-"))
-            (bind "XF86MonBrightnessUp" (execCmd "${pkgs.brightnessctl}/bin/brightnessctl s +10%"))
-            (bind "XF86AudioMute" (execCmd "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_SINK@ toggle"))
-            (bind "XF86AudioLowerVolume" (
-              execCmd "${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_SINK@ 5%-"
-            ))
-            (bind "XF86AudioRaiseVolume" (
-              execCmd "${pkgs.wireplumber}/bin/wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
-            ))
-
-            # Alphabet keys.
-            (bind "${mod} + B" (execCmd (floatCenter config.desktop.bluetooth.guiCmd)))
-            (bind "${mod} + SHIFT + B" (execCmd "${lib.getExe config.programs.foyer.package} bar toggle"))
-            (bind "${mod} + D" (execCmd "kitty ${pkgs.yazi}/bin/yazi"))
-            (bind "${mod} + SHIFT + D" (execCmd "${pkgs.wdisplays}/bin/wdisplays"))
-            (bind "${mod} + E" (execCmd "${config.programs.doom-emacs.finalEmacsPackage}/bin/emacs"))
-            (bind "${mod} + F" (dispatch "window.fullscreen" "{ mode = \"fullscreen\" }"))
-            # https://wiki.hypr.land/Configuring/Basics/Dispatchers/#fullscreenstate
-            (bind "${mod} + SHIFT + F" (dispatch "window.fullscreen_state" "{ client = 2, internal = 0 }"))
-            (bind "${mod} + M" (execCmd "spotify"))
-            (bind "${mod} + N" (execCmd "${lib.getExe config.programs.foyer.package} notifications toggle"))
-            (bind "${mod} + O" ''function() hl.plugin.scrolloverview.overview("toggle all") end'')
-            (bind "${mod} + R" (execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy"))
-            (bind "${mod} + SHIFT + R" (
-              execCmd "${pkgs.hyprpicker}/bin/hyprpicker --autocopy --render-inactive"
-            ))
-            (bind "${mod} + P" (execCmd "${lib.getExe pkgs.proton-pass}"))
-            (bind "${mod} + Q" (dispatch "window.close" ""))
-            (bind "${mod} + SHIFT + Q" (execCmd "${pkgs.hyprshutdown}/bin/hyprshutdown"))
-            (bind "${mod} + S" (execCmd config.desktop.cli.screenshot))
-            (bind "${mod} + SHIFT + S" (execCmd "kitty ${config.desktop.cli.home.switch}"))
-            (bind "${mod} + T" (execCmd (floatCenter "kitty ${config.desktop.btop.attach}")))
-            (bind "${mod} + V" (execCmd (floatCenter config.desktop.audio.guiCmd)))
-            (bind "${mod} + W" (execCmd config.desktop.browser.cmd))
-            (bind "${mod} + equal" (dispatch "layout" "\"promote\""))
-
-            # Other keys
-            (bind "${mod} + DELETE" (execCmd config.desktop.lock.cmd))
-            (bind "${mod} + RETURN" (execCmd "kitty"))
-            (bind "${mod} + SHIFT + RETURN" ''
-              function()
-                local w = hl.get_active_window()
-                _G.kitty_below_height = w and w.size.y or nil
-                hl.exec_cmd("kitty --class kitty-below")
-              end
-            '')
-            (bind "${mod} + SLASH" (execCmd "${lib.getExe config.programs.foyer.package} launcher toggle"))
-            (bind "${mod} + SPACE" (
-              if config.desktop.hyprland.layout == "dwindle" then
-                dispatch "togglesplit" ""
-              else
-                dispatch "layout" "\"fit visible\""
-            ))
-            (bind "${mod} + SHIFT + SPACE" (dispatch "window.float" ""))
-            (bind "${mod} + TAB" (dispatch "window.cycle_next" ""))
-            (bind "${mod} + SHIFT + TAB" (dispatch "group.prev" ""))
-
-            ##### Focus #####
-
-            # Move focus in direction.
-            (bind "${mod} + H" (dispatch "layout" "\"focus l\""))
-            (bindDefault "${mod} + J" (dispatchFocusMoveInDirection "d"))
-            (bindDefault "${mod} + K" (dispatchFocusMoveInDirection "u"))
-            (bind "${mod} + L" (dispatch "layout" "\"focus r\""))
-
-            # Navigate columns with the mouse wheel.
-            (bind "${mod} + mouse_up" (dispatch "layout" "\"focus l\""))
-            (bind "${mod} + mouse_down" (dispatch "layout" "\"focus r\""))
-
-            # Move focus to workspace.
-            (bind "${mod} + 0" (dispatchFocusMoveToWorkspace "0"))
-            (bind "${mod} + 1" (dispatchFocusMoveToWorkspace "1"))
-            (bind "${mod} + 2" (dispatchFocusMoveToWorkspace "2"))
-            (bind "${mod} + 3" (dispatchFocusMoveToWorkspace "3"))
-            (bind "${mod} + 4" (dispatchFocusMoveToWorkspace "4"))
-            (bind "${mod} + 5" (dispatchFocusMoveToWorkspace "5"))
-            (bind "${mod} + 6" (dispatchFocusMoveToWorkspace "6"))
-            (bind "${mod} + 7" (dispatchFocusMoveToWorkspace "7"))
-            (bind "${mod} + 8" (dispatchFocusMoveToWorkspace "8"))
-            (bind "${mod} + 9" (dispatchFocusMoveToWorkspace "9"))
-
-            ##### Windows #####
-
-            # Move window in direction.
-            (bind "${mod} + SHIFT + H" (dispatchWindowMoveInDirection "l"))
-            (bind "${mod} + SHIFT + J" (dispatchWindowMoveInDirection "d"))
-            (bind "${mod} + SHIFT + K" (dispatchWindowMoveInDirection "u"))
-            (bind "${mod} + SHIFT + L" (dispatchWindowMoveInDirection "r"))
-
-            # Move window to workspace.
-            (bind "${mod} + SHIFT + 0" (dispatchWindowMoveToWorkspace "0"))
-            (bind "${mod} + SHIFT + 1" (dispatchWindowMoveToWorkspace "1"))
-            (bind "${mod} + SHIFT + 2" (dispatchWindowMoveToWorkspace "2"))
-            (bind "${mod} + SHIFT + 3" (dispatchWindowMoveToWorkspace "3"))
-            (bind "${mod} + SHIFT + 4" (dispatchWindowMoveToWorkspace "4"))
-            (bind "${mod} + SHIFT + 5" (dispatchWindowMoveToWorkspace "5"))
-            (bind "${mod} + SHIFT + 6" (dispatchWindowMoveToWorkspace "6"))
-            (bind "${mod} + SHIFT + 7" (dispatchWindowMoveToWorkspace "7"))
-            (bind "${mod} + SHIFT + 8" (dispatchWindowMoveToWorkspace "8"))
-            (bind "${mod} + SHIFT + 9" (dispatchWindowMoveToWorkspace "9"))
-
-            # Move column horizontally in scrolling mode.
-            (bind "${mod} + COMMA" (dispatchLayoutSwapCol "l"))
-            (bind "${mod} + PERIOD" (dispatchLayoutSwapCol "r"))
-
-            ##### Workspaces #####
-
-            # Move workspace in direction.
-            (bind "${mod} + CTRL + H" (dispatchWorkspaceMoveInDirection "l"))
-            (bind "${mod} + CTRL + J" (dispatchWorkspaceMoveInDirection "d"))
-            (bind "${mod} + CTRL + K" (dispatchWorkspaceMoveInDirection "u"))
-            (bind "${mod} + CTRL + L" (dispatchWorkspaceMoveInDirection "r"))
-
-            ##### Resizing and zooming #####
-
-            # Resize column width
-            (bind "${mod} +         ALT + 1" (dispatch "layout" "\"colresize 0.1\""))
-            (bind "${mod} +         ALT + 2" (dispatch "layout" "\"colresize 0.25\""))
-            (bind "${mod} +         ALT + 3" (dispatch "layout" "\"colresize 0.333333\""))
-            (bind "${mod} + SHIFT + ALT + 3" (dispatch "layout" "\"colresize 0.3\""))
-            (bind "${mod} +         ALT + 4" (dispatch "layout" "\"colresize 0.4\""))
-            (bind "${mod} +         ALT + 5" (dispatch "layout" "\"colresize 0.5\""))
-            (bind "${mod} +         ALT + 6" (dispatch "layout" "\"colresize 0.666666\""))
-            (bind "${mod} + SHIFT + ALT + 6" (dispatch "layout" "\"colresize 0.6\""))
-            (bind "${mod} +         ALT + 7" (dispatch "layout" "\"colresize 0.75\""))
-            (bind "${mod} +         ALT + 8" (dispatch "layout" "\"colresize 0.8\""))
-            (bind "${mod} +         ALT + 9" (dispatch "layout" "\"colresize 0.9\""))
-            (bind "${mod} +         ALT + 0" (dispatch "layout" "\"colresize 1.0\""))
-
-            # Zoom
-            (bind "${mod} + SHIFT + U" (
-              execCmd "hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '[.float - ${toString zoomFactor}, 1.0] | max')"
-            ))
-            (bind "${mod} + SHIFT + I" (
-              execCmd "hyprctl keyword cursor:zoom_factor $(hyprctl -j getoption cursor:zoom_factor | ${pkgs.jq}/bin/jq '.float + ${toString zoomFactor}')"
-            ))
-            (bind "${mod} + SHIFT + O" (execCmd "hyprctl keyword cursor:zoom_factor 1"))
-
-            # Suspend system on laptop-lid close
+          map (
+            binding:
+            let
+              command = builtins.elemAt binding 2;
+              keys = builtins.elemAt binding 0;
+              name = builtins.elemAt binding 1;
+            in
             {
               _args = [
-                "switch:on:Lid Switch"
-                (lib.generators.mkLuaInline (execCmd "systemctl suspend"))
-                {
-                  locked = true; # Suspend system even if locked.
-                  submap_universal = true;
-                }
+                keys
+                (lib.generators.mkLuaInline command)
+                (
+                  {
+                    description = name;
+                    submap_universal = true;
+                  }
+                  // (options.${keys} or { })
+                )
               ];
             }
-          ];
+          ) keybindings;
         # Blur Quickshell components.
         layer_rule = [
           {
