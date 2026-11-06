@@ -6,7 +6,39 @@
 }:
 let
   dispatch = action: arg: hl "dsp.${action}" arg;
-  dispatchFocusMoveInDirection = direction: dispatch "focus" "{ direction = \"${direction}\" }";
+  dispatchFocusMoveInDirection = direction: ''
+    function()
+      local window = hl.get_active_window()
+      local workspace = hl.get_active_workspace()
+      -- Disable built-in fallbacks only for this synchronous focus attempt.
+      local focusOptions = {
+        ["binds.movefocus_cycles_fullscreen"] = false,
+        ["binds.window_direction_monitor_fallback"] = false,
+        ["general.no_focus_fallback"] = true,
+      }
+      local previousOptions = {}
+      for name, value in pairs(focusOptions) do
+        previousOptions[name] = hl.get_config(name)
+      end
+      hl.config(focusOptions)
+      local result = hl.dispatch(hl.dsp.focus({ direction = "${direction}" }))
+      hl.config(previousOptions)
+      if not result.ok and result.code ~= "not_found" then
+        return result
+      end
+      if hl.get_active_window() ~= window then
+        return
+      end
+      local id = workspace and workspace.id
+      if not id or id < 1 or id > 9 then
+        return
+      end
+      local target = id ${if direction == "d" then "+ 1" else "- 1"}
+      if target >= 1 and target <= 9 then
+        return hl.dispatch(hl.dsp.focus({ workspace = target }))
+      end
+    end
+  '';
   dispatchFocusMoveToWorkspace = workspace: dispatch "focus" "{ workspace = \"${workspace}\" }";
   dispatchLayoutSwapCol = direction: dispatch "layout" "\"swapcol ${direction}\"";
   dispatchWindowMoveInDirection =
@@ -239,12 +271,12 @@ in
   ]
   [
     "${mod} + J"
-    "Focus down"
+    "Focus down or next workspace (1-9)"
     (dispatchFocusMoveInDirection "d")
   ]
   [
     "${mod} + K"
-    "Focus up"
+    "Focus up or previous workspace (1-9)"
     (dispatchFocusMoveInDirection "u")
   ]
   [

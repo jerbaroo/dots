@@ -8,7 +8,7 @@ in
   home.packages = with pkgs; [
     bacon # mmmmm
     brightnessctl # 🔆🔆🔆
-    chatgpt
+    chatgpt # Make no mistakes!
     codex # skynet
     ddcutil # Monitor brightness over DDC (menu bar).
     gh # Slob Hub.
