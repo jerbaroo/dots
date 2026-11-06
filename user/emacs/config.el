@@ -116,10 +116,9 @@
               #'my/eglot-clear-cached-file-diagnostics)
   (add-to-list
    'eglot-server-programs
-   (cons '(haskell-mode haskell-ts-mode)
-         (eglot-alternatives
-          '(("haskell-language-server-wrapper" "--lsp")
-            ("haskell-language-server" "--lsp"))))))
+   '((haskell-mode haskell-ts-mode)
+     . ("direnv" "exec" "."
+        "haskell-language-server-wrapper" "--lsp"))))
 
 ;; Org-mode
 

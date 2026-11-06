@@ -18,7 +18,6 @@ in
     gcc # GNU Compiler Collection.
     jq # JSON processor.
     niv # Nix dependency manager.
-    nix # Nix package manager.
     nixfmt # Nix formatter.
     nix-output-monitor # Pretty nix command info.
     nix-tree # Nix dependency browser.

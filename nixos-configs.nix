@@ -29,6 +29,7 @@
           google-chrome # Well-supported browser.
           mpv # Better HDR support.
           neo # The one screensaver.
+          nix # Nix package manager.
           obs-studio # Video recorder.
           texliveFull # LaTeX.
           vlc # Video player.

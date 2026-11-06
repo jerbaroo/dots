@@ -17,6 +17,7 @@
           allowUnfreePredicate =
             let
               whitelist = map pkgs.lib.getName [
+                pkgs_latest.github-copilot-app
                 pkgs_latest.github-copilot-cli # FIXME
                 pkgs.spotify
               ];
@@ -29,13 +30,19 @@
             nixGL.packages = inputs.nixgl.packages;
           };
           hyprland = {
-            defaultColumnWidth = 0.333333;
+            defaultColumnWidth = 0.5;
             gap = 8;
           };
           lock.cmd = "swaylock";
           neo.colour = "gold";
         };
         home.packages = [
+          (pkgs_latest.github-copilot-app.overrideAttrs (old: {
+            # Foundry loads OpenSSL dynamically, so autoPatchelf cannot infer it.
+            runtimeDependencies = (old.runtimeDependencies or [ ]) ++ [
+              pkgs_latest.openssl_3_5
+            ];
+          }))
           pkgs_latest.github-copilot-cli
         ];
       };
