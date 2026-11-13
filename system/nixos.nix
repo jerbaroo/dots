@@ -1,44 +1,12 @@
 {
-  accent,
   allowUnfreePredicate,
-  catppuccin,
-  colorSchemes,
-  config,
-  doomModule,
-  flavor,
-  foyer,
   homeConfig,
-  hostname,
-  hyprlandPackages,
-  lib,
-  pkgs,
-  pkgs_latest,
-  spicetify,
   stateVersion,
-  system,
   username,
   ...
 }:
 {
   home-manager = {
-    extraSpecialArgs = {
-      inherit
-        accent
-        catppuccin
-        colorSchemes
-        doomModule
-        flavor
-        foyer
-        hostname
-        hyprlandPackages
-        pkgs_latest
-        spicetify
-        stateVersion
-        system
-        username
-        ;
-      allowUnfreePredicate = null;
-    };
     useGlobalPkgs = true;
     useUserPackages = true;
     users.${username} = {

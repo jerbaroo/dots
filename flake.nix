@@ -25,6 +25,10 @@
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
       url = "github:hyprwm/Hyprland?ref=refs/tags/v0.57.1";
     };
+    lig = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:KevenGoncalves/lig";
+    };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs_stable.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -56,6 +60,7 @@
           })
         ];
       };
+      # Arguments we pass both to NixOS and to Home Manager.
       sharedArgs = {
         accent = "lavender";
         catppuccin = inputs.catppuccin;
@@ -66,6 +71,7 @@
         hyprlandPackages = {
           inherit (hyprlandPkgs) hyprland xdg-desktop-portal-hyprland;
         };
+        lig = inputs.lig;
         inherit pkgs_latest;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
@@ -81,8 +87,17 @@
               ./system/nixos.nix
               inputs.catppuccin.nixosModules.catppuccin
               inputs.home-manager.nixosModules.home-manager
+              { home-manager.extraSpecialArgs = sharedArgs; }
             ];
-            specialArgs = sharedArgs // nixosConfig;
+            specialArgs = {
+              inherit (sharedArgs)
+                accent
+                flavor
+                hyprlandPackages
+                stateVersion
+                ;
+            }
+            // nixosConfig;
           };
         }) nixosConfigs
       );

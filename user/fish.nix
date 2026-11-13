@@ -204,6 +204,7 @@ in
       shellAbbrs = {
         dr = "direnv reload";
         g = "git";
+        gc = "git checkout";
         gd = "git diff";
         gf = "git_fixup";
         gl = "git log";

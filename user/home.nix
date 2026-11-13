@@ -6,6 +6,7 @@
   flavor,
   hyprlandPackages,
   lib,
+  lig,
   pkgs,
   spicetify,
   stateVersion,
@@ -15,9 +16,7 @@
 {
   # Set Home Manager options using module parameters.
   desktop = {
-    inherit
-      system
-      ;
+    inherit system;
     hyprland.packages = hyprlandPackages;
     spicetify.packages = spicetify.legacyPackages.${system};
     # Theme options taken as parameters because, either they are shared with
@@ -32,6 +31,7 @@
   imports = [
     # 3rd-party Home Manager modules.
     catppuccin.homeModules.catppuccin
+    lig.homeModules.default
     spicetify.homeManagerModules.default
 
     # Define common Home Manager options.

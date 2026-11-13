@@ -35,4 +35,5 @@ in
     wev # Wayland event viewer.
     wl-clipboard # Wayland command-line copy and paste.
   ];
+  programs.lig.enable = true;
 }
