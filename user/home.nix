@@ -80,11 +80,6 @@
     ./wallpaper-service.nix
     ./wlogout.nix
   ];
-  # We use "mkIf" because setting this is not permitted on NixOS (instead this
-  # should be set in NixOS' configuration directly).
-  nixpkgs.config = lib.mkIf (config.desktop.allowUnfreePredicate != null) {
-    allowUnfreePredicate = config.desktop.allowUnfreePredicate;
-  };
   programs.home-manager.enable = true;
   xdg.configFile."mpv/mpv.conf".text = ''
     panscan=0

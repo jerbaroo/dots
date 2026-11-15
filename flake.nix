@@ -39,12 +39,13 @@
     inputs:
     let
       hmConfigs = import ./hm-configs.nix { inherit inputs; };
+      # Import a package set, setting system architecture and unfree predicate.
+      mkPkgs = nixpkgs: allowUnfreePredicate:
+        import nixpkgs {
+          config.allowUnfreePredicate = allowUnfreePredicate;
+          system = "x86_64-linux";
+        };
       nixosConfigs = import ./nixos-configs.nix { inherit inputs; };
-      pkgs = import inputs.nixpkgs {
-        system = "x86_64-linux";
-        #  overlays = [ inputs.hyprland.overlays.hyprland-packages ];
-      };
-      pkgs_latest = import inputs.nixpkgs_latest { system = "x86_64-linux"; };
       pkgs_stable = import inputs.nixpkgs_stable { system = "x86_64-linux"; };
       hyprlandPkgs = import inputs.nixpkgs {
         system = "x86_64-linux";
@@ -61,7 +62,7 @@
         ];
       };
       # Arguments we pass both to NixOS and to Home Manager.
-      sharedArgs = {
+      sharedArgs = allowUnfreePredicate: {
         accent = "lavender";
         catppuccin = inputs.catppuccin;
         colorSchemes = inputs.color-schemes;
@@ -72,7 +73,7 @@
           inherit (hyprlandPkgs) hyprland xdg-desktop-portal-hyprland;
         };
         lig = inputs.lig;
-        inherit pkgs_latest;
+        pkgs_latest = mkPkgs inputs.nixpkgs_latest allowUnfreePredicate;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";
         system = "x86_64-linux";
@@ -87,10 +88,13 @@
               ./system/nixos.nix
               inputs.catppuccin.nixosModules.catppuccin
               inputs.home-manager.nixosModules.home-manager
-              { home-manager.extraSpecialArgs = sharedArgs; }
+              {
+                home-manager.extraSpecialArgs =
+                  sharedArgs nixosConfig.allowUnfreePredicate;
+              }
             ];
             specialArgs = {
-              inherit (sharedArgs)
+              inherit (sharedArgs nixosConfig.allowUnfreePredicate)
                 accent
                 flavor
                 hyprlandPackages
@@ -105,8 +109,8 @@
         map (hmConfig: {
           name = "${hmConfig.username}@${hmConfig.hostname}";
           value = inputs.home-manager.lib.homeManagerConfiguration {
-            inherit pkgs;
-            extraSpecialArgs = sharedArgs;
+            pkgs = mkPkgs inputs.nixpkgs hmConfig.allowUnfreePredicate;
+            extraSpecialArgs = sharedArgs hmConfig.allowUnfreePredicate;
             modules = [
               hmConfig.homeConfig
               ./user/home.nix

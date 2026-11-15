@@ -8,13 +8,10 @@ in
   home.packages = with pkgs; [
     bacon # mmmmm
     brightnessctl # 🔆🔆🔆
-    chatgpt # Make no mistakes!
-    codex # skynet
     ddcutil # Monitor brightness over DDC (menu bar).
-    gh # Slob Hub.
+    gh # Slop Hub.
     ghc # Glorious Haskell Compiler.
-    ghciwatch # Mercury's ghcid.
-    ghcidPoll # Ol' reliable.
+    ghcidPoll # Ole reliable.
     gcc # GNU Compiler Collection.
     jq # JSON processor.
     niv # Nix dependency manager.

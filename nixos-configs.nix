@@ -22,13 +22,14 @@
         };
         home.packages = with pkgs; [
           cbonsai # Screensaver.
+          codex # Skynet.
           fastfetch # System info fetch.
           feh # Image viewer.
           ffmpeg # Video converter.
           footage # Video editor.
           google-chrome # Well-supported browser.
           mpv # Better HDR support.
-          neo # The one screensaver.
+          neo # The one.
           nix # Nix package manager.
           obs-studio # Video recorder.
           texliveFull # LaTeX.

@@ -11,12 +11,15 @@ BLUETOOTH_GUI_CMD = os.environ.get("OS_BLUETOOTH_GUI_CMD", "blueman")
 GRIM = os.environ.get("OS_GRIM_PATH", "grim")
 HOSTNAME = os.environ["OS_HOSTNAME"]
 HYPRCTL = os.environ.get("OS_HYPRCTL_PATH", "hyprctl")
-IGNIS = os.environ.get("OS_IGNIS_PATH", "ignis")
 KANATA_CMD = os.environ.get("OS_KANATA_CMD")
 NH = os.environ.get("OS_NH_PATH", "nh")
 SLURP = os.environ.get("OS_SLURP_PATH", "slurp")
 SWAPPY = os.environ.get("OS_SWAPPY_PATH", "swappy")
 USERNAME = os.environ["OS_USERNAME"]
+
+home_path = f"/home/{USERNAME}"
+flake_path = f"{home_path}/dots"
+flake_attribute = f"{USERNAME}@{HOSTNAME}"
 
 
 def monitor_current() -> Optional[tuple[int, str]]:
@@ -24,10 +27,6 @@ def monitor_current() -> Optional[tuple[int, str]]:
     for monitor in json.loads(output):
         if monitor["focused"]:
             return monitor["id"], monitor["name"]
-
-
-def ui_reload():
-    subprocess.run([IGNIS, "reload"])
 
 
 ##### ROOT #####################################################################
@@ -70,7 +69,6 @@ def info():
     """Print debugging information."""
     click.echo(f"GRIM path: {GRIM}")
     click.echo(f"HYPRCTL path: {HYPRCTL}")
-    click.echo(f"IGNIS path: {IGNIS}")
     click.echo(f"SLURP path: {SLURP}")
     click.echo(f"SWAPPY path: {SWAPPY}")
 
@@ -87,16 +85,11 @@ def home():
 @home.command()
 def switch():
     """Switch Home Manager configuration."""
-    home_path = f"/home/{USERNAME}"
-    flake_path = f"{home_path}/nixos-config"
-    flake_attribute = f"{USERNAME}@{HOSTNAME}"
     click.echo(f"Switching home configuration using {flake_path}")
     subprocess.run(
         [NH, "home", "switch", flake_path, "-c", flake_attribute, "-b", "backup"],
         cwd=home_path,
     )
-    # We also reload the UI to avoid issues with missing icons.
-    ui_reload()
 
 
 ##### MONITOR ##################################################################
@@ -125,10 +118,9 @@ def nixos():
 @nixos.command()
 def switch():
     """Switch NixOS configuration."""
-    config_path = f"/home/{USERNAME}/nixos-config"
-    click.echo(f"Switching NixOS configuration using {config_path}")
+    click.echo(f"Switching NixOS configuration using {flake_path}")
     subprocess.run(
-        ["sudo", "nixos-rebuild", "switch", "--flake", ".#nixos"], cwd=config_path
+        ["sudo", "nixos-rebuild", "switch", "--flake", ".#nixos"], cwd=flake_path
     )
 
 
@@ -145,52 +137,6 @@ def screenshot():
         [GRIM, "-l", "0", "-g", geometry, "-"], stdout=subprocess.PIPE
     ) as grim_proc:
         subprocess.run([SWAPPY, "-f", "-"], stdin=grim_proc.stdout)
-
-
-##### UI #######################################################################
-
-
-@cli.group()
-def ui():
-    pass
-
-
-@ui.group()
-def app_launcher():
-    pass
-
-
-@app_launcher.command()
-def toggle():
-    # TODO fix, and should be passed in.
-    subprocess.run([IGNIS, "toggle-window", "ignis-app-launcher"])
-
-
-@ui.group()
-def lock_screen():
-    pass
-
-
-@lock_screen.command()
-def toggle():
-    subprocess.run(
-        [IGNIS, "toggle-window", f"ignis-lock-screen-{monitor_current()[1]}"]
-    )
-
-
-@ui.group()
-def menu_bar():
-    pass
-
-
-@menu_bar.command()
-def toggle():
-    subprocess.run([IGNIS, "toggle-window", f"ignis-bar-{monitor_current()[0]}"])
-
-
-@ui.command()
-def reload():
-    ui_reload()
 
 
 if __name__ == "__main__":
