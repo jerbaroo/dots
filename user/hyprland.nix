@@ -135,7 +135,7 @@ in
           input.kb_options = "caps:swapescape";
           misc = {
             disable_hyprland_logo = true;
-            vrr = 1;
+            vrr = 2;
           };
           render.cm_auto_hdr = config.desktop.monitor.hdr.auto;
           scrolling = {

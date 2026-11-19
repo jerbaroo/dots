@@ -5,7 +5,6 @@
   flavor,
   hyprlandPackages,
   lib,
-  lig,
   pkgs,
   spicetify,
   stateVersion,
@@ -29,7 +28,6 @@
   };
   imports = [
     # 3rd-party Home Manager modules.
-    lig.homeModules.default
     spicetify.homeManagerModules.default
 
     # Define common Home Manager options.

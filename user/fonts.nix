@@ -13,11 +13,42 @@ let
     privateBuildPlan = {
       family = "Iosevka Custom";
       ligations = {
-        inherits = "haskell";
         enables = [ "llggeq" ];
+        inherits = "haskell";
       };
       serifs = "sans";
+      slopes = {
+        Italic = {
+          angle = 9.4;
+          css = "italic";
+          menu = "italic";
+          shape = "italic";
+        };
+        Upright = {
+          angle = 0;
+          css = "normal";
+          menu = "upright";
+          shape = "upright";
+        };
+      };
       spacing = "term";
+      weights = {
+        Bold = {
+          css = 700;
+          menu = 700;
+          shape = 700;
+        };
+        Regular = {
+          css = 400;
+          menu = 400;
+          shape = 400;
+        };
+      };
+      widths.Normal = {
+        css = "normal";
+        menu = 5;
+        shape = 500;
+      };
     };
     set = "custom";
   };

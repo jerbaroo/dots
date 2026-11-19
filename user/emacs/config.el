@@ -22,7 +22,7 @@
 ;; Override some faces.
 (custom-set-faces!
   ;; Using a different font messes with fill-column-indicator alignment.
-  '(font-lock-comment-face :family "@codeFontName@" :foreground "@colourComment@" :size @codeFontSize@ :slant italic)
+  '(font-lock-comment-face :family "@codeFontName@" :size @codeFontSize@ :slant italic)
   '(line-number :foreground "@colourLineNumber@")
   '(line-number-current-line :foreground "@colourLineNumberCurrent@")
   )

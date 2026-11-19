@@ -22,11 +22,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       # Build Hyprglass against this version and recheck its compatibility when bumping:
       # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.57.1";
-    };
-    lig = {
-      inputs.nixpkgs.follows = "nixpkgs";
-      url = "github:KevenGoncalves/lig";
+      url = "github:hyprwm/Hyprland?ref=refs/tags/v0.57.2";
     };
     nixgl.url = "github:nix-community/nixGL";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -71,7 +67,6 @@
         hyprlandPackages = {
           inherit (hyprlandPkgs) hyprland xdg-desktop-portal-hyprland;
         };
-        lig = inputs.lig;
         pkgs_latest = mkPkgs inputs.nixpkgs_latest allowUnfreePredicate;
         spicetify = inputs.spicetify;
         stateVersion = "26.05";

@@ -13,7 +13,6 @@ let
     );
     codeFontName = config.desktop.font.code.name;
     codeFontSize = toString (config.desktop.font.code.size) + ".0";
-    colourComment = config.desktop.theme.palette.rosewater.hex;
     colourLineNumber = config.desktop.theme.palette.subtext0.hex;
     colourLineNumberCurrent = config.desktop.theme.palette.peach.hex;
   };

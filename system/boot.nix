@@ -11,7 +11,7 @@
       "rd.systemd.show_status=false"
       "vt.global_cursor_default=0"
     ];
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_testing;
     loader = {
       efi.canTouchEfiVariables = true;
       grub.configurationLimit = 5;

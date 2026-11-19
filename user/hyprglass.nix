@@ -20,14 +20,14 @@ let
     patches = [ ./patches/hyprglass-overview.patch ];
     pluginName = "hyprglass";
     src = pkgs.fetchFromGitHub {
-      hash = "sha256-cQmVmmdaITss2hO6aidKOtq6GtEe85fmgrPcrn1eIUg=";
+      hash = "sha256-yWfeuLNVhoLYDmrFrZ8YDoHSFObwvKoplwHvTulPWTs=";
       owner = "hyprnux";
       repo = "hyprglass";
       rev = "v${finalAttrs.version}";
     };
     # Recheck Hyprland compatibility and refresh the local patch when bumping.
     # https://github.com/hyprnux/hyprglass/blob/main/.hyprland-version
-    version = "1.1.1";
+    version = "1.2.0";
   });
 in
 {
@@ -61,17 +61,17 @@ in
       type = lib.types.bool;
     };
     grain = lib.mkOption {
-      default = 0.2;
+      default = 0.3;
       description = "Amount of frosted grain.";
       type = lib.types.addCheck lib.types.float (x: x >= 0 && x <= 1);
     };
     iterations = lib.mkOption {
-      default = 2;
+      default = 3;
       description = "Amount of liquid glass blurring iterations.";
       type = lib.types.ints.unsigned;
     };
     size = lib.mkOption {
-      default = 2.0;
+      default = 3.0;
       description = "Liquid glass blur size.";
       type = lib.types.float;
     };

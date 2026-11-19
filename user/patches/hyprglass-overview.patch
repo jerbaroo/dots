@@ -10,7 +10,7 @@
      // Content below committed damage in our sample region — resample next frame.
 --- a/src/GlassDecoration.cpp
 +++ b/src/GlassDecoration.cpp
-@@ -680,6 +680,47 @@
+@@ -677,6 +677,47 @@
                                       frostInput.copy ? &frostInput : nullptr);
  }
 
@@ -43,8 +43,8 @@
 +
 +    SP<Render::IFramebuffer> sample;
 +    SP<Render::IFramebuffer> temporary;
-+    Vector2D padding;
-+    GlassRenderer::sampleBackground(ctx, sample, target, box, padding, downscale);
++    GlassRenderer::SSampleMap sampleMap;
++    GlassRenderer::sampleBackground(ctx, sample, target, box, sampleMap, downscale);
 +    if (!sample || !sample->isAllocated() || !sample->getTexture())
 +        return;
 +    GlassRenderer::blurBackground(ctx, sample, radius, iterations, target, &temporary);
@@ -52,7 +52,7 @@
 +    const bool fullscreen = Fullscreen::controller()->getFullscreenModes(window).internal == Fullscreen::FSMODE_FULLSCREEN;
 +    const float rounding = fullscreen ? 0.0f : window->presentation().rounding() * monitor->m_scale * scale;
 +    GlassRenderer::applyGlassEffect(ctx, sample, target, box, alpha,
-+                                   {rounding, rounding, rounding, rounding}, window->presentation().roundingPower(), padding, resolveContext);
++                                   {rounding, rounding, rounding, rounding}, window->presentation().roundingPower(), sampleMap, resolveContext);
 +}
 +
  eDecorationType CGlassDecoration::getDecorationType() {
@@ -60,7 +60,7 @@
  }
 --- a/src/main.cpp
 +++ b/src/main.cpp
-@@ -770,6 +770,20 @@
+@@ -896,6 +896,20 @@
  // Read by a later copy's LoadGuard::otherActiveCopyPath() through dlsym.
  APICALL EXPORT bool hyprglass_instance_active() {
      return s_instanceActive;
