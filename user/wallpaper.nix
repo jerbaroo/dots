@@ -21,7 +21,7 @@ in
     type = lib.types.str;
   };
   options.desktop.wallpaperName = lib.mkOption {
-    default = "gilded.jpg";
+    default = "pawel-czerwinski-4qHG5ewDRaU-unsplash.jpg";
     description = "The filename of the wallpaper.";
     type = lib.types.str;
   };

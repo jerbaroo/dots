@@ -34,6 +34,10 @@
                          #'flymake-eldoc-function t)))
 
 (after! flymake
+  ;; Eglot supplies diagnostics; the legacy compiler backend can retain stale state.
+  (with-eval-after-load 'flymake-proc
+    (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake))
+
   (defvar my/flymake-hidden-projects nil)
 
   (defun my/flymake-show-project-diagnostics (&rest _)
