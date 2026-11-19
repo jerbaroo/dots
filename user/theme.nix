@@ -5,6 +5,7 @@
   ...
 }:
 let
+  palettes = import ./palettes;
   themeAccent =
     {
       peach = "orange";
@@ -105,35 +106,16 @@ let
 in
 {
   config = {
-    assertions = [
-      {
-        assertion = config.desktop.theme.oled -> config.desktop.theme.flavor == "mocha";
-        message = "desktop.theme.oled only supports the mocha flavour, but desktop.theme.flavor is '${config.desktop.theme.flavor}'.";
-      }
-    ];
-
-    # We use nix-catppuccin to style some apps. Notably not GTK.
-    catppuccin = {
-      accent = config.desktop.theme.accent;
-      autoEnable = true;
-      enable = true;
-      flavor = config.desktop.theme.flavor;
-    };
-
-    # Cursors.
-    # ls /etc/profiles/per-user/jer/share/icons
-    catppuccin.cursors.enable = false;
     home.pointerCursor = {
       enable = true;
       gtk.enable = true;
-      name = "catppuccin-${config.desktop.theme.flavor}-${config.desktop.theme.accent}-cursors";
+      name = "catppuccin-mocha-${config.desktop.theme.accent}-cursors";
       package =
-        pkgs.catppuccin-cursors."${config.desktop.theme.flavor}${pkgs.lib.strings.toSentenceCase config.desktop.theme.accent}";
+        pkgs.catppuccin-cursors."mocha${pkgs.lib.strings.toSentenceCase config.desktop.theme.accent}";
       # x11.enable = true;
     };
 
     # GTK.
-    catppuccin.gtk.icon.enable = false;
     gtk = {
       enable = true;
       # Icons.
@@ -166,19 +148,31 @@ in
       type = lib.types.attrs;
     };
     flavor = lib.mkOption {
-      type = lib.types.str;
+      description = "Desktop color palette.";
+      type = lib.types.enum (builtins.attrNames palettes);
     };
     oled = lib.mkOption {
       default = true;
       description = "Darken the palette's backgrounds for OLED panels.";
       type = lib.types.bool;
     };
+    palette = lib.mkOption {
+      default =
+        let
+          upstream = palettes.${config.desktop.theme.flavor};
+        in
+        if config.desktop.theme.oled then
+          upstream // lib.mapAttrs (name: override: upstream.${name} // override) oledOverrides
+        else
+          upstream;
+      description = "Colors from the selected desktop palette, including OLED overrides.";
+      readOnly = true;
+      type = lib.types.attrs;
+    };
     paletteChanges = lib.mkOption {
       default =
         let
-          upstream =
-            (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json"))
-            .${config.desktop.theme.flavor}.colors;
+          upstream = palettes.mocha;
         in
         lib.filterAttrs (_: colour: colour.from != colour.to) (
           lib.mapAttrs (name: colour: {
@@ -187,21 +181,6 @@ in
           }) upstream
         );
       description = "Calculated list of changes to apply to the palette";
-      readOnly = true;
-      type = lib.types.attrs;
-    };
-    palette = lib.mkOption {
-      default =
-        let
-          upstream =
-            (pkgs.lib.importJSON (config.catppuccin.sources.palette + "/palette.json"))
-            .${config.desktop.theme.flavor}.colors;
-        in
-        if config.desktop.theme.oled then
-          upstream // lib.mapAttrs (name: override: upstream.${name} // override) oledOverrides
-        else
-          upstream;
-      description = "Palette of colours for the selected Catppuccin theme.";
       readOnly = true;
       type = lib.types.attrs;
     };

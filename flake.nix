@@ -1,7 +1,6 @@
 {
   description = "NixOS";
   inputs = {
-    catppuccin.url = "github:catppuccin/nix";
     color-schemes = {
       flake = false;
       url = "github:mbadolato/iTerm2-Color-Schemes";
@@ -40,7 +39,8 @@
     let
       hmConfigs = import ./hm-configs.nix { inherit inputs; };
       # Import a package set, setting system architecture and unfree predicate.
-      mkPkgs = nixpkgs: allowUnfreePredicate:
+      mkPkgs =
+        nixpkgs: allowUnfreePredicate:
         import nixpkgs {
           config.allowUnfreePredicate = allowUnfreePredicate;
           system = "x86_64-linux";
@@ -63,11 +63,10 @@
       };
       # Arguments we pass both to NixOS and to Home Manager.
       sharedArgs = allowUnfreePredicate: {
-        accent = "lavender";
-        catppuccin = inputs.catppuccin;
+        accent = "yellow";
         colorSchemes = inputs.color-schemes;
         doomModule = inputs.nix-doom-emacs-unstraightened.homeModule;
-        flavor = "mocha";
+        flavor = "gilded";
         foyer = inputs.foyer;
         hyprlandPackages = {
           inherit (hyprlandPkgs) hyprland xdg-desktop-portal-hyprland;
@@ -86,11 +85,9 @@
           value = inputs.nixpkgs.lib.nixosSystem {
             modules = [
               ./system/nixos.nix
-              inputs.catppuccin.nixosModules.catppuccin
               inputs.home-manager.nixosModules.home-manager
               {
-                home-manager.extraSpecialArgs =
-                  sharedArgs nixosConfig.allowUnfreePredicate;
+                home-manager.extraSpecialArgs = sharedArgs nixosConfig.allowUnfreePredicate;
               }
             ];
             specialArgs = {

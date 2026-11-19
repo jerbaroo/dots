@@ -6,7 +6,7 @@
 }:
 {
   config.programs.spicetify = {
-    colorScheme = config.desktop.theme.flavor;
+    colorScheme = "mocha";
     enable = true;
     enabledExtensions = with config.desktop.spicetify.packages.extensions; [
       fullAppDisplay

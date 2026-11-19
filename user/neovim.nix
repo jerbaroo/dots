@@ -1,8 +1,5 @@
 { pkgs, ... }:
 {
-  catppuccin.nvim.settings = {
-    transparent_background = true;
-  };
   programs.neovim = {
     defaultEditor = true;
     enable = true;
@@ -37,9 +34,6 @@
       vim.o.tabstop = 2
     '';
     package = pkgs.neovim-unwrapped;
-    plugins = with pkgs.vimPlugins; [
-      # catppuccin-nvim
-    ];
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;

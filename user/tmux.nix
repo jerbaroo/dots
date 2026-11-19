@@ -48,7 +48,6 @@ let
 in
 {
   config = {
-    catppuccin.tmux.enable = false;
     home.packages = [
       tmux-git-open
       tmux-project-edit
@@ -81,7 +80,11 @@ in
 
         # Theming.
         set -as terminal-features ",*:RGB" # True color.
-        # Keep copy-mode highlights on the desktop palette instead of tmux's theme.
+        set -g clock-mode-colour "${config.desktop.theme.palette.${config.desktop.theme.accent}.hex}"
+        set -g display-panes-active-colour "${
+          config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+        }"
+        set -g display-panes-colour "${config.desktop.theme.palette.overlay0.hex}"
         set -g mode-style bg=${
           config.desktop.theme.palette.${config.desktop.theme.accent}.hex
         },fg=${config.desktop.theme.palette.base.hex}
@@ -91,8 +94,10 @@ in
           config.desktop.theme.palette.${config.desktop.theme.accent}.hex
         },fg=${config.desktop.theme.palette.base.hex}
         # tmux 3.8 defaults to opaque themed popup and border backgrounds.
-        set -g popup-style bg=default
-        set -ag popup-border-style bg=default
+        set -g popup-style bg=default,fg=${config.desktop.theme.palette.text.hex}
+        set -g popup-border-style bg=default,fg=${
+          config.desktop.theme.palette.${config.desktop.theme.accent}.hex
+        }
         set -g pane-active-border-style fg=${
           config.desktop.theme.palette.${config.desktop.theme.accent}.hex
         }
@@ -102,9 +107,13 @@ in
         set -g message-style bg=${config.desktop.theme.palette.base.hex},fg=${config.desktop.theme.palette.text.hex}
         set -g prompt-cursor-colour "${config.desktop.theme.palette.${config.desktop.theme.accent}.hex}"
         set -g status-left-style fg=${config.desktop.theme.palette.text.hex}
-        set -g status-style bg=default # Transparent status bar background.
+        set -g status-right-style fg=${config.desktop.theme.palette.text.hex}
+        set -g status-style bg=default,fg=${config.desktop.theme.palette.text.hex} # Transparent status bar background.
         set -g window-status-separator " "
         set -g window-status-style fg=${config.desktop.theme.palette.text.hex}
+        set -g window-status-activity-style fg=${config.desktop.theme.palette.peach.hex}
+        set -g window-status-bell-style fg=${config.desktop.theme.palette.red.hex}
+        set -g window-status-last-style fg=${config.desktop.theme.palette.subtext0.hex}
         set -g window-status-current-style bg=${config.desktop.theme.palette.base.hex},fg="${
           config.desktop.theme.palette.${config.desktop.theme.accent}.hex
         } bold"

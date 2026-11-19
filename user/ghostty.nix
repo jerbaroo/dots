@@ -12,9 +12,6 @@
     settings = {
       background-opacity = config.desktop.font.code.backgroundOpacity;
       command = config.desktop.tmux.start.command;
-      config-file = [
-        "${config.desktop.theme.colorSchemes}/ghostty/Catppuccin ${pkgs.lib.strings.toSentenceCase config.desktop.theme.flavor}"
-      ];
       confirm-close-surface = false;
       font-family = config.desktop.font.code.name;
       font-size = config.desktop.font.code.size;

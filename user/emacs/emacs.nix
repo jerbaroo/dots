@@ -1,40 +1,39 @@
 {
   config,
+  doomModule,
+  lib,
   pkgs,
   pkgs_latest,
-  lib,
-  doomModule,
   ...
 }:
 let
   configEl = pkgs.replaceVars ./config.el {
-    codeFontName = config.desktop.font.code.name;
     codeBackgroundOpacity = toString (
       builtins.floor (config.desktop.font.code.backgroundOpacity * 100)
     );
+    codeFontName = config.desktop.font.code.name;
     codeFontSize = toString (config.desktop.font.code.size) + ".0";
     colourComment = config.desktop.theme.palette.rosewater.hex;
     colourLineNumber = config.desktop.theme.palette.subtext0.hex;
     colourLineNumberCurrent = config.desktop.theme.palette.peach.hex;
-    flavor = config.desktop.theme.flavor;
-    paletteOverrides =
-      let
-        changes = config.desktop.theme.paletteChanges;
-      in
-      if changes == { } then
-        ""
-      else
-        lib.concatStringsSep "\n" (
-          [ ''(load "catppuccin-theme" nil t)'' ]
-          ++ lib.mapAttrsToList (name: colour: "(catppuccin-set-color '${name} \"${colour.to}\")") changes
-          ++ [ "(catppuccin-reload)" ]
-        );
+  };
+  desktopTheme = pkgs.replaceVars ./desktop-theme.el {
+    backgroundMode = if config.desktop.theme.flavor == "latte" then "light" else "dark";
+    errorColor = config.desktop.theme.palette.red.hex;
+    noteColor = config.desktop.theme.palette.blue.hex;
+    palette = lib.concatStringsSep "\n    " (
+      lib.mapAttrsToList (
+        name: colour: "(${name} . ${builtins.toJSON colour.hex})"
+      ) config.desktop.theme.palette
+    );
+    warningColor = config.desktop.theme.palette.yellow.hex;
   };
   doomDir = pkgs.runCommandLocal "doom-config" { } ''
     mkdir -p $out
     cp ${./init.el} $out/init.el
     cp ${./packages.el} $out/packages.el
     cp ${configEl} $out/config.el
+    cp ${desktopTheme} $out/desktop-theme.el
   '';
 in
 {

@@ -5,6 +5,43 @@
   ...
 }:
 let
+  colour = name: lib.removePrefix "#" config.desktop.theme.palette.${name}.hex;
+  fishColors = {
+    fish_color_autosuggestion = colour "overlay0";
+    fish_color_cancel = colour "red";
+    fish_color_command = colour "blue";
+    fish_color_comment = "${colour "rosewater"} --italics";
+    fish_color_cwd = colour "green";
+    fish_color_cwd_root = colour "red";
+    fish_color_end = colour "peach";
+    fish_color_error = colour "red";
+    fish_color_escape = colour "pink";
+    fish_color_history_current = "${colour "text"} --bold";
+    fish_color_host = colour "teal";
+    fish_color_host_remote = colour "yellow";
+    fish_color_keyword = colour "mauve";
+    fish_color_match = "${colour "peach"} --background=${colour "surface1"}";
+    fish_color_normal = colour "text";
+    fish_color_operator = colour "sky";
+    fish_color_option = colour "peach";
+    fish_color_param = colour "lavender";
+    fish_color_quote = colour "green";
+    fish_color_redirection = colour "pink";
+    fish_color_search_match = "${colour "text"} --background=${colour "surface1"}";
+    fish_color_selection = "${colour "text"} --background=${colour "surface2"}";
+    fish_color_status = colour "red";
+    fish_color_user = colour "green";
+    fish_color_valid_path = "${colour "text"} --underline";
+    fish_pager_color_background = "--background=${colour "base"}";
+    fish_pager_color_completion = colour "text";
+    fish_pager_color_description = colour "subtext0";
+    fish_pager_color_prefix = "${colour "blue"} --bold";
+    fish_pager_color_progress = "${colour "overlay1"} --background=${colour "surface0"}";
+    fish_pager_color_selected_background = "--background=${colour "surface1"}";
+    fish_pager_color_selected_completion = colour "text";
+    fish_pager_color_selected_description = colour "subtext1";
+    fish_pager_color_selected_prefix = "${colour "blue"} --bold";
+  };
   os-neo = pkgs.writeShellScriptBin "os-neo" "${pkgs.neo}/bin/neo -D -f 120 -F -c ${config.desktop.neo.colour}";
   plugin = x: {
     name = x;
@@ -227,12 +264,9 @@ in
       ];
       shellInit = ''
         set -g fish_key_bindings fish_vi_key_bindings
-        set -g fish_color_comment ${
-          let
-            str = config.desktop.theme.palette.rosewater.hex;
-          in
-          builtins.substring 1 (builtins.stringLength str) str
-        } --italics
+        ${lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (name: value: "set -g ${name} ${value}") fishColors
+        )}
         set fish_greeting
         # Prevent failure notifications persisting.
         set -g __done_notification_urgency_level_failure normal

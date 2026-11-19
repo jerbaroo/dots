@@ -2,18 +2,16 @@
 
 ;; Appearance
 
+(add-to-list 'custom-theme-load-path doom-user-dir)
+
 (setq
-  catppuccin-flavor '@flavor@
   display-line-numbers-type 'relative
   doom-font (font-spec :family "@codeFontName@" :size @codeFontSize@)
-  doom-theme 'catppuccin
+  doom-theme 'desktop
   ;; doom-variable-pitch-font (font-spec :family "@codeFontName@" :size @codeFontSize@)
   global-display-fill-column-indicator-mode 1
   which-key-idle-delay 0.0
   )
-
-;; Override parts of theme.
-@paletteOverrides@
 
 ;; Theme background opacity.
 (add-to-list

@@ -5,18 +5,44 @@
   ...
 }:
 let
-  # catppuccin-nix themes kitty by including a prebuilt theme from nixpkgs'
-  # kitty-themes, so kitty does not follow desktop.theme.palette.
   paletteSettings = lib.mapAttrs (_: name: config.desktop.theme.palette.${name}.hex) {
+    active_border_color = config.desktop.theme.accent;
+    active_tab_background = config.desktop.theme.accent;
     active_tab_foreground = "crust";
     background = "base";
+    bell_border_color = "red";
+    color0 = "surface1";
+    color1 = "red";
+    color10 = "green";
+    color11 = "yellow";
+    color12 = "blue";
+    color13 = "pink";
+    color14 = "teal";
+    color15 = "subtext0";
+    color2 = "green";
+    color3 = "yellow";
+    color4 = "blue";
+    color5 = "pink";
+    color6 = "teal";
+    color7 = "subtext1";
+    color8 = "surface2";
+    color9 = "red";
+    cursor = "rosewater";
     cursor_text_color = "base";
+    foreground = "text";
+    inactive_border_color = "surface0";
     inactive_tab_background = "mantle";
+    inactive_tab_foreground = "subtext1";
+    mark1_background = "lavender";
     mark1_foreground = "base";
+    mark2_background = "peach";
     mark2_foreground = "base";
+    mark3_background = "green";
     mark3_foreground = "base";
+    selection_background = "surface2";
     selection_foreground = "base";
     tab_bar_background = "crust";
+    url_color = "blue";
   };
 in
 {

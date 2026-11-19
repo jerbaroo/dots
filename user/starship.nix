@@ -1,3 +1,7 @@
+{ config, lib, ... }:
+let
+  palette = lib.mapAttrs (_: colour: colour.hex) config.desktop.theme.palette;
+in
 {
   programs.starship = {
     enable = true;
@@ -17,6 +21,21 @@
       haskell.format = "[$symbol($version )]($style)";
       nix_shell.format = "$symbol";
       nix_shell.symbol = "❄️ "; # To avoid extra space after default symbol.
+      palette = "desktop";
+      palettes.desktop = palette // {
+        black = palette.crust;
+        bright-black = palette.overlay0;
+        bright-blue = palette.blue;
+        bright-cyan = palette.sky;
+        bright-green = palette.green;
+        bright-purple = palette.pink;
+        bright-red = palette.red;
+        bright-white = palette.text;
+        bright-yellow = palette.yellow;
+        cyan = palette.teal;
+        purple = palette.mauve;
+        white = palette.text;
+      };
       python.format = "$symbol";
     };
   };

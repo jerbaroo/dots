@@ -1,6 +1,5 @@
 ;;; $DOOMDIR/packages.el -*- lexical-binding: t; no-byte-compile: t -*-
 
-(package! catppuccin-theme)
 (package! eca :recipe (:host github :repo "editor-code-assistant/eca-emacs" :files ("*.el")))
 (package! zoom)
 (package! persp-mode-tab-bar

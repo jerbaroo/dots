@@ -12,9 +12,6 @@ let
     dark = "firefox-compact-dark@mozilla.org";
     light = "firefox-compact-light@mozilla.org";
   };
-  changeByHex = lib.mapAttrs' (
-    _: colour: lib.nameValuePair colour.from colour.to
-  ) config.desktop.theme.paletteChanges;
   chromiumPkg = config.lib.nixGL.wrap pkgs.chromium;
   commonExtensions = [
     {
@@ -47,39 +44,10 @@ let
         installation_mode = "normal_installed";
       };
     };
-  flavourTheme =
-    (lib.importJSON "${config.catppuccin.sources.firefox}/themes.json")
-    .${config.desktop.theme.flavor}.${config.desktop.theme.accent};
-  repalettedTheme = flavourTheme // {
-    colors = lib.mapAttrs (
-      _: colour:
-      let
-        hex = toHex colour;
-      in
-      if changeByHex ? ${hex} then toRgb changeByHex.${hex} else colour
-    ) flavourTheme.colors;
-  };
-  toHex =
-    colour:
-    "#"
-    + lib.concatMapStrings (n: lib.toLower (lib.fixedWidthString 2 "0" (lib.toHexString n))) [
-      colour.r
-      colour.g
-      colour.b
-    ];
-  toRgb = hex: {
-    b = lib.fromHexString (builtins.substring 5 2 hex);
-    g = lib.fromHexString (builtins.substring 3 2 hex);
-    r = lib.fromHexString (builtins.substring 1 2 hex);
-  };
-  useCatppuccin = config.desktop.browser.firefox.theme == "theme";
+
 in
 {
   config = {
-    catppuccin.firefox = {
-      enable = useCatppuccin;
-      force = true;
-    };
     # Run Firefox natively on Wayland instead of via XWayland.
     home.sessionVariables.MOZ_ENABLE_WAYLAND = "1";
     programs.chromium = {
@@ -118,21 +86,7 @@ in
         DisableTelemetry = true;
         DontCheckDefaultBrowser = true;
         EncryptedMediaExtensions.Enabled = true; # Widevine (Netflix, etc.).
-        ExtensionSettings = builtins.listToAttrs (map firefoxExtension commonExtensions) // {
-          # Firefox Color is required by the Catppuccin Firefox module, which
-          # only provides this extension's theme but does not install it.
-          "FirefoxColor@mozilla.com" =
-            if useCatppuccin then
-              {
-                install_url = "https://addons.mozilla.org/en-US/firefox/downloads/latest/firefox-color/latest.xpi";
-                installation_mode = "normal_installed";
-              }
-            else
-              {
-                # Keep a saved Firefox Color theme from overriding built-in themes.
-                installation_mode = "blocked";
-              };
-        };
+        ExtensionSettings = builtins.listToAttrs (map firefoxExtension commonExtensions);
         FirefoxHome = {
           Pocket = false;
           Snippets = false;
@@ -153,9 +107,6 @@ in
         };
       };
       profiles.default = {
-        extensions.settings."FirefoxColor@mozilla.com".settings.theme = lib.mkIf (
-          config.desktop.browser.firefox.theme == "theme" && config.desktop.theme.paletteChanges != { }
-        ) (lib.mkForce repalettedTheme);
         id = 0;
         isDefault = true;
         search = {
@@ -190,7 +141,7 @@ in
           # `profiles.ini` to add `StoreID`/`ShowSelector`, but Home Manager
           # owns that file as a read-only /nix/store symlink. The failed write
           # makes Firefox fork onto an unmanaged profile that has none of the
-          # config below, including the Catppuccin theme. Disabling the feature
+          # config below. Disabling the feature
           # short-circuits its init (`SelectableProfileService.sys.mjs`, see `if
           # (!this.isEnabled) return;`) before it touches `profiles.ini`.
           "browser.profiles.enabled" = false;
@@ -198,16 +149,14 @@ in
           "browser.urlbar.suggest.quicksuggest.nonsponsored" = false;
           "browser.urlbar.suggest.quicksuggest.sponsored" = false;
           "dom.security.https_only_mode" = true;
-          "extensions.activeThemeID" = lib.mkIf (
-            !useCatppuccin
-          ) builtinThemeIds.${config.desktop.browser.firefox.theme};
+          "extensions.activeThemeID" = builtinThemeIds.${config.desktop.browser.firefox.theme};
           "extensions.autoDisableScopes" = 0;
           "extensions.pocket.enabled" = false;
           "gfx.webrender.all" = true;
           # Keep content, including the new-tab page, dark independently of the toolbar theme.
           "layout.css.prefers-color-scheme.content-override" = 0;
           "media.ffmpeg.vaapi.enabled" = true;
-          "services.sync.prefs.sync.extensions.activeThemeID" = lib.mkIf (!useCatppuccin) false;
+          "services.sync.prefs.sync.extensions.activeThemeID" = false;
           "toolkit.legacyUserProfileCustomizations.stylesheets" = lib.mkIf config.desktop.theme.oled true;
           "widget.use-xdg-desktop-portal.mime-handler" = 1;
           "widget.use-xdg-desktop-portal.open-uri" = 1;
@@ -264,11 +213,9 @@ in
       type = lib.types.str;
     };
     firefox.theme = lib.mkOption {
-      default = "theme";
+      default = "dark";
       description = ''
-        Firefox UI theme. "theme" follows desktop.theme.flavor and accent,
-        applying desktop.theme.paletteChanges (including OLED backgrounds).
-        "dark", "light", and "alpenglow" use Firefox's built-in themes.
+        Firefox UI theme: "dark", "light", or "alpenglow".
         Existing profiles may need the built-in theme enabled once in Firefox's
         Themes page; setting the preference alone does not always activate it.
       '';
@@ -276,7 +223,6 @@ in
         "alpenglow"
         "dark"
         "light"
-        "theme"
       ];
     };
     homepage = lib.mkOption {

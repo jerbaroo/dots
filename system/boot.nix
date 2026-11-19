@@ -29,5 +29,4 @@
     };
     supportedFilesystems = [ "ntfs" ];
   };
-  catppuccin.plymouth.enable = false;
 }

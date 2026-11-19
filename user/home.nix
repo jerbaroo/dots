@@ -1,6 +1,5 @@
 {
   accent,
-  catppuccin,
   colorSchemes,
   config,
   flavor,
@@ -30,7 +29,6 @@
   };
   imports = [
     # 3rd-party Home Manager modules.
-    catppuccin.homeModules.catppuccin
     lig.homeModules.default
     spicetify.homeManagerModules.default
 
